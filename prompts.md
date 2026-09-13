@@ -18,9 +18,29 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 1:**
 
+> Vamos a realizar un sistema para gestionar un gimnasio vamos a empezar
+> primero definiendo las US y luego vamos a refinarlas. Primero quiero que
+> leas estos 2 archivos readme.md y prompts.md ... Luego quiero que leas este
+> readme README_AI.md en base a esta especificacion vamos a armar nuestro
+> proyecto. Las tecnologias que quiero trabajar son backend en node y
+> frontend en react, base de datos en postgres. Cualquier duda o pregunta
+> por favor formular antes de arrancar.
+
 **Prompt 2:**
 
+> La idea seria crear un mvp web donde por ahora un solo usuario tendria
+> acceso para crear rutinas de gimnasio por cliente, gestionar pagos, cargar
+> ficha medica de los clientes. La idea es automatizar ciertos procesos como
+> el cargar rutinas para los clientes. Despues me gustaria saber si me
+> sugeris que mas podemos meter en este mvp?
+
 **Prompt 3:**
+
+> (Respuesta a las preguntas de setup y alcance del agente vía
+> `vscode_askQuestions`): confirmación de estructura monorepo `backend/` +
+> `frontend/`, ORM Prisma, alcance single-tenant por ahora, gestión local vía
+> OpenSpec sin Jira, y confirmación de fasing MVP (Fase 1) vs backlog futuro
+> (Fase 2).
 
 ---
 

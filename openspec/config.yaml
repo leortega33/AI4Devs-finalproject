@@ -1,0 +1,59 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  Tech stack: TypeScript, Node.js, Express, Prisma ORM, PostgreSQL (backend);
+  React, TypeScript (frontend). Domain-Driven Design (DDD) layered
+  architecture on the backend.
+  Domain: single-gym management MVP for one admin user (owner/trainer) —
+  clients, medical records, exercise catalog, routine templates, payments,
+  dashboard alerts.
+  Repo layout: monorepo with backend/ and frontend/ folders at project root.
+  All code, comments, documentation, and technical artifacts must be in
+  English.
+
+  Project specs (single source of truth): all artifact creation and
+  implementation MUST follow the project's technical context in docs/ and
+  ai-specs/. Read and apply:
+  - docs/base-standards.md — core principles, TDD, language standards, links
+    to backend/frontend/docs standards
+  - docs/backend-standards.md — API, database, testing, security (backend
+    changes)
+  - docs/frontend-standards.md — React, UI/UX (frontend changes)
+  - docs/api-spec.yml — API contracts and endpoint definitions
+  - docs/data-model.md — domain and data model
+  - docs/documentation-standards.md — docs structure and maintenance
+  - docs/openspec-tasks-mandatory-steps.md — mandatory checklist when
+    creating/updating tasks.md
+  For implementation: adopt the relevant agent from ai-specs/agents/
+  (backend-developer.md for backend, frontend-developer.md for frontend).
+  Use ai-specs/skills/ for workflow guidance (enrich-us, adversarial-review,
+  commit, using-git-worktrees, etc.) when applicable.
+  User stories backlog (pre-OpenSpec drafts): planning/user-stories-backlog.md.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+rules:
+  proposal:
+    - Before drafting a proposal, read docs/base-standards.md and the
+      relevant backend/frontend standards for the affected layer(s)
+    - Use docs/api-spec.yml and docs/data-model.md for API and data
+      consistency
+  tasks:
+    - Read openspec/config.yaml and docs/openspec-tasks-mandatory-steps.md
+      before creating or updating tasks.md
+    - Break tasks into small, incremental, testable steps (baby steps, per
+      docs/base-standards.md)
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+operations:
+  apply:
+    guidance:
+      - Follow docs/openspec-tasks-mandatory-steps.md mandatory testing
+        steps; never delegate testing to the user
+  archive:
+    guidance:
+      - Run the adversarial-review skill before archiving non-trivial
+        changes

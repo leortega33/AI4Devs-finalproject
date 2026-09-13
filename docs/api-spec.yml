@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Gym Management API
+  description: |
+    REST API for a single-gym management MVP: client management, medical
+    records, exercise catalog, routine templates, payments, and dashboard
+    alerts for a single admin user (gym owner/trainer).
+
+    This API follows Domain-Driven Design principles and implements a
+    layered architecture (see docs/backend-standards.md).
+
+    This spec is living documentation: paths are added here as each user
+    story is implemented via OpenSpec changes (see
+    planning/user-stories-backlog.md). Only endpoints that have been fully
+    designed are documented below.
+
+  version: 0.1.0
+  contact:
+    name: Gym Management Development Team
+  license:
+    name: ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /api/auth/login:
+    post:
+      summary: Log in
+      description: Validates credentials and sets an httpOnly session cookie (JWT). See US-001.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many attempts (rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/logout:
+    post:
+      summary: Log out
+      description: Clears the session cookie. See US-001.
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: Logout successful
+
+  /api/auth/me:
+    get:
+      summary: Get current authenticated user
+      description: Returns the currently authenticated user, used by the frontend on app load. See US-001.
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/forgot-password:
+    post:
+      summary: Request a password reset
+      description: |
+        Accepts an email and always returns a generic success response
+        (to avoid confirming/denying account existence). Sends a reset
+        email only if the email matches the admin account. See US-001.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Generic acknowledgement (sent regardless of whether the email matched)
+        '429':
+          description: Too many attempts (rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/reset-password:
+    post:
+      summary: Reset password
+      description: Validates the reset token and expiration, then updates the password. See US-001.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password updated successfully
+        '400':
+          description: Invalid, expired, or already-used token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          format: password
+      required:
+        - token
+        - newPassword
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - email
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Error message
+            code:
+              type: string
+              description: Machine-readable error code
+      required:
+        - success
+        - error
+
+tags:
+  - name: Auth
+    description: Authentication endpoints for the single admin user (US-001)
+
+# NOTE: Additional resources (Clients, Medical Records, Exercises, Routine
+# Templates, Payments, Dashboard) will be documented here as their
+# corresponding user stories (US-002 through US-009) are enriched and
+# implemented via OpenSpec changes. See planning/user-stories-backlog.md.
+
+
+

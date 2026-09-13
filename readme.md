@@ -36,11 +36,30 @@
 
 ### **1.1. Objetivo:**
 
-> Propósito del producto. Qué valor aporta, qué soluciona, y para quién.
+Aplicación web para que un entrenador/dueño de gimnasio (usuario único) gestione
+su operación diaria desde un solo lugar: clientes, fichas médicas, rutinas y
+pagos. Resuelve la dispersión de esta información en planillas/papel y
+automatiza la parte más repetitiva del día a día: armar rutinas para cada
+cliente.
 
 ### **1.2. Características y funcionalidades principales:**
 
-> Enumera y describe las características y funcionalidades específicas que tiene el producto para satisfacer las necesidades identificadas.
+**MVP (Fase 1):**
+- Login básico de usuario único (administrador/entrenador)
+- Gestión de clientes (alta, edición, baja lógica, listado/búsqueda)
+- Ficha médica por cliente (condiciones, lesiones, restricciones, contacto de emergencia)
+- Catálogo de ejercicios reutilizable
+- Plantillas de rutina (creación y duplicación) a partir del catálogo de ejercicios
+- Asignación de rutina a cliente con vigencia
+- Registro de pagos por cliente e historial completo de pagos
+- Dashboard con alertas de pagos vencidos/por vencer y rutinas por vencer
+
+**Backlog futuro (Fase 2, fuera del MVP):** recordatorios automáticos
+(email/WhatsApp), pasarela de pago online, registro de asistencia/check-in,
+seguimiento de progreso físico, planes de nutrición, soporte multi-tenant
+(varios gimnasios).
+
+Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planning/user-stories-backlog.md).
 
 ### **1.3. Diseño y experiencia de usuario:**
 
