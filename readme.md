@@ -195,7 +195,20 @@ su spec a `openspec/specs/`.
   [detalle completo](planning/user-stories-backlog.md) y el spec en
   `openspec/specs/admin-authentication/spec.md`).
 
-**Historia de Usuario 2**
+**Historia de Usuario 2 — US-002: Gestión de clientes (CRUD)**
+
+> Como dueño/entrenador, quiero crear, ver, editar y dar de baja perfiles de
+> clientes, para tener un solo lugar con los datos básicos de mis clientes.
+
+- **Criterios de aceptación:** alta con campos obligatorios (nombre, apellido,
+  DNI único de 7-8 dígitos, teléfono, email, fecha de nacimiento) y opcionales
+  (dirección, objetivo, contacto de emergencia); validación de formato; baja
+  lógica (no borrado) con posibilidad de reactivar; listado con búsqueda por
+  nombre y filtro por estado; DNI duplicado rechazado; todo protegido por
+  autenticación.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el spec en el change
+  `openspec/changes/add-client-management/`).
 
 **Historia de Usuario 3**
 

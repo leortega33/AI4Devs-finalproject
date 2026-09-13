@@ -104,7 +104,7 @@ authentication.
 
 ## US-002: Client management (CRUD)
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-client-management/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-13-add-client-management/` and `openspec/specs/client-management/`)
 
 **User story:** As a gym owner/trainer, I want to create, view, edit, and
 deactivate client profiles, so that I have a single place with all my
@@ -611,6 +611,51 @@ group with links to client profiles).
 **Open technical decisions:**
 - Default "due soon" threshold: proposing 5 days as a simple configurable
   constant for now (a full settings UI is Phase 2 unless requested sooner).
+
+## US-010: Bilingual UI (i18n Spanish/English)
+
+- **Status:** ready-to-enrich
+- **Priority:** cross-cutting — do this NEXT, before US-003, while there are
+  few screens (cheaper than retrofitting all screens later).
+
+**User story:** As a gym owner/trainer, I want the app's interface available
+in Spanish and English with a language switcher, so that I can use it in my
+own language.
+
+**Functional description:** internationalize the frontend with `react-i18next`.
+All user-facing copy moves to translation files (`es` and `en`); a language
+selector lets the user switch, and the choice persists (localStorage). Default
+language: Spanish (the target user is Spanish-speaking). Retrofit the existing
+auth and client screens (US-001, US-002); all future stories add their strings
+to the translation files from the start.
+
+**Important constraint:** per `docs/base-standards.md`, all code stays in
+English — this includes translation KEYS, variable/function names, comments,
+commits, and docs. Only the display strings (the values in the `es`/`en`
+resource files) are translated. Backend error `code`s stay English; the
+frontend maps them to localized messages.
+
+**Files/modules to create/modify (frontend):**
+- `src/i18n/index.ts` (i18next config), `src/i18n/locales/es.json`,
+  `src/i18n/locales/en.json`
+- `components/LanguageSwitcher.tsx`
+- Replace hardcoded strings in all existing pages/components with `t()` calls
+
+**Definition of done:**
+- Language switcher toggles es/en across the whole app; choice persists.
+- Default language is Spanish.
+- All existing screens (login, forgot/reset password, dashboard, clients
+  list/form, dialogs) fully translated with no leftover hardcoded copy.
+- Unit test for the switcher and for a representative translated screen.
+
+**Non-functional requirements:**
+- No backend change required (error codes already language-agnostic).
+- Adds `react-i18next` + `i18next` as frontend dependencies.
+
+**Open technical decisions:**
+- Whether to detect the browser language on first load or always default to
+  Spanish (proposing: default Spanish, switch persists after first manual
+  change).
 
 ---
 

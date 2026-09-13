@@ -1,7 +1,7 @@
 ## 0. Setup: Create Feature Branch (MANDATORY - FIRST STEP)
 
-- [ ] 0.1 Create feature branch `feature/add-client-management` from `main` and verify it is checked out (`git branch --show-current`)
-- [ ] 0.2 Verify the working tree is clean before starting (`git status`)
+- [x] 0.1 Create feature branch `feature/add-client-management` from `main` and verify it is checked out (`git branch --show-current`)
+- [x] 0.2 Verify the working tree is clean before starting (`git status`)
 
 ## 1. Backend: Data Model & Migration
 
@@ -68,4 +68,4 @@
 - [x] 10.1 Update `docs/api-spec.yml` with the client endpoints
 - [x] 10.2 Verify/adjust `docs/data-model.md` `Client` entity to match the implemented schema
 - [x] 10.3 Update `planning/user-stories-backlog.md` US-002 status to `in-openspec`, linking to this change
-- [ ] 10.4 On feature close: update `readme.md` and `prompts.md` deliverables with US-002 content
+- [x] 10.4 On feature close: update `readme.md` and `prompts.md` deliverables with US-002 content

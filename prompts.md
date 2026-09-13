@@ -157,6 +157,11 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 1:**
 
+> Sigamos con la US-002 (creación del change OpenSpec `add-client-management`
+> e implementación completa de la gestión de clientes: modelo `Client` con
+> DNI único y baja lógica, endpoints CRUD protegidos, y UI con listado
+> filtrable, formulario y diálogo de baja).
+
 **Prompt 2:**
 
 **Prompt 3:**
