@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { useTranslation } from 'react-i18next';
 import { clientService, type Client, type ClientStatus } from '../services/clientService';
 import { DeactivateClientDialog } from '../components/DeactivateClientDialog';
 
@@ -18,6 +19,7 @@ type StatusFilter = 'all' | ClientStatus;
 
 export function ClientsListPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -47,34 +49,38 @@ export function ClientsListPage() {
   };
 
   const columns: GridColDef<Client>[] = [
-    { field: 'fullName', headerName: 'Name', flex: 1, valueGetter: (_v, row) => `${row.firstName} ${row.lastName}` },
-    { field: 'dni', headerName: 'DNI', width: 120 },
-    { field: 'phone', headerName: 'Phone', width: 160 },
+    { field: 'fullName', headerName: t('clients.columns.name'), flex: 1, valueGetter: (_v, row) => `${row.firstName} ${row.lastName}` },
+    { field: 'dni', headerName: t('clients.columns.dni'), width: 120 },
+    { field: 'phone', headerName: t('clients.columns.phone'), width: 160 },
     {
       field: 'status',
-      headerName: 'Status',
+      headerName: t('clients.columns.status'),
       width: 120,
       renderCell: (params) => (
-        <Chip label={params.value} color={params.value === 'active' ? 'success' : 'default'} size="small" />
+        <Chip
+          label={params.value === 'active' ? t('clients.statusActive') : t('clients.statusInactive')}
+          color={params.value === 'active' ? 'success' : 'default'}
+          size="small"
+        />
       ),
     },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: t('clients.columns.actions'),
       width: 240,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
           <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/edit`)}>
-            Edit
+            {t('common.edit')}
           </Button>
           {params.row.status === 'active' ? (
             <Button size="small" color="error" onClick={() => setToDeactivate(params.row)}>
-              Deactivate
+              {t('clients.actions.deactivate')}
             </Button>
           ) : (
             <Button size="small" onClick={() => reactivate(params.row)}>
-              Reactivate
+              {t('clients.actions.reactivate')}
             </Button>
           )}
         </Stack>
@@ -85,29 +91,29 @@ export function ClientsListPage() {
   return (
     <Container sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h4">Clients</Typography>
+        <Typography variant="h4">{t('clients.title')}</Typography>
         <Button variant="contained" onClick={() => navigate('/clients/new')}>
-          New client
+          {t('clients.new')}
         </Button>
       </Box>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <TextField
-          label="Search by name"
+          label={t('clients.search')}
           size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <TextField
-          label="Status"
+          label={t('clients.status')}
           size="small"
           select
           sx={{ minWidth: 140 }}
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
         >
-          <MenuItem value="all">All</MenuItem>
-          <MenuItem value="active">Active</MenuItem>
-          <MenuItem value="inactive">Inactive</MenuItem>
+          <MenuItem value="all">{t('clients.statusAll')}</MenuItem>
+          <MenuItem value="active">{t('clients.statusActive')}</MenuItem>
+          <MenuItem value="inactive">{t('clients.statusInactive')}</MenuItem>
         </TextField>
       </Stack>
       <div style={{ width: '100%' }}>

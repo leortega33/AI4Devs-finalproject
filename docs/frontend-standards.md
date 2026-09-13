@@ -68,6 +68,11 @@ This document outlines the best practices, conventions, and standards used in th
 - **React Context**: Auth state (see US-001) and other cross-cutting state
 - **Axios**: HTTP client for API communication
 
+### Internationalization
+- **react-i18next** + **i18next** + **i18next-browser-languagedetector**:
+  bilingual UI (Spanish default, English), see the Internationalization
+  section below and US-010.
+
 ### Testing Framework
 - **Playwright**: End-to-end testing (aligned with the Playwright MCP
   integration recommended in this repo's workflow)
@@ -89,6 +94,7 @@ frontend/
 │   ├── pages/             # Page components (one per route)
 │   ├── services/          # API service layer (axios calls per resource)
 │   ├── context/           # React context providers (e.g. AuthContext)
+│   ├── i18n/              # i18next config + locales/ (es.json, en.json)
 │   ├── assets/            # Images, fonts, static resources
 │   ├── App.tsx            # Main application component
 │   ├── main.tsx           # Application entry point
@@ -499,5 +505,32 @@ npm run test:e2e:ui  # Open Playwright UI test runner
 - **TypeScript compilation** without errors
 - **All tests passing** before deployment
 - **Performance monitoring** with Web Vitals
+
+## Internationalization (i18n)
+
+The UI is bilingual (Spanish and English) using `react-i18next` (see US-010).
+
+- **Setup**: `src/i18n/index.ts` configures i18next; `src/i18n/locales/es.json`
+  and `en.json` hold the translations. It is imported once in `main.tsx`.
+- **Default language**: detection order is stored preference (localStorage) →
+  browser language → Spanish fallback. Only `es` and `en` are supported.
+- **Usage in components**: use the `useTranslation()` hook and render text via
+  `t('namespace.key')`; never hardcode user-facing strings.
+- **Key naming**: keys are grouped by feature and written in **English**
+  (e.g. `auth.login.title`, `clients.form.dni`, `common.save`). Per
+  `docs/base-standards.md`, all code — including translation KEYS, identifiers,
+  and comments — stays in English; only the string VALUES are translated.
+- **Backend errors**: backend error `code`s are language-agnostic (English,
+  e.g. `DUPLICATE_DNI`). The frontend maps each code to a translation key
+  (see `src/i18n/localizeApiError.ts` and the `errors.*` namespace) so messages
+  localize without any backend change. Unknown codes fall back to a generic
+  message.
+- **Language switcher**: `components/LanguageSwitcher.tsx`, shown on the
+  authenticated screens (dashboard header). Pre-login screens follow the
+  detected/stored language without exposing a switcher.
+- **Testing**: unit tests assert on the Spanish (default) copy (`setupTests.ts`
+  forces `es`). E2E runs with the browser locale set to `es-AR`
+  (`playwright.config.ts`) so the app is deterministically in Spanish; add new
+  strings to **both** locale files to keep them in sync.
 
 This document serves as the foundation for maintaining code quality and consistency across this gym management frontend application. All team members should follow these practices to ensure a maintainable and scalable codebase.

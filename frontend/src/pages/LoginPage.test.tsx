@@ -28,9 +28,9 @@ describe('LoginPage', () => {
         <LoginPage />
       </MemoryRouter>,
     );
-    await user.click(screen.getByRole('button', { name: /log in/i }));
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
-    expect(await screen.findByText(/email and password are required/i)).toBeInTheDocument();
+    expect(await screen.findByText(/campos.*obligatorios|obligatorios/i)).toBeInTheDocument();
   });
 
   it('should navigate to / after a successful login', async () => {
@@ -44,8 +44,8 @@ describe('LoginPage', () => {
       </MemoryRouter>,
     );
     await user.type(screen.getByLabelText(/email/i), 'admin@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'secret123');
-    await user.click(screen.getByRole('button', { name: /log in/i }));
+    await user.type(screen.getByLabelText(/contraseña/i), 'secret123');
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/'));
   });
@@ -61,9 +61,9 @@ describe('LoginPage', () => {
       </MemoryRouter>,
     );
     await user.type(screen.getByLabelText(/email/i), 'admin@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'wrong-password');
-    await user.click(screen.getByRole('button', { name: /log in/i }));
+    await user.type(screen.getByLabelText(/contraseña/i), 'wrong-password');
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
-    expect(await screen.findByText(/invalid email or password/i)).toBeInTheDocument();
+    expect(await screen.findByText(/email o contraseña inválidos/i)).toBeInTheDocument();
   });
 });

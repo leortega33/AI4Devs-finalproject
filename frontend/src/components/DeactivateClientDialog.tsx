@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface DeactivateClientDialogProps {
   open: boolean;
@@ -8,18 +9,19 @@ interface DeactivateClientDialogProps {
 }
 
 export function DeactivateClientDialog({ open, clientName, onCancel, onConfirm }: DeactivateClientDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={onCancel}>
-      <DialogTitle>Deactivate client</DialogTitle>
+      <DialogTitle>{t('clients.deactivateDialog.title')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Deactivate {clientName}? Their history is preserved and they can be reactivated later.
+          {t('clients.deactivateDialog.message', { name: clientName })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel}>{t('common.cancel')}</Button>
         <Button color="error" variant="contained" onClick={onConfirm}>
-          Deactivate
+          {t('clients.deactivateDialog.confirm')}
         </Button>
       </DialogActions>
     </Dialog>

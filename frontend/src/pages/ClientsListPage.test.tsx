@@ -42,8 +42,8 @@ describe('ClientsListPage', () => {
     render(<MemoryRouter><ClientsListPage /></MemoryRouter>);
     await screen.findByText('John Doe');
 
-    await user.click(screen.getByRole('combobox', { name: /status/i }));
-    await user.click(await screen.findByRole('option', { name: /inactive/i }));
+    await user.click(screen.getByRole('combobox', { name: /estado/i }));
+    await user.click(await screen.findByRole('option', { name: /inactivo/i }));
 
     await waitFor(() => expect(clientService.list).toHaveBeenLastCalledWith({ status: 'inactive' }));
   });

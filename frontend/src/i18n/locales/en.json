@@ -1,0 +1,95 @@
+{
+  "common": {
+    "appName": "Gym Management",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "logout": "Log out",
+    "language": "Language",
+    "spanish": "Spanish",
+    "english": "English"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "forgotPassword": "Forgot your password?",
+      "requiredFields": "Email and password are required."
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "email": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending...",
+      "sent": "If that email matches an account, a reset link was sent.",
+      "failed": "The request could not be completed. Please try again."
+    },
+    "reset": {
+      "title": "Reset your password",
+      "newPassword": "New password",
+      "submit": "Update password",
+      "submitting": "Updating...",
+      "tooShort": "Password must be at least 8 characters long.",
+      "invalidToken": "This reset link is invalid or has expired."
+    },
+    "dashboard": {
+      "loggedInAs": "Logged in as {{email}}",
+      "clients": "Clients"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "new": "New client",
+    "search": "Search by name",
+    "status": "Status",
+    "statusAll": "All",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "columns": {
+      "name": "Name",
+      "dni": "DNI",
+      "phone": "Phone",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate"
+    },
+    "form": {
+      "newTitle": "New client",
+      "editTitle": "Edit client",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "dni": "DNI",
+      "phone": "Phone",
+      "email": "Email",
+      "birthDate": "Birth date",
+      "address": "Address",
+      "goal": "Goal / notes",
+      "emergencyContact": "Emergency contact",
+      "emergencyPhone": "Emergency phone",
+      "relationship": "Relationship",
+      "requiredFields": "Please fill in all required fields.",
+      "invalidDni": "DNI must be 7 or 8 digits.",
+      "invalidEmail": "Please enter a valid email.",
+      "saveFailed": "Could not save the client."
+    },
+    "deactivateDialog": {
+      "title": "Deactivate client",
+      "message": "Deactivate {{name}}? Their history is preserved and they can be reactivated later.",
+      "confirm": "Deactivate"
+    }
+  },
+  "errors": {
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "INVALID_RESET_TOKEN": "This reset link is invalid or has expired.",
+    "DUPLICATE_DNI": "A client with this DNI already exists.",
+    "NOT_FOUND": "The requested item was not found.",
+    "VALIDATION_ERROR": "Please check the entered data.",
+    "GENERIC": "Something went wrong. Please try again."
+  }
+}

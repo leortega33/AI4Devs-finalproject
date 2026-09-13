@@ -12,8 +12,8 @@ describe('DeactivateClientDialog', () => {
       <DeactivateClientDialog open clientName="John Doe" onCancel={onCancel} onConfirm={onConfirm} />,
     );
 
-    expect(screen.getByText(/deactivate john doe/i)).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /^deactivate$/i }));
+    expect(screen.getByText(/desactivar a john doe/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /^desactivar$/i }));
     expect(onConfirm).toHaveBeenCalled();
   });
 
@@ -24,7 +24,7 @@ describe('DeactivateClientDialog', () => {
     render(
       <DeactivateClientDialog open clientName="John Doe" onCancel={onCancel} onConfirm={vi.fn()} />,
     );
-    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getByRole('button', { name: /cancelar/i }));
 
     expect(onCancel).toHaveBeenCalled();
   });

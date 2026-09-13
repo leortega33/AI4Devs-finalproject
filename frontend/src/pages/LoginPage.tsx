@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,7 +18,7 @@ export function LoginPage() {
     setError('');
 
     if (!email || !password) {
-      setError('Email and password are required.');
+      setError(t('auth.login.requiredFields'));
       return;
     }
 
@@ -25,7 +27,7 @@ export function LoginPage() {
       await login(email, password);
       navigate('/');
     } catch {
-      setError('Invalid email or password.');
+      setError(t('errors.INVALID_CREDENTIALS'));
     } finally {
       setSubmitting(false);
     }
@@ -33,9 +35,9 @@ export function LoginPage() {
 
   return (
     <Container maxWidth="xs">
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 8 }}>
+      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 8 }}>
         <Typography variant="h5" component="h1" gutterBottom>
-          Log in
+          {t('auth.login.title')}
         </Typography>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -43,7 +45,7 @@ export function LoginPage() {
           </Alert>
         )}
         <TextField
-          label="Email"
+          label={t('auth.login.email')}
           type="email"
           fullWidth
           margin="normal"
@@ -51,7 +53,7 @@ export function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="Password"
+          label={t('auth.login.password')}
           type="password"
           fullWidth
           margin="normal"
@@ -59,10 +61,10 @@ export function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button type="submit" variant="contained" fullWidth disabled={submitting} sx={{ mt: 2 }}>
-          {submitting ? 'Logging in...' : 'Log in'}
+          {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </Button>
         <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Link to="/forgot-password">Forgot your password?</Link>
+          <Link to="/forgot-password">{t('auth.login.forgotPassword')}</Link>
         </Box>
       </Box>
     </Container>

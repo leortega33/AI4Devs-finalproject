@@ -15,12 +15,12 @@ vi.mock('react-router-dom', async () => {
 });
 
 async function fillRequired(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText(/first name/i), 'John');
-  await user.type(screen.getByLabelText(/last name/i), 'Doe');
+  await user.type(screen.getByLabelText(/nombre/i), 'John');
+  await user.type(screen.getByLabelText(/apellido/i), 'Doe');
   await user.type(screen.getByLabelText(/dni/i), '12345678');
-  await user.type(screen.getByLabelText(/^phone/i), '+542604000000');
+  await user.type(screen.getByLabelText(/^teléfono(?! de)/i), '+542604000000');
   await user.type(screen.getByLabelText(/email/i), 'john@example.com');
-  await user.type(screen.getByLabelText(/birth date/i), '1990-01-01');
+  await user.type(screen.getByLabelText(/fecha de nacimiento/i), '1990-01-01');
 }
 
 describe('ClientFormPage (create)', () => {
@@ -30,9 +30,9 @@ describe('ClientFormPage (create)', () => {
     const user = userEvent.setup();
     render(<MemoryRouter><ClientFormPage /></MemoryRouter>);
 
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
 
-    expect(await screen.findByText(/fill in all required fields/i)).toBeInTheDocument();
+    expect(await screen.findByText(/completá todos los campos obligatorios/i)).toBeInTheDocument();
     expect(clientService.create).not.toHaveBeenCalled();
   });
 
@@ -40,15 +40,15 @@ describe('ClientFormPage (create)', () => {
     const user = userEvent.setup();
     render(<MemoryRouter><ClientFormPage /></MemoryRouter>);
 
-    await user.type(screen.getByLabelText(/first name/i), 'John');
-    await user.type(screen.getByLabelText(/last name/i), 'Doe');
+    await user.type(screen.getByLabelText(/nombre/i), 'John');
+    await user.type(screen.getByLabelText(/apellido/i), 'Doe');
     await user.type(screen.getByLabelText(/dni/i), 'abc');
-    await user.type(screen.getByLabelText(/^phone/i), '+54');
+    await user.type(screen.getByLabelText(/^teléfono(?! de)/i), '+54');
     await user.type(screen.getByLabelText(/email/i), 'john@example.com');
-    await user.type(screen.getByLabelText(/birth date/i), '1990-01-01');
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.type(screen.getByLabelText(/fecha de nacimiento/i), '1990-01-01');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
 
-    expect(await screen.findByText(/dni must be 7 or 8 digits/i)).toBeInTheDocument();
+    expect(await screen.findByText(/dni debe tener 7 u 8 dígitos/i)).toBeInTheDocument();
   });
 
   it('should create a client and navigate to the list', async () => {
@@ -57,7 +57,7 @@ describe('ClientFormPage (create)', () => {
     render(<MemoryRouter><ClientFormPage /></MemoryRouter>);
 
     await fillRequired(user);
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/clients'));
     expect(clientService.create).toHaveBeenCalled();
@@ -69,8 +69,8 @@ describe('ClientFormPage (create)', () => {
     render(<MemoryRouter><ClientFormPage /></MemoryRouter>);
 
     await fillRequired(user);
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
 
-    expect(await screen.findByText(/dni already exists/i)).toBeInTheDocument();
+    expect(await screen.findByText(/ya existe un cliente con este dni/i)).toBeInTheDocument();
   });
 });

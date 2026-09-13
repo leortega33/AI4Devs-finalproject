@@ -1,0 +1,95 @@
+{
+  "common": {
+    "appName": "Gestión de Gimnasio",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "logout": "Cerrar sesión",
+    "language": "Idioma",
+    "spanish": "Español",
+    "english": "Inglés"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "email": "Email",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión...",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "requiredFields": "El email y la contraseña son obligatorios."
+    },
+    "forgot": {
+      "title": "¿Olvidaste tu contraseña?",
+      "email": "Email",
+      "submit": "Enviar enlace de recuperación",
+      "submitting": "Enviando...",
+      "sent": "Si ese email corresponde a una cuenta, se envió un enlace de recuperación.",
+      "failed": "No se pudo completar la solicitud. Intentá de nuevo."
+    },
+    "reset": {
+      "title": "Restablecer tu contraseña",
+      "newPassword": "Nueva contraseña",
+      "submit": "Actualizar contraseña",
+      "submitting": "Actualizando...",
+      "tooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "invalidToken": "Este enlace de recuperación es inválido o expiró."
+    },
+    "dashboard": {
+      "loggedInAs": "Sesión iniciada como {{email}}",
+      "clients": "Clientes"
+    }
+  },
+  "clients": {
+    "title": "Clientes",
+    "new": "Nuevo cliente",
+    "search": "Buscar por nombre",
+    "status": "Estado",
+    "statusAll": "Todos",
+    "statusActive": "Activo",
+    "statusInactive": "Inactivo",
+    "columns": {
+      "name": "Nombre",
+      "dni": "DNI",
+      "phone": "Teléfono",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar"
+    },
+    "form": {
+      "newTitle": "Nuevo cliente",
+      "editTitle": "Editar cliente",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "dni": "DNI",
+      "phone": "Teléfono",
+      "email": "Email",
+      "birthDate": "Fecha de nacimiento",
+      "address": "Dirección",
+      "goal": "Objetivo / notas",
+      "emergencyContact": "Contacto de emergencia",
+      "emergencyPhone": "Teléfono de emergencia",
+      "relationship": "Relación",
+      "requiredFields": "Por favor completá todos los campos obligatorios.",
+      "invalidDni": "El DNI debe tener 7 u 8 dígitos.",
+      "invalidEmail": "Ingresá un email válido.",
+      "saveFailed": "No se pudo guardar el cliente."
+    },
+    "deactivateDialog": {
+      "title": "Desactivar cliente",
+      "message": "¿Desactivar a {{name}}? Su historial se conserva y puede reactivarse más adelante.",
+      "confirm": "Desactivar"
+    }
+  },
+  "errors": {
+    "INVALID_CREDENTIALS": "Email o contraseña inválidos.",
+    "INVALID_RESET_TOKEN": "Este enlace de recuperación es inválido o expiró.",
+    "DUPLICATE_DNI": "Ya existe un cliente con este DNI.",
+    "NOT_FOUND": "No se encontró el elemento solicitado.",
+    "VALIDATION_ERROR": "Por favor revisá los datos ingresados.",
+    "GENERIC": "Algo salió mal. Intentá de nuevo."
+  }
+}

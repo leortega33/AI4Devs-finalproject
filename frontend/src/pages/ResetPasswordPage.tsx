@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const token = searchParams.get('token') || '';
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,7 +18,7 @@ export function ResetPasswordPage() {
     setError('');
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long.');
+      setError(t('auth.reset.tooShort'));
       return;
     }
 
@@ -25,7 +27,7 @@ export function ResetPasswordPage() {
       await authService.resetPassword(token, newPassword);
       navigate('/login');
     } catch {
-      setError('This reset link is invalid or has expired.');
+      setError(t('auth.reset.invalidToken'));
     } finally {
       setSubmitting(false);
     }
@@ -33,9 +35,9 @@ export function ResetPasswordPage() {
 
   return (
     <Container maxWidth="xs">
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 8 }}>
+      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 8 }}>
         <Typography variant="h5" component="h1" gutterBottom>
-          Reset your password
+          {t('auth.reset.title')}
         </Typography>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -43,7 +45,7 @@ export function ResetPasswordPage() {
           </Alert>
         )}
         <TextField
-          label="New password"
+          label={t('auth.reset.newPassword')}
           type="password"
           fullWidth
           margin="normal"
@@ -51,7 +53,7 @@ export function ResetPasswordPage() {
           onChange={(e) => setNewPassword(e.target.value)}
         />
         <Button type="submit" variant="contained" fullWidth disabled={submitting} sx={{ mt: 2 }}>
-          {submitting ? 'Updating...' : 'Update password'}
+          {submitting ? t('auth.reset.submitting') : t('auth.reset.submit')}
         </Button>
       </Box>
     </Container>

@@ -614,9 +614,7 @@ group with links to client profiles).
 
 ## US-010: Bilingual UI (i18n Spanish/English)
 
-- **Status:** ready-to-enrich
-- **Priority:** cross-cutting — do this NEXT, before US-003, while there are
-  few screens (cheaper than retrofitting all screens later).
+- **Status:** in-openspec (implemented — see `openspec/changes/add-bilingual-ui/`)
 
 **User story:** As a gym owner/trainer, I want the app's interface available
 in Spanish and English with a language switcher, so that I can use it in my

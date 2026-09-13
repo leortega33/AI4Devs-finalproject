@@ -31,10 +31,10 @@ describe('ResetPasswordPage', () => {
     const user = userEvent.setup();
     renderWithToken();
 
-    await user.type(screen.getByLabelText(/new password/i), 'short');
-    await user.click(screen.getByRole('button', { name: /update password/i }));
+    await user.type(screen.getByLabelText(/nueva contraseña/i), 'short');
+    await user.click(screen.getByRole('button', { name: /actualizar contraseña/i }));
 
-    expect(await screen.findByText(/at least 8 characters/i)).toBeInTheDocument();
+    expect(await screen.findByText(/al menos 8 caracteres/i)).toBeInTheDocument();
     expect(authService.resetPassword).not.toHaveBeenCalled();
   });
 
@@ -43,8 +43,8 @@ describe('ResetPasswordPage', () => {
     const user = userEvent.setup();
     renderWithToken('valid-token');
 
-    await user.type(screen.getByLabelText(/new password/i), 'longenough1');
-    await user.click(screen.getByRole('button', { name: /update password/i }));
+    await user.type(screen.getByLabelText(/nueva contraseña/i), 'longenough1');
+    await user.click(screen.getByRole('button', { name: /actualizar contraseña/i }));
 
     expect(authService.resetPassword).toHaveBeenCalledWith('valid-token', 'longenough1');
   });
@@ -54,9 +54,9 @@ describe('ResetPasswordPage', () => {
     const user = userEvent.setup();
     renderWithToken('bad-token');
 
-    await user.type(screen.getByLabelText(/new password/i), 'longenough1');
-    await user.click(screen.getByRole('button', { name: /update password/i }));
+    await user.type(screen.getByLabelText(/nueva contraseña/i), 'longenough1');
+    await user.click(screen.getByRole('button', { name: /actualizar contraseña/i }));
 
-    expect(await screen.findByText(/invalid or has expired/i)).toBeInTheDocument();
+    expect(await screen.findByText(/inválido o expiró/i)).toBeInTheDocument();
   });
 });

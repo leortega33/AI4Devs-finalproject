@@ -1,7 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import { Button, Container, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LoginPage } from './pages/LoginPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
@@ -12,18 +14,22 @@ import { ClientFormPage } from './pages/ClientFormPage';
 function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <Container sx={{ mt: 8 }}>
-      <Typography variant="h4" gutterBottom>
-        Gym Management
-      </Typography>
-      <Typography gutterBottom>Logged in as {user?.email}</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" gutterBottom>
+          {t('common.appName')}
+        </Typography>
+        <LanguageSwitcher />
+      </Box>
+      <Typography gutterBottom>{t('auth.dashboard.loggedInAs', { email: user?.email })}</Typography>
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         <Button variant="contained" onClick={() => navigate('/clients')}>
-          Clients
+          {t('auth.dashboard.clients')}
         </Button>
         <Button variant="outlined" onClick={() => logout()}>
-          Log out
+          {t('common.logout')}
         </Button>
       </Stack>
     </Container>
