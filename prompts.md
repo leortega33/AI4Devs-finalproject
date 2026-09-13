@@ -74,6 +74,10 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 1:**
 
+> (Setup de entorno) Instalación de Node 20.19.0 vía nvm y del CLI de
+> OpenSpec, `openspec init` apuntando `config.yaml` a `docs/` y `ai-specs/`,
+> y `docker-compose.yml` para levantar PostgreSQL local.
+
 **Prompt 2:**
 
 **Prompt 3:**
@@ -90,7 +94,17 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 1:**
 
+> (Flujo `opsx-apply` para US-001) Implementación guiada por TDD con pasos
+> obligatorios de verificación: tests unitarios con 90%+ de cobertura,
+> pruebas manuales de endpoints con curl ejecutadas por el agente, y E2E con
+> Playwright, cada uno con su reporte en la carpeta del change.
+
 **Prompt 2:**
+
+> Pero lo de reset password no está devolviendo ningún link, ¿podés
+> chequear? (diagnóstico: la feature funcionaba; el link se loguea en la
+> consola del backend por no haber proveedor de email aún; además se corrigió
+> un mensaje de éxito que se mostraba aunque la petición fallara).
 
 **Prompt 3:**
 
@@ -120,9 +134,22 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 1:**
 
+> Repasemos una por una antes de realizar el enrich (revisión interactiva de
+> las 9 historias del MVP una por una, definiendo campos, alcance y qué queda
+> para Fase 2 antes de enriquecerlas con la skill `enrich-us`).
+
 **Prompt 2:**
 
+> ¿Pero estamos respetando lo que dice el README_AI.md sobre cómo correr el
+> comando /enrich-us? ... ¿deberíamos haber instalado antes OpenSpec y seguir
+> los pasos como indica el README? (derivó en customizar `docs/` para el
+> dominio del gimnasio e inicializar OpenSpec antes de seguir enriqueciendo).
+
 **Prompt 3:**
+
+> Ok arranquemos / aplica el change (creación del change OpenSpec
+> `add-admin-authentication` para US-001 con proposal, spec, diseño y tareas,
+> y posterior implementación de las 49 tareas).
 
 ---
 

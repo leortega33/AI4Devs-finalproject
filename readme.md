@@ -66,7 +66,37 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 > Proporciona imágenes y/o videotutorial mostrando la experiencia del usuario desde que aterriza en la aplicación, pasando por todas las funcionalidades principales.
 
 ### **1.4. Instrucciones de instalación:**
-> Documenta de manera precisa las instrucciones para instalar y poner en marcha el proyecto en local (librerías, backend, frontend, servidor, base de datos, migraciones y semillas de datos, etc.)
+
+**Requisitos previos:** Node.js `20.19.0`+ (recomendado gestionarlo con `nvm`),
+npm `10`+, Docker + Docker Compose, y Git.
+
+```bash
+# 1. Clonar el repositorio
+git clone <url-del-repo>
+cd AI4Devs-finalproject
+
+# 2. Levantar la base de datos PostgreSQL (Docker)
+docker compose up -d
+
+# 3. Backend
+cd backend
+cp .env.example .env          # completar JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
+npm install
+npx prisma migrate deploy     # aplicar migraciones
+npx prisma db seed            # crear el usuario admin desde el .env
+npm run dev                   # API en http://localhost:3000
+
+# 4. Frontend (en otra terminal, desde la raíz)
+cd frontend
+cp .env.example .env          # VITE_API_URL=http://localhost:3000
+npm install
+npm run dev                   # App en http://localhost:5173
+```
+
+Credenciales por defecto del admin (definidas en `backend/.env`):
+`admin@example.com` / `ChangeMe123!`.
+
+> Detalle ampliado en [docs/development_guide.md](docs/development_guide.md).
 
 ---
 
@@ -82,7 +112,36 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
-> Representa la estructura del proyecto y explica brevemente el propósito de las carpetas principales, así como si obedece a algún patrón o arquitectura específica.
+Monorepo con el backend y el frontend como carpetas separadas en la raíz, más
+la documentación técnica y los artefactos de spec-driven development.
+
+```
+.
+├── backend/            # API Node.js + Express + TypeScript (arquitectura DDD por capas)
+│   ├── src/
+│   │   ├── domain/         # entidades y contratos de repositorio
+│   │   ├── application/     # servicios (lógica de negocio) y validación
+│   │   ├── infrastructure/  # implementaciones Prisma, email, logger
+│   │   ├── presentation/    # controllers HTTP
+│   │   ├── routes/ middleware/
+│   │   └── index.ts
+│   └── prisma/          # schema, migraciones y seed
+├── frontend/           # SPA React + TypeScript + Vite + MUI
+│   ├── src/
+│   │   ├── pages/ components/ context/ services/
+│   └── e2e/             # tests end-to-end (Playwright)
+├── docs/               # estándares y documentación técnica (fuente de verdad)
+├── ai-specs/           # agentes y skills reutilizables para asistentes de IA
+├── openspec/           # changes (spec-driven) y specs consolidados
+├── planning/           # backlog de historias de usuario
+└── docker-compose.yml  # PostgreSQL local
+```
+
+El backend sigue **Domain-Driven Design (DDD)** con capas (dominio, aplicación,
+infraestructura, presentación). El flujo de desarrollo usa **OpenSpec**
+(spec-driven): cada funcionalidad se define como un *change* (propuesta, spec,
+diseño y tareas) antes de implementarse, y al terminar se archiva promoviendo
+su spec a `openspec/specs/`.
 
 ### **2.4. Infraestructura y despliegue**
 
@@ -121,7 +180,20 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 
 > Documenta 3 de las historias de usuario principales utilizadas durante el desarrollo, teniendo en cuenta las buenas prácticas de producto al respecto.
 
-**Historia de Usuario 1**
+**Historia de Usuario 1 — US-001: Autenticación del administrador (single admin)**
+
+> Como dueño/entrenador del gimnasio (usuario administrador único), quiero
+> loguearme con email/contraseña y poder recuperar mi contraseña si la olvido,
+> para que solo yo pueda acceder a los datos de clientes, fichas médicas y pagos.
+
+- **Criterios de aceptación:** login con credenciales válidas inicia sesión
+  persistente; credenciales inválidas se rechazan; todas las demás rutas quedan
+  protegidas; recuperación de contraseña por email que responde igual exista o
+  no la cuenta (no revela su existencia); token de reset de un solo uso y con
+  expiración; rate limiting en login y forgot-password.
+- **Estado:** Implementada y archivada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el spec en
+  `openspec/specs/admin-authentication/spec.md`).
 
 **Historia de Usuario 2**
 
@@ -133,11 +205,34 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 
 > Documenta 3 de los tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto. 
 
-**Ticket 1**
+**Ticket 1 — Backend: endpoints y servicio de autenticación (US-001)**
 
-**Ticket 2**
+- **Descripción:** implementar los 5 endpoints de auth (`login`, `logout`,
+  `me`, `forgot-password`, `reset-password`) sobre arquitectura DDD, con
+  `authService` (bcrypt + JWT en cookie httpOnly), validación con zod,
+  middleware que protege el resto de las rutas y rate limiting.
+- **Definición de terminado:** endpoints implementados y protegidos, tests
+  unitarios/integración (90%+ cobertura), `docs/api-spec.yml` actualizado.
+- **Referencia:** `openspec/changes/archive/2026-09-13-add-admin-authentication/tasks.md` (secciones 3-6).
 
-**Ticket 3**
+**Ticket 2 — Frontend: pantallas de acceso y guarda de rutas (US-001)**
+
+- **Descripción:** implementar `AuthContext`, `ProtectedRoute` y las páginas
+  de login, recuperación y reseteo de contraseña con MUI, incluyendo validación
+  de formularios y persistencia de sesión entre recargas.
+- **Definición de terminado:** flujo de login/logout/reset funcional, rutas
+  protegidas redirigen a `/login`, tests unitarios (Vitest) y E2E (Playwright).
+- **Referencia:** `openspec/changes/archive/2026-09-13-add-admin-authentication/tasks.md` (sección 7).
+
+**Ticket 3 — Base de datos: modelo `User`, migración y seed (US-001)**
+
+- **Descripción:** definir el modelo `User` en Prisma (email único, hash de
+  contraseña, token de reset hasheado y expiración), crear la migración inicial
+  y un script de seed que crea el admin único desde variables de entorno.
+- **Definición de terminado:** `npx prisma migrate dev` aplica la tabla `User`;
+  `npx prisma db seed` crea exactamente una fila admin; documentado en
+  `docs/data-model.md` y `docs/development_guide.md`.
+- **Referencia:** `openspec/changes/archive/2026-09-13-add-admin-authentication/tasks.md` (secciones 3.1 y 6).
 
 ---
 
