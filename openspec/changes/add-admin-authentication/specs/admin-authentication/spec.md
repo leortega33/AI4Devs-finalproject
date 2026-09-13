@@ -64,6 +64,13 @@ matches the admin account, to avoid revealing account existence.
   the admin account
 - **THEN** the same generic acknowledgement is returned and no email is sent
 
+#### Scenario: Reset request could not be submitted
+- **WHEN** the administrator submits the password reset form but the request
+  cannot be completed (for example, the service is unreachable)
+- **THEN** the administrator is shown that the request did not go through,
+  rather than a success confirmation, without revealing whether the email
+  matches an account
+
 ### Requirement: Password reset completion
 The system SHALL let the administrator set a new password using a valid,
 unexpired, single-use password-reset token, and SHALL reject the attempt

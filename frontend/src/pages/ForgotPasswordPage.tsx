@@ -5,16 +5,20 @@ import { authService } from '../services/authService';
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setError('');
     setSubmitting(true);
     try {
       await authService.requestPasswordReset(email);
+      setSubmitted(true);
+    } catch {
+      setError('The request could not be completed. Please try again.');
     } finally {
       setSubmitting(false);
-      setSubmitted(true);
     }
   };
 
@@ -30,6 +34,11 @@ export function ForgotPasswordPage() {
           </Alert>
         ) : (
           <>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
             <TextField
               label="Email"
               type="email"
