@@ -134,6 +134,196 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients:
+    get:
+      summary: List clients
+      description: List clients, optionally filtered by name search and status. See US-002.
+      tags:
+        - Clients
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Case-insensitive name fragment to filter by
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive]
+          description: Filter by client status
+      responses:
+        '200':
+          description: The list of matching clients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a client
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '201':
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: A client with this DNI already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{id}:
+    get:
+      summary: Get a client by id
+      tags:
+        - Clients
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update a client
+      tags:
+        - Clients
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '200':
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: DNI belongs to another client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{id}/status:
+    patch:
+      summary: Activate or deactivate a client
+      description: Logical status change (no hard delete). See US-002.
+      tags:
+        - Clients
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [active, inactive]
+              required:
+                - status
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
@@ -183,6 +373,69 @@ components:
         - id
         - email
 
+    ClientInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dni:
+          type: string
+          description: 7 or 8 digits, unique across clients
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        birthDate:
+          type: string
+          format: date
+        address:
+          type: string
+          nullable: true
+        goal:
+          type: string
+          nullable: true
+        emergencyContactName:
+          type: string
+          nullable: true
+        emergencyContactPhone:
+          type: string
+          nullable: true
+        emergencyContactRelationship:
+          type: string
+          nullable: true
+      required:
+        - firstName
+        - lastName
+        - dni
+        - phone
+        - email
+        - birthDate
+
+    Client:
+      allOf:
+        - $ref: '#/components/schemas/ClientInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum: [active, inactive]
+            joinDate:
+              type: string
+              format: date-time
+
+    ClientResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Client'
+
     ErrorResponse:
       type: object
       properties:
@@ -205,11 +458,13 @@ components:
 tags:
   - name: Auth
     description: Authentication endpoints for the single admin user (US-001)
+  - name: Clients
+    description: Gym client management (US-002)
 
-# NOTE: Additional resources (Clients, Medical Records, Exercises, Routine
-# Templates, Payments, Dashboard) will be documented here as their
-# corresponding user stories (US-002 through US-009) are enriched and
-# implemented via OpenSpec changes. See planning/user-stories-backlog.md.
+# NOTE: Additional resources (Medical Records, Exercises, Routine Templates,
+# Payments, Dashboard) will be documented here as their corresponding user
+# stories (US-003 through US-009) are enriched and implemented via OpenSpec
+# changes. See planning/user-stories-backlog.md.
 
 
 

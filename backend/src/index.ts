@@ -4,9 +4,12 @@ import cors from 'cors';
 import express from 'express';
 import { prisma } from './infrastructure/prismaClient';
 import { PrismaUserRepository } from './infrastructure/repositories/PrismaUserRepository';
+import { PrismaClientRepository } from './infrastructure/repositories/PrismaClientRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { AuthService } from './application/services/authService';
+import { ClientService } from './application/services/clientService';
 import { createAuthRoutes } from './routes/authRoutes';
+import { createClientRoutes } from './routes/clientRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -33,7 +36,11 @@ export function createApp() {
   const emailService = new ConsoleEmailService();
   const authService = new AuthService(userRepository, emailService, JWT_SECRET, RESET_URL_BASE);
 
+  const clientRepository = new PrismaClientRepository(prisma);
+  const clientService = new ClientService(clientRepository);
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
+  app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
 
   app.use(errorHandler);
 

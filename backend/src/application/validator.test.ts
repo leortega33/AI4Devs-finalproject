@@ -2,6 +2,8 @@ import {
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
+  validateClient,
+  validateClientStatus,
   ValidationError,
 } from './validator';
 
@@ -53,6 +55,47 @@ describe('validator', () => {
 
     it('should reject a missing token', () => {
       expect(() => validateResetPassword({ newPassword: 'longenough' })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateClient', () => {
+    const validClient = {
+      firstName: 'John',
+      lastName: 'Doe',
+      dni: '12345678',
+      phone: '+542604000000',
+      email: 'john@example.com',
+      birthDate: '1990-01-01',
+    };
+
+    it('should accept a valid client and coerce the birth date', () => {
+      const result = validateClient(validClient);
+
+      expect(result.firstName).toBe('John');
+      expect(result.birthDate).toBeInstanceOf(Date);
+    });
+
+    it('should reject a missing required field', () => {
+      const { firstName, ...withoutName } = validClient;
+      expect(() => validateClient(withoutName)).toThrow(ValidationError);
+    });
+
+    it('should reject an invalid DNI format', () => {
+      expect(() => validateClient({ ...validClient, dni: 'ABC' })).toThrow(ValidationError);
+    });
+
+    it('should reject an invalid email', () => {
+      expect(() => validateClient({ ...validClient, email: 'nope' })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateClientStatus', () => {
+    it('should accept a valid status', () => {
+      expect(validateClientStatus({ status: 'inactive' })).toEqual({ status: 'inactive' });
+    });
+
+    it('should reject an unknown status', () => {
+      expect(() => validateClientStatus({ status: 'archived' })).toThrow(ValidationError);
     });
   });
 });

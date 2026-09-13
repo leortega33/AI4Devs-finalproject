@@ -16,3 +16,27 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 }
+
+enum ClientStatus {
+  active
+  inactive
+}
+
+model Client {
+  id                           Int          @id @default(autoincrement())
+  firstName                    String
+  lastName                     String
+  dni                          String       @unique
+  phone                        String
+  email                        String
+  birthDate                    DateTime
+  address                      String?
+  goal                         String?
+  emergencyContactName         String?
+  emergencyContactPhone        String?
+  emergencyContactRelationship String?
+  joinDate                     DateTime     @default(now())
+  status                       ClientStatus @default(active)
+  createdAt                    DateTime     @default(now())
+  updatedAt                    DateTime     @updatedAt
+}

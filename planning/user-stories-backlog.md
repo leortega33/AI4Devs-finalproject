@@ -104,7 +104,7 @@ authentication.
 
 ## US-002: Client management (CRUD)
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-client-management/`)
 
 **User story:** As a gym owner/trainer, I want to create, view, edit, and
 deactivate client profiles, so that I have a single place with all my
