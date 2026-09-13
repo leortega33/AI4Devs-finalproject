@@ -29,7 +29,7 @@ Create environment files for both backend and frontend:
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=gymDbUser
-DB_PASSWORD=<choose-a-local-dev-password>
+DB_PASSWORD=gymDbLocalPass
 DB_NAME=gymDb
 
 # Application Configuration
@@ -37,7 +37,7 @@ PORT=3000
 NODE_ENV=development
 
 # Prisma Database URL
-DATABASE_URL="postgresql://gymDbUser:<choose-a-local-dev-password>@localhost:5432/gymDb"
+DATABASE_URL="postgresql://gymDbUser:gymDbLocalPass@localhost:5432/gymDb"
 
 # Auth (see US-001)
 JWT_SECRET=<generate-a-random-secret>
@@ -67,7 +67,7 @@ The PostgreSQL database will be available at:
 - **Port**: `5432`
 - **Database**: `gymDb`
 - **Username**: `gymDbUser`
-- **Password**: value set in `backend/.env`
+- **Password**: `gymDbLocalPass` (local dev only, defined in `docker-compose.yml` and `backend/.env`)
 
 ### 4. Backend Setup
 

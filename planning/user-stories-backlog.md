@@ -21,7 +21,7 @@ and will be turned into fully-detailed OpenSpec changes one at a time.
 
 ## US-001: Basic authentication (single admin user)
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-admin-authentication/`)
 
 **User story:** As a gym owner/trainer (single admin user), I want to log in
 with email/password and recover my password if I forget it, so that only I

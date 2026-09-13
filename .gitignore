@@ -1,2 +1,21 @@
 .DS_Store
 .worktrees/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Env files (never commit secrets)
+.env
+.env.local
+
+# Prisma
+backend/prisma/migrations/dev.db
+
+# Playwright
+test-results/
+playwright-report/
+
