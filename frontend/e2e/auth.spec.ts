@@ -41,4 +41,21 @@ test.describe('admin authentication', () => {
 
     await expect(page.getByText(/se envió un enlace/i)).toBeVisible();
   });
+
+  test('app shell shows the branded bar and back navigation works', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
+    await page.getByLabel(/contraseña/i).fill(ADMIN_PASSWORD);
+    await page.getByRole('button', { name: /iniciar sesión/i }).click();
+    await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
+
+    // Branded app bar is present on authenticated screens.
+    await expect(page.getByRole('banner').getByText('SPORT – FITNESS')).toBeVisible();
+
+    // Navigate into clients, then use the back button to return home.
+    await page.getByRole('button', { name: 'Clientes' }).click();
+    await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
+    await page.getByRole('button', { name: /atrás/i }).click();
+    await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
+  });
 });

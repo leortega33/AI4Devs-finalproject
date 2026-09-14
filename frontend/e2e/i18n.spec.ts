@@ -16,7 +16,7 @@ test.describe('internationalization', () => {
     await login(page);
 
     // Default Spanish
-    await expect(page.getByRole('heading', { name: 'Gestión de Gimnasio' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
 
     // Switch to English via the in-app switcher (option labelled "Inglés" in Spanish)
     await page.getByRole('combobox', { name: /idioma/i }).click();

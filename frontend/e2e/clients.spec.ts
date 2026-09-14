@@ -9,7 +9,7 @@ async function login(page: import('@playwright/test').Page) {
   await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
   await page.getByLabel(/contraseña/i).fill(ADMIN_PASSWORD);
   await page.getByRole('button', { name: /iniciar sesión/i }).click();
-  await expect(page.getByRole('heading', { name: 'Gestión de Gimnasio' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
 }
 
 test.describe('client management', () => {

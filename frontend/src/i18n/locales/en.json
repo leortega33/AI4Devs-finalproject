@@ -1,6 +1,10 @@
 {
   "common": {
-    "appName": "Gym Management",
+    "appName": "SPORT – FITNESS",
+    "appTagline": "Integral Physical Training",
+    "logoAlt": "SPORT – FITNESS logo",
+    "back": "Back",
+    "home": "Home",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -36,6 +40,8 @@
       "invalidToken": "This reset link is invalid or has expired."
     },
     "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome",
       "loggedInAs": "Logged in as {{email}}",
       "clients": "Clients"
     }

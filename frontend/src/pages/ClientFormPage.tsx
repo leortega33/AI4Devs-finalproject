@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { clientService, type ClientFormData } from '../services/clientService';
+import { BackButton } from '../components/BackButton';
 
 const EMPTY_FORM: ClientFormData = {
   firstName: '',
@@ -92,8 +93,9 @@ export function ClientFormPage() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 4 }}>
+    <Box sx={{ maxWidth: 640, mx: 'auto' }}>
+      <BackButton to="/clients" />
+      <Box component="form" noValidate onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1" gutterBottom>
           {isEdit ? t('clients.form.editTitle') : t('clients.form.newTitle')}
         </Typography>
@@ -154,6 +156,6 @@ export function ClientFormPage() {
           </Button>
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 }

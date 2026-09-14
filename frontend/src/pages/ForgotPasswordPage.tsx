@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
+import { PreLoginHeader } from '../components/PreLoginHeader';
 
 export function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -26,7 +27,10 @@ export function ForgotPasswordPage() {
 
   return (
     <Container maxWidth="xs">
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 8 }}>
+      <Box sx={{ mt: 6 }}>
+        <PreLoginHeader />
+      </Box>
+      <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h5" component="h1" gutterBottom>
           {t('auth.forgot.title')}
         </Typography>

@@ -1,6 +1,10 @@
 {
   "common": {
-    "appName": "Gestión de Gimnasio",
+    "appName": "SPORT – FITNESS",
+    "appTagline": "Entrenamiento Físico Integral",
+    "logoAlt": "Logo de SPORT – FITNESS",
+    "back": "Atrás",
+    "home": "Inicio",
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Editar",
@@ -36,6 +40,8 @@
       "invalidToken": "Este enlace de recuperación es inválido o expiró."
     },
     "dashboard": {
+      "title": "Panel",
+      "welcome": "Bienvenido/a",
       "loggedInAs": "Sesión iniciada como {{email}}",
       "clients": "Clientes"
     }

@@ -332,11 +332,40 @@ export const routineTemplateService = {
 
 ### MUI Integration
 - Use **MUI components** (`@mui/material`) for all UI, including `DataGrid` from `@mui/x-data-grid` for tabular data (client lists, payment history, exercise catalog)
-- **Wrap the app** with MUI's `ThemeProvider` in the main entry point
+- **Wrap the app** with MUI's `ThemeProvider` in the main entry point, using the shared brand theme
 - Follow **MUI's responsive layout system** (`Box`, `Grid`, `Stack`, `Container`)
 
 ```javascript
 import { Container, Grid, Card, Button, TextField, Alert } from '@mui/material';
+```
+
+#### Brand Theme (`theme/theme.ts`)
+- A single `createTheme` instance in `frontend/src/theme/theme.ts` defines the brand palette (leaf green primary, near-black secondary, light background) and typography. It is derived from the gym's brand assets (black + leaf green + white).
+- Apply it once via `ThemeProvider` in `main.tsx` (with `CssBaseline`). Components must rely on theme tokens (`primary`, `secondary`, `background`, `text`) instead of hard-coded colors.
+
+```tsx
+// main.tsx
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { theme } from './theme/theme';
+
+<ThemeProvider theme={theme}>
+  <CssBaseline />
+  <App />
+</ThemeProvider>
+```
+
+#### Application Shell (`components/AppLayout.tsx`)
+- Authenticated routes render inside `AppLayout`, which provides a persistent branded `AppBar` (logo + "SPORT – FITNESS" brand, `LanguageSwitcher`, and logout) and an `<Outlet />` for page content wrapped in a `Container`.
+- Wire it as a layout route nested inside `ProtectedRoute`; do **not** duplicate the language switcher or logout inside individual pages.
+- `BrandLogo` renders the logo image with a text fallback (`onError`). Public (pre-login) pages use `PreLoginHeader` (logo + brand name + tagline, no nav actions).
+
+```tsx
+<Route element={<ProtectedRoute />}>
+  <Route element={<AppLayout />}>
+    <Route path="/" element={<DashboardPage />} />
+    <Route path="/clients" element={<ClientsListPage />} />
+  </Route>
+</Route>
 ```
 
 ### Form Handling
@@ -364,18 +393,18 @@ import { Container, Grid, Card, Button, TextField, Alert } from '@mui/material';
 
 ### Navigation Patterns
 - Use **React Router** for all navigation
-- **Implement breadcrumbs** with back navigation
-- Use **programmatic navigation** with useNavigate hook
+- The branded `AppBar` (via `AppLayout`) acts as the home link on authenticated screens; the brand/logo navigates back to `/`
+- Inner screens use the reusable **`BackButton`** component for consistent back navigation (either to an explicit route via `to`, or to the previous history entry)
+- Use **programmatic navigation** with the `useNavigate` hook
 
-```javascript
-import { useNavigate } from 'react-router-dom';
+```tsx
+import { BackButton } from '../components/BackButton';
 
-const navigate = useNavigate();
+// Explicit destination
+<BackButton to="/clients" />
 
-// Navigation examples
-<Button variant="text" onClick={() => navigate('/')}>
-    ← Back to Dashboard
-</Button>
+// Or fall back to the previous history entry
+<BackButton />
 ```
 
 ### Accessibility

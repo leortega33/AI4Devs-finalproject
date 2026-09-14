@@ -66,6 +66,29 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 
 > Proporciona imágenes y/o videotutorial mostrando la experiencia del usuario desde que aterriza en la aplicación, pasando por todas las funcionalidades principales.
 
+**Sistema de diseño (US-011).** La app usa una identidad visual de marca
+inspirada en el material del gimnasio (negro + verde hoja + blanco), centralizada
+en un tema MUI (`frontend/src/theme/theme.ts`): verde hoja como color primario
+para acciones y marca, superficies claras y tipografía consistente. Todas las
+pantallas comparten un *app shell* (`components/AppLayout.tsx`) con una barra
+superior persistente que incluye el logo/marca "SPORT – FITNESS", el selector de
+idioma y el botón de cerrar sesión.
+
+**Recorrido del usuario:**
+
+1. **Acceso** — El usuario aterriza en una pantalla de login con la cabecera de
+   marca (logo + nombre + lema) y el selector de idioma. Puede recuperar su
+   contraseña desde el enlace correspondiente.
+2. **Panel** — Tras autenticarse llega al panel, dentro del shell con la barra
+   superior de marca. Desde allí navega a la gestión de clientes.
+3. **Clientes** — Lista con búsqueda por nombre y filtro por estado (`DataGrid`),
+   alta/edición mediante formularios, y baja lógica con diálogo de confirmación.
+   Cada pantalla interna ofrece un botón "Atrás" consistente para volver.
+4. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+   desde la barra superior; la preferencia persiste entre recargas.
+
+> _Capturas / videotutorial: pendientes de incorporar._
+
 ### **1.4. Instrucciones de instalación:**
 
 **Requisitos previos:** Node.js `20.19.0`+ (recomendado gestionarlo con `nvm`),
@@ -225,6 +248,24 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (`react-i18next`; ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-bilingual-ui/`).
+
+**Historia de Usuario 4 — US-011: Shell de aplicación, navegación y tema visual**
+
+> Como dueño/entrenador, quiero una identidad visual coherente (colores y logo
+> del gimnasio) y una navegación consistente con barra superior y botón de
+> "atrás", para moverme por la app con comodidad y que se sienta como un
+> producto terminado.
+
+- **Criterios de aceptación:** un tema de marca central (MUI `createTheme`:
+  verde hoja como color primario, negro y blanco) aplicado a toda la app; una
+  barra superior persistente (`AppBar`) con el logo/marca "SPORT – FITNESS", el
+  selector de idioma y el botón de cerrar sesión, presente en todas las
+  pantallas autenticadas; navegación "atrás" consistente en las pantallas
+  internas mediante un componente `BackButton`; una cabecera de marca en las
+  pantallas públicas (login, recuperación); el logo actúa como enlace al inicio.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-app-shell/`).
 
 ---
 

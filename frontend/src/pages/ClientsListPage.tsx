@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Chip,
-  Container,
   MenuItem,
   Stack,
   TextField,
@@ -14,6 +13,7 @@ import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { clientService, type Client, type ClientStatus } from '../services/clientService';
 import { DeactivateClientDialog } from '../components/DeactivateClientDialog';
+import { BackButton } from '../components/BackButton';
 
 type StatusFilter = 'all' | ClientStatus;
 
@@ -89,7 +89,8 @@ export function ClientsListPage() {
   ];
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Box>
+      <BackButton to="/" />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h4">{t('clients.title')}</Typography>
         <Button variant="contained" onClick={() => navigate('/clients/new')}>
@@ -131,6 +132,6 @@ export function ClientsListPage() {
         onCancel={() => setToDeactivate(null)}
         onConfirm={confirmDeactivate}
       />
-    </Container>
+    </Box>
   );
 }

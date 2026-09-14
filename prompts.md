@@ -41,6 +41,14 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > `react-i18next`, idioma por defecto según navegador con fallback a español,
 > selector es/en, manteniendo el código y las claves en inglés).
 
+**Prompt 4:**
+
+> en que momento vamos a meter estilos css (...) si quiero volver atrás en la
+> pantalla de clientes no puedo no tengo un botón de atrás (derivó en US-011:
+> tema de marca MUI —verde hoja/negro/blanco con el logo del gimnasio—, app
+> shell con `AppBar` persistente, navegación "atrás" consistente y cabecera de
+> marca en las pantallas públicas; change OpenSpec `add-app-shell`).
+
 ---
 
 ## 2. Arquitectura del Sistema
