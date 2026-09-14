@@ -36,11 +36,10 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 3:**
 
-> (Respuesta a las preguntas de setup y alcance del agente vía
-> `vscode_askQuestions`): confirmación de estructura monorepo `backend/` +
-> `frontend/`, ORM Prisma, alcance single-tenant por ahora, gestión local vía
-> OpenSpec sin Jira, y confirmación de fasing MVP (Fase 1) vs backlog futuro
-> (Fase 2).
+> lo unico que podriamos ir pensando es que esta todo en ingles, podria quedar
+> para español/ingles se puede? (derivó en US-010: UI bilingüe con
+> `react-i18next`, idioma por defecto según navegador con fallback a español,
+> selector es/en, manteniendo el código y las claves en inglés).
 
 ---
 

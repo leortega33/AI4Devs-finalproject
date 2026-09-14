@@ -1,7 +1,7 @@
 ## 0. Setup: Create Feature Branch (MANDATORY - FIRST STEP)
 
-- [ ] 0.1 Create feature branch `feature/add-bilingual-ui` from `main` and verify it is checked out (`git branch --show-current`)
-- [ ] 0.2 Verify the working tree is clean before starting (`git status`)
+- [x] 0.1 Create feature branch `feature/add-bilingual-ui` from `main` and verify it is checked out (`git branch --show-current`)
+- [x] 0.2 Verify the working tree is clean before starting (`git status`)
 
 ## 1. Frontend: i18n Foundation
 
@@ -48,4 +48,4 @@
 
 - [x] 8.1 Update `docs/frontend-standards.md` to document the i18n setup, key-naming convention, and the English-keys/translated-values rule
 - [x] 8.2 Update `planning/user-stories-backlog.md` US-010 status to `in-openspec`, linking to this change
-- [ ] 8.3 On feature close: update `readme.md` and `prompts.md` deliverables with US-010 content
+- [x] 8.3 On feature close: update `readme.md` and `prompts.md` deliverables with US-010 content

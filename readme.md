@@ -53,6 +53,7 @@ cliente.
 - Asignación de rutina a cliente con vigencia
 - Registro de pagos por cliente e historial completo de pagos
 - Dashboard con alertas de pagos vencidos/por vencer y rutinas por vencer
+- Interfaz bilingüe (español por defecto / inglés) con selector de idioma
 
 **Backlog futuro (Fase 2, fuera del MVP):** recordatorios automáticos
 (email/WhatsApp), pasarela de pago online, registro de asistencia/check-in,
@@ -210,7 +211,20 @@ su spec a `openspec/specs/`.
   [detalle completo](planning/user-stories-backlog.md) y el spec en el change
   `openspec/changes/add-client-management/`).
 
-**Historia de Usuario 3**
+**Historia de Usuario 3 — US-010: Interfaz bilingüe (español/inglés)**
+
+> Como dueño/entrenador, quiero la interfaz disponible en español e inglés con
+> un selector de idioma, para poder usar la app en mi propio idioma.
+
+- **Criterios de aceptación:** la app arranca en el idioma del navegador (o
+  español por defecto); un selector permite cambiar entre español e inglés y
+  la preferencia persiste entre recargas; todas las pantallas y los mensajes
+  de error están traducidos. El código (claves de traducción, identificadores,
+  comentarios) se mantiene en inglés según los estándares; solo se traducen
+  los textos visibles.
+- **Estado:** Implementada (`react-i18next`; ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-bilingual-ui/`).
 
 ---
 
