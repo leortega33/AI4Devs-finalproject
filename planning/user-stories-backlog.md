@@ -655,6 +655,57 @@ frontend maps them to localized messages.
   Spanish (proposing: default Spanish, switch persists after first manual
   change).
 
+## US-011: App shell, navigation and visual theme
+
+- **Status:** in-openspec (implemented — see `openspec/changes/add-app-shell/`)
+- **Priority:** cross-cutting — done before US-003, while there are few screens.
+
+**User story:** As a gym owner/trainer, I want a consistent branded layout with
+clear navigation (a top app bar, back/home navigation), so that the app looks
+professional and I can always move between screens.
+
+**Functional description:** introduce a shared app shell (a persistent MUI
+`AppBar` with the gym brand — "SPORT – FITNESS" and the bear logo — plus the
+language switcher and logout), a consistent page layout, back/home navigation
+(and breadcrumbs) on inner screens, and a custom MUI theme derived from the
+gym's brand (black + leaf green + white). Retrofit the existing screens
+(dashboard, clients) to use the shell. Pre-login screens (login, forgot/reset)
+get the brand/logo header but no nav actions.
+
+**Brand:** gym "SPORT – FITNESS / Entrenamiento Físico Integral" (from the
+client's training-plan PDF). Palette: black, leaf green (derived from the PDF),
+white. Logo: black bear standing with a barbell (the user provides the image
+file placed under `frontend/src/assets/`).
+
+**Files/modules (frontend):**
+- `theme/theme.ts` (custom MUI theme: palette, typography), applied in `main.tsx`
+- `components/AppLayout.tsx` (AppBar + brand + logo + language switcher + logout
+  + content outlet) wrapping the protected routes
+- `components/BackButton.tsx` / breadcrumbs for inner screens
+- `assets/logo.png` (provided by the user)
+- Retrofit `DashboardPage`, `ClientsListPage`, `ClientFormPage` to sit inside
+  the layout; move the language switcher/logout out of the dashboard into the
+  AppBar
+
+**Definition of done:**
+- Persistent AppBar with brand/logo, language switcher and logout on all
+  authenticated screens.
+- Back navigation available on inner screens (e.g. from clients back to the
+  dashboard) — resolves the missing "back" control.
+- Custom theme applied app-wide (colors/typography), pre-login screens show the
+  brand/logo.
+- Existing unit and E2E tests updated (switcher/logout now live in the AppBar).
+
+**Non-functional requirements:**
+- Responsive layout (works on smaller widths).
+- Accessibility: nav controls have aria-labels; logo has alt text.
+- No backend change.
+
+**Open technical decisions:**
+- Exact leaf-green HEX (to be finalized from the PDF during implementation).
+- Also update `ai-specs/agents/frontend-developer.md`, which is stale (mentions
+  React Bootstrap) — align it to MUI.
+
 ---
 
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
