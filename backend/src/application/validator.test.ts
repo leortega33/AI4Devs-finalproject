@@ -5,6 +5,7 @@ import {
   validateClient,
   validateClientStatus,
   validateMedicalRecord,
+  validateExercise,
   ValidationError,
 } from './validator';
 
@@ -122,6 +123,41 @@ describe('validator', () => {
 
     it('should reject an oversized blood type', () => {
       expect(() => validateMedicalRecord({ bloodType: 'x'.repeat(11) })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateExercise', () => {
+    const validExercise = {
+      name: 'Back squat',
+      muscleGroup: 'Legs',
+      category: 'main',
+    };
+
+    it('should accept a valid exercise with only the required fields', () => {
+      const result = validateExercise(validExercise);
+
+      expect(result.name).toBe('Back squat');
+      expect(result.category).toBe('main');
+    });
+
+    it('should accept optional numeric and text fields', () => {
+      const result = validateExercise({ ...validExercise, defaultSets: 4, defaultReps: 8, equipment: 'Barbell' });
+
+      expect(result.defaultSets).toBe(4);
+      expect(result.equipment).toBe('Barbell');
+    });
+
+    it('should reject a missing required field', () => {
+      const { muscleGroup, ...withoutGroup } = validExercise;
+      expect(() => validateExercise(withoutGroup)).toThrow(ValidationError);
+    });
+
+    it('should reject an invalid category', () => {
+      expect(() => validateExercise({ ...validExercise, category: 'cardio' })).toThrow(ValidationError);
+    });
+
+    it('should reject a negative default sets value', () => {
+      expect(() => validateExercise({ ...validExercise, defaultSets: -1 })).toThrow(ValidationError);
     });
   });
 });

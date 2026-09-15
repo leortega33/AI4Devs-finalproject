@@ -233,7 +233,7 @@ in the client detail page, `components/MedicalRecordForm.tsx`.
 
 ## US-004: Exercise catalog
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-exercise-catalog/`)
 
 **User story:** As a gym owner/trainer, I want a reusable catalog of
 exercises, so that I can build routines faster without retyping exercises

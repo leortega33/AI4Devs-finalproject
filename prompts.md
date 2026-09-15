@@ -180,6 +180,13 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 3:**
 
+> Vamos con la US-004 (catálogo de ejercicios): change OpenSpec
+> `add-exercise-catalog`, modelo `Exercise` + enum `ExerciseCategory`
+> (mobility/activation/main), endpoints `/api/exercises` (list con
+> search+category, get, create, update) protegidos y **sin delete**, seed
+> idempotente de un set base, y UI con catálogo filtrable (`DataGrid`) y
+> formulario de alta/edición.
+
 ---
 
 ### 7. Pull Requests

@@ -6,13 +6,16 @@ import { prisma } from './infrastructure/prismaClient';
 import { PrismaUserRepository } from './infrastructure/repositories/PrismaUserRepository';
 import { PrismaClientRepository } from './infrastructure/repositories/PrismaClientRepository';
 import { PrismaMedicalRecordRepository } from './infrastructure/repositories/PrismaMedicalRecordRepository';
+import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
 import { MedicalRecordService } from './application/services/medicalRecordService';
+import { ExerciseService } from './application/services/exerciseService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
+import { createExerciseRoutes } from './routes/exerciseRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -45,12 +48,16 @@ export function createApp() {
   const medicalRecordRepository = new PrismaMedicalRecordRepository(prisma);
   const medicalRecordService = new MedicalRecordService(medicalRecordRepository, clientRepository);
 
+  const exerciseRepository = new PrismaExerciseRepository(prisma);
+  const exerciseService = new ExerciseService(exerciseRepository);
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
   app.use(
     '/api/clients/:clientId/medical-record',
     createMedicalRecordRoutes(medicalRecordService, JWT_SECRET),
   );
+  app.use('/api/exercises', createExerciseRoutes(exerciseService, JWT_SECRET));
 
   app.use(errorHandler);
 

@@ -50,12 +50,25 @@ export const medicalRecordSchema = z.object({
   notes: medicalField,
 });
 
+// A catalog exercise (US-004). Required: name, muscleGroup, category. Optional:
+// default sets/reps (non-negative integers), technique, equipment.
+export const exerciseSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  muscleGroup: z.string().min(1, 'Muscle group is required'),
+  category: z.enum(['mobility', 'activation', 'main']),
+  defaultSets: z.number().int().nonnegative().optional().nullable(),
+  defaultReps: z.number().int().nonnegative().optional().nullable(),
+  technique: z.string().max(1000, 'Technique must be 1000 characters or fewer').optional().nullable(),
+  equipment: z.string().max(255, 'Equipment must be 255 characters or fewer').optional().nullable(),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ClientInputData = z.infer<typeof clientSchema>;
 export type ClientStatusInput = z.infer<typeof clientStatusSchema>;
 export type MedicalRecordInputData = z.infer<typeof medicalRecordSchema>;
+export type ExerciseInputData = z.infer<typeof exerciseSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -95,4 +108,8 @@ export function validateClientStatus(data: unknown): ClientStatusInput {
 
 export function validateMedicalRecord(data: unknown): MedicalRecordInputData {
   return parseOrThrow(medicalRecordSchema, data);
+}
+
+export function validateExercise(data: unknown): ExerciseInputData {
+  return parseOrThrow(exerciseSchema, data);
 }

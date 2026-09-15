@@ -10,6 +10,8 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ClientsListPage } from './pages/ClientsListPage';
 import { ClientFormPage } from './pages/ClientFormPage';
 import { MedicalRecordPage } from './pages/MedicalRecordPage';
+import { ExerciseCatalogPage } from './pages/ExerciseCatalogPage';
+import { ExerciseFormPage } from './pages/ExerciseFormPage';
 
 /** Placeholder landing page for the authenticated admin (real dashboard comes in US-009). */
 function DashboardPage() {
@@ -20,9 +22,14 @@ function DashboardPage() {
     <Stack spacing={2} alignItems="flex-start">
       <Typography variant="h4">{t('auth.dashboard.title')}</Typography>
       <Typography>{t('auth.dashboard.loggedInAs', { email: user?.email })}</Typography>
-      <Button variant="contained" onClick={() => navigate('/clients')}>
-        {t('auth.dashboard.clients')}
-      </Button>
+      <Stack direction="row" spacing={2}>
+        <Button variant="contained" onClick={() => navigate('/clients')}>
+          {t('auth.dashboard.clients')}
+        </Button>
+        <Button variant="outlined" onClick={() => navigate('/exercises')}>
+          {t('exercises.title')}
+        </Button>
+      </Stack>
     </Stack>
   );
 }
@@ -42,6 +49,9 @@ function App() {
               <Route path="/clients/new" element={<ClientFormPage />} />
               <Route path="/clients/:id/edit" element={<ClientFormPage />} />
               <Route path="/clients/:clientId/medical-record" element={<MedicalRecordPage />} />
+              <Route path="/exercises" element={<ExerciseCatalogPage />} />
+              <Route path="/exercises/new" element={<ExerciseFormPage />} />
+              <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

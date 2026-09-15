@@ -109,6 +109,36 @@
     "saveFailed": "No se pudo guardar la ficha médica.",
     "loadFailed": "No se pudo cargar la ficha médica."
   },
+  "exercises": {
+    "title": "Ejercicios",
+    "new": "Nuevo ejercicio",
+    "search": "Buscar por nombre",
+    "category": "Categoría",
+    "categoryAll": "Todas",
+    "categoryMobility": "Movilidad",
+    "categoryActivation": "Activación",
+    "categoryMain": "Principal",
+    "columns": {
+      "name": "Nombre",
+      "muscleGroup": "Grupo muscular",
+      "category": "Categoría",
+      "actions": "Acciones"
+    },
+    "form": {
+      "newTitle": "Nuevo ejercicio",
+      "editTitle": "Editar ejercicio",
+      "name": "Nombre",
+      "muscleGroup": "Grupo muscular",
+      "category": "Categoría",
+      "defaultSets": "Series por defecto",
+      "defaultReps": "Repeticiones por defecto",
+      "technique": "Técnica",
+      "equipment": "Equipamiento",
+      "requiredFields": "Por favor completá nombre, grupo muscular y categoría.",
+      "saveFailed": "No se pudo guardar el ejercicio."
+    },
+    "loadFailed": "No se pudo cargar el catálogo de ejercicios."
+  },
   "errors": {
     "INVALID_CREDENTIALS": "Email o contraseña inválidos.",
     "INVALID_RESET_TOKEN": "Este enlace de recuperación es inválido o expiró.",

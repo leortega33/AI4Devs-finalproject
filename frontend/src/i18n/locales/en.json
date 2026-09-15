@@ -109,6 +109,36 @@
     "saveFailed": "Could not save the medical record.",
     "loadFailed": "Could not load the medical record."
   },
+  "exercises": {
+    "title": "Exercises",
+    "new": "New exercise",
+    "search": "Search by name",
+    "category": "Category",
+    "categoryAll": "All",
+    "categoryMobility": "Mobility",
+    "categoryActivation": "Activation",
+    "categoryMain": "Main",
+    "columns": {
+      "name": "Name",
+      "muscleGroup": "Muscle group",
+      "category": "Category",
+      "actions": "Actions"
+    },
+    "form": {
+      "newTitle": "New exercise",
+      "editTitle": "Edit exercise",
+      "name": "Name",
+      "muscleGroup": "Muscle group",
+      "category": "Category",
+      "defaultSets": "Default sets",
+      "defaultReps": "Default reps",
+      "technique": "Technique",
+      "equipment": "Equipment",
+      "requiredFields": "Please fill in name, muscle group and category.",
+      "saveFailed": "Could not save the exercise."
+    },
+    "loadFailed": "Could not load the exercise catalog."
+  },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password.",
     "INVALID_RESET_TOKEN": "This reset link is invalid or has expired.",

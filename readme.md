@@ -88,7 +88,10 @@ idioma y el botón de cerrar sesión.
    pantalla propia por cliente con condiciones, lesiones, medicación, alergias,
    grupo sanguíneo y notas. Muestra un estado vacío cuando aún no hay ficha y
    guarda mediante upsert.
-5. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+5. **Ejercicios** — Desde el panel, "Ejercicios" abre el catálogo (`DataGrid`
+   con búsqueda por nombre y filtro por categoría). Alta/edición mediante
+   formulario; sin borrado. Trae un set base sembrado al iniciar.
+6. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._
@@ -289,6 +292,23 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-medical-record/`).
+
+**Historia de Usuario 6 — US-004: Catálogo de ejercicios**
+
+> Como dueño/entrenador, quiero un catálogo reutilizable de ejercicios, para
+> armar rutinas más rápido sin volver a tipear los ejercicios cada vez.
+
+- **Criterios de aceptación:** catálogo de solo alta/edición (sin borrado
+  físico, para no romper rutinas que referencien un ejercicio); cada ejercicio
+  tiene nombre, grupo muscular y categoría (`mobility`/`activation`/`main`,
+  para separar entrada en calor de trabajo principal), y opcionalmente series
+  y repeticiones por defecto, técnica y equipamiento; listado con búsqueda por
+  nombre y filtro por categoría; formulario de alta/edición; un set base de
+  ejercicios se siembra al iniciar (idempotente, sin duplicar al re-sembrar);
+  todo protegido por autenticación.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-exercise-catalog/`).
 
 ---
 
