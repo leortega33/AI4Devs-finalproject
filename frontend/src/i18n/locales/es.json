@@ -135,6 +135,7 @@
       "technique": "Técnica",
       "equipment": "Equipamiento",
       "requiredFields": "Por favor completá nombre, grupo muscular y categoría.",
+      "negativeNumbers": "Las series y repeticiones no pueden ser negativas.",
       "saveFailed": "No se pudo guardar el ejercicio."
     },
     "loadFailed": "No se pudo cargar el catálogo de ejercicios."

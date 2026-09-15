@@ -135,6 +135,7 @@
       "technique": "Technique",
       "equipment": "Equipment",
       "requiredFields": "Please fill in name, muscle group and category.",
+      "negativeNumbers": "Default sets and reps cannot be negative.",
       "saveFailed": "Could not save the exercise."
     },
     "loadFailed": "Could not load the exercise catalog."

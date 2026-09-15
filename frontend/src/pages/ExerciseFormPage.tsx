@@ -54,6 +54,10 @@ export function ExerciseFormPage() {
       setError(t('exercises.form.requiredFields'));
       return;
     }
+    if ((form.defaultSets ?? 0) < 0 || (form.defaultReps ?? 0) < 0) {
+      setError(t('exercises.form.negativeNumbers'));
+      return;
+    }
     setSubmitting(true);
     try {
       if (isEdit) {
@@ -96,10 +100,10 @@ export function ExerciseFormPage() {
             </TextField>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <TextField label={t('exercises.form.defaultSets')} type="number" fullWidth value={form.defaultSets ?? ''} onChange={setNumber('defaultSets')} />
+            <TextField label={t('exercises.form.defaultSets')} type="number" fullWidth inputProps={{ min: 0 }} value={form.defaultSets ?? ''} onChange={setNumber('defaultSets')} />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <TextField label={t('exercises.form.defaultReps')} type="number" fullWidth value={form.defaultReps ?? ''} onChange={setNumber('defaultReps')} />
+            <TextField label={t('exercises.form.defaultReps')} type="number" fullWidth inputProps={{ min: 0 }} value={form.defaultReps ?? ''} onChange={setNumber('defaultReps')} />
           </Grid>
           <Grid item xs={12}>
             <TextField label={t('exercises.form.equipment')} fullWidth value={form.equipment ?? ''} onChange={setField('equipment')} />

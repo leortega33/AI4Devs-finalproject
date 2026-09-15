@@ -20,7 +20,7 @@ test.describe('exercise catalog', () => {
     await page.getByRole('button', { name: 'Ejercicios' }).click();
     await expect(page.getByRole('heading', { name: 'Ejercicios' })).toBeVisible();
     // Seeded exercise is present.
-    await expect(page.getByText('Back squat')).toBeVisible();
+    await expect(page.getByText('Sentadilla')).toBeVisible();
 
     // Create a new exercise.
     await page.getByRole('button', { name: 'Nuevo ejercicio' }).click();

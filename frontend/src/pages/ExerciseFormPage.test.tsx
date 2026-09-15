@@ -55,4 +55,17 @@ describe('ExerciseFormPage (create)', () => {
     );
     expect(mockNavigate).toHaveBeenCalledWith('/exercises');
   });
+
+  it('should reject negative default sets or reps', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.type(screen.getByLabelText(/nombre/i), 'Front squat');
+    await user.type(screen.getByLabelText(/grupo muscular/i), 'Legs');
+    await user.type(screen.getByLabelText(/series por defecto/i), '-2');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(await screen.findByText(/no pueden ser negativas/i)).toBeInTheDocument();
+    expect(exerciseService.create).not.toHaveBeenCalled();
+  });
 });

@@ -303,8 +303,9 @@ su spec a `openspec/specs/`.
   tiene nombre, grupo muscular y categoría (`mobility`/`activation`/`main`,
   para separar entrada en calor de trabajo principal), y opcionalmente series
   y repeticiones por defecto, técnica y equipamiento; listado con búsqueda por
-  nombre y filtro por categoría; formulario de alta/edición; un set base de
-  ejercicios se siembra al iniciar (idempotente, sin duplicar al re-sembrar);
+  nombre y filtro por categoría; formulario de alta/edición (las series y
+  repeticiones no admiten valores negativos); un set base de ejercicios en
+  español se siembra al iniciar (idempotente, sin duplicar al re-sembrar);
   todo protegido por autenticación.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change

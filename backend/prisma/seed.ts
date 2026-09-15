@@ -4,19 +4,20 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Base exercise catalog seeded on first run (US-004). Extendable over time.
+// Base exercise catalog seeded on first run (US-004). Content in Spanish (the
+// trainer's language); extendable over time.
 const BASE_EXERCISES = [
-  { name: 'Hip mobility drill', muscleGroup: 'Hips', category: 'mobility' as const },
-  { name: 'Shoulder mobility drill', muscleGroup: 'Shoulders', category: 'mobility' as const },
-  { name: 'Thoracic mobility drill', muscleGroup: 'Upper back', category: 'mobility' as const },
-  { name: 'Glute bridge', muscleGroup: 'Glutes', category: 'activation' as const, defaultSets: 3, defaultReps: 15 },
-  { name: 'Band lateral walk', muscleGroup: 'Glutes', category: 'activation' as const, defaultSets: 3, defaultReps: 12 },
-  { name: 'Plank', muscleGroup: 'Core', category: 'activation' as const, defaultSets: 3 },
-  { name: 'Back squat', muscleGroup: 'Legs', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barbell' },
-  { name: 'Deadlift', muscleGroup: 'Posterior chain', category: 'main' as const, defaultSets: 4, defaultReps: 6, equipment: 'Barbell' },
-  { name: 'Bench press', muscleGroup: 'Chest', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barbell' },
-  { name: 'Bent-over row', muscleGroup: 'Back', category: 'main' as const, defaultSets: 4, defaultReps: 10, equipment: 'Barbell' },
-  { name: 'Overhead press', muscleGroup: 'Shoulders', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barbell' },
+  { name: 'Movilidad de cadera', muscleGroup: 'Cadera', category: 'mobility' as const },
+  { name: 'Movilidad de hombro', muscleGroup: 'Hombros', category: 'mobility' as const },
+  { name: 'Movilidad torácica', muscleGroup: 'Espalda alta', category: 'mobility' as const },
+  { name: 'Puente de glúteos', muscleGroup: 'Glúteos', category: 'activation' as const, defaultSets: 3, defaultReps: 15 },
+  { name: 'Caminata lateral con banda', muscleGroup: 'Glúteos', category: 'activation' as const, defaultSets: 3, defaultReps: 12 },
+  { name: 'Plancha', muscleGroup: 'Core', category: 'activation' as const, defaultSets: 3 },
+  { name: 'Sentadilla', muscleGroup: 'Piernas', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barra' },
+  { name: 'Peso muerto', muscleGroup: 'Cadena posterior', category: 'main' as const, defaultSets: 4, defaultReps: 6, equipment: 'Barra' },
+  { name: 'Press de banca', muscleGroup: 'Pecho', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barra' },
+  { name: 'Remo con barra', muscleGroup: 'Espalda', category: 'main' as const, defaultSets: 4, defaultReps: 10, equipment: 'Barra' },
+  { name: 'Press militar', muscleGroup: 'Hombros', category: 'main' as const, defaultSets: 4, defaultReps: 8, equipment: 'Barra' },
 ];
 
 async function main(): Promise<void> {

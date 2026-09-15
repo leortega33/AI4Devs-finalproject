@@ -187,6 +187,14 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > idempotente de un set base, y UI con catálogo filtrable (`DataGrid`) y
 > formulario de alta/edición.
 
+**Prompt 4:**
+
+> Ajustes de pulido sobre US-004 (change OpenSpec `refine-exercise-catalog`):
+> sembrar el catálogo base en español (nombres, grupos musculares,
+> equipamiento) e impedir cargar series/repeticiones negativas en el
+> formulario (min 0 + validación con mensaje claro, alineado con el rechazo
+> del backend).
+
 ---
 
 ### 7. Pull Requests
