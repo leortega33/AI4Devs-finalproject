@@ -295,7 +295,7 @@ the routine builder (US-005) can filter warm-up vs main exercises.
 
 ## US-005: Routine templates (create/duplicate/reuse)
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-routine-templates/`)
 
 **User story:** As a gym owner/trainer, I want to build reusable routine
 templates composed of one or more sessions, and duplicate an existing

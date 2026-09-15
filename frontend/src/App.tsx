@@ -12,6 +12,8 @@ import { ClientFormPage } from './pages/ClientFormPage';
 import { MedicalRecordPage } from './pages/MedicalRecordPage';
 import { ExerciseCatalogPage } from './pages/ExerciseCatalogPage';
 import { ExerciseFormPage } from './pages/ExerciseFormPage';
+import { RoutineTemplatesListPage } from './pages/RoutineTemplatesListPage';
+import { RoutineTemplateBuilderPage } from './pages/RoutineTemplateBuilderPage';
 
 /** Placeholder landing page for the authenticated admin (real dashboard comes in US-009). */
 function DashboardPage() {
@@ -28,6 +30,9 @@ function DashboardPage() {
         </Button>
         <Button variant="outlined" onClick={() => navigate('/exercises')}>
           {t('exercises.title')}
+        </Button>
+        <Button variant="outlined" onClick={() => navigate('/routines')}>
+          {t('routines.title')}
         </Button>
       </Stack>
     </Stack>
@@ -52,6 +57,9 @@ function App() {
               <Route path="/exercises" element={<ExerciseCatalogPage />} />
               <Route path="/exercises/new" element={<ExerciseFormPage />} />
               <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />
+              <Route path="/routines" element={<RoutineTemplatesListPage />} />
+              <Route path="/routines/new" element={<RoutineTemplateBuilderPage />} />
+              <Route path="/routines/:id/edit" element={<RoutineTemplateBuilderPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

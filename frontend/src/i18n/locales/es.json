@@ -140,6 +140,56 @@
     },
     "loadFailed": "No se pudo cargar el catálogo de ejercicios."
   },
+  "routines": {
+    "title": "Rutinas",
+    "new": "Nueva rutina",
+    "columns": {
+      "name": "Nombre",
+      "objective": "Objetivo",
+      "sessions": "Sesiones",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "duplicate": "Duplicar"
+    },
+    "loadFailed": "No se pudo cargar las rutinas.",
+    "duplicateFailed": "No se pudo duplicar la rutina.",
+    "form": {
+      "newTitle": "Nueva rutina",
+      "editTitle": "Editar rutina",
+      "name": "Nombre",
+      "objective": "Objetivo",
+      "description": "Descripción",
+      "generalConsiderations": "Consideraciones generales",
+      "addSession": "Agregar sesión",
+      "removeSession": "Quitar sesión",
+      "sessionName": "Nombre de la sesión",
+      "warmupPrescription": "Prescripción de entrada en calor",
+      "warmupPhase": "Entrada en calor",
+      "mainPhase": "Bloque principal",
+      "addExercise": "Agregar ejercicio",
+      "removeExercise": "Quitar",
+      "block": "Bloque",
+      "kg": "Kg",
+      "reps": "Reps",
+      "series": "Series",
+      "notes": "Notas",
+      "requiredName": "Ingresá un nombre para la rutina.",
+      "requiredSession": "Agregá al menos una sesión con nombre.",
+      "saveFailed": "No se pudo guardar la rutina."
+    },
+    "picker": {
+      "title": "Elegir ejercicio",
+      "search": "Buscar por nombre",
+      "category": "Categoría",
+      "categoryAll": "Todas",
+      "categoryMobility": "Movilidad",
+      "categoryActivation": "Activación",
+      "categoryMain": "Principal",
+      "choose": "Elegir",
+      "cancel": "Cancelar"
+    }
+  },
   "errors": {
     "INVALID_CREDENTIALS": "Email o contraseña inválidos.",
     "INVALID_RESET_TOKEN": "Este enlace de recuperación es inválido o expiró.",

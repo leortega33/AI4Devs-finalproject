@@ -6,6 +6,7 @@ import {
   validateClientStatus,
   validateMedicalRecord,
   validateExercise,
+  validateRoutineTemplate,
   ValidationError,
 } from './validator';
 
@@ -158,6 +159,68 @@ describe('validator', () => {
 
     it('should reject a negative default sets value', () => {
       expect(() => validateExercise({ ...validExercise, defaultSets: -1 })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateRoutineTemplate', () => {
+    const validTemplate = {
+      name: 'Hipertrofia',
+      sessions: [
+        {
+          name: 'Sesión A',
+          order: 0,
+          entries: [{ exerciseId: 7, phase: 'main', order: 0, kg: 60, reps: 8, series: 4 }],
+        },
+      ],
+    };
+
+    it('should accept a valid nested template', () => {
+      const result = validateRoutineTemplate(validTemplate);
+
+      expect(result.name).toBe('Hipertrofia');
+      expect(result.sessions[0].entries[0].exerciseId).toBe(7);
+    });
+
+    it('should accept a session with an empty entries list', () => {
+      const result = validateRoutineTemplate({
+        name: 'Vacía',
+        sessions: [{ name: 'Sesión A', order: 0, entries: [] }],
+      });
+
+      expect(result.sessions[0].entries).toEqual([]);
+    });
+
+    it('should reject a template without a name', () => {
+      const { name, ...withoutName } = validTemplate;
+      expect(() => validateRoutineTemplate(withoutName)).toThrow(ValidationError);
+    });
+
+    it('should reject a template with no sessions', () => {
+      expect(() => validateRoutineTemplate({ ...validTemplate, sessions: [] })).toThrow(ValidationError);
+    });
+
+    it('should reject a session without a name', () => {
+      expect(() =>
+        validateRoutineTemplate({ name: 'X', sessions: [{ order: 0, entries: [] }] }),
+      ).toThrow(ValidationError);
+    });
+
+    it('should reject an entry with an invalid phase', () => {
+      expect(() =>
+        validateRoutineTemplate({
+          name: 'X',
+          sessions: [{ name: 'A', order: 0, entries: [{ exerciseId: 1, phase: 'cooldown', order: 0 }] }],
+        }),
+      ).toThrow(ValidationError);
+    });
+
+    it('should reject a negative kg value', () => {
+      expect(() =>
+        validateRoutineTemplate({
+          name: 'X',
+          sessions: [{ name: 'A', order: 0, entries: [{ exerciseId: 1, phase: 'main', order: 0, kg: -5 }] }],
+        }),
+      ).toThrow(ValidationError);
     });
   });
 });

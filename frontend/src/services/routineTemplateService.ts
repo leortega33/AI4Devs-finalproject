@@ -1,0 +1,103 @@
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+const api = axios.create({
+  baseURL: `${API_BASE_URL}/api/routine-templates`,
+  withCredentials: true,
+});
+
+export type RoutinePhase = 'warmup' | 'main';
+export type RoutineStatus = 'draft' | 'active' | 'expired';
+
+export interface RoutineExerciseEntry {
+  id?: number;
+  exerciseId: number;
+  exerciseName?: string;
+  phase: RoutinePhase;
+  block?: string | null;
+  kg?: number | null;
+  reps?: number | null;
+  series?: number | null;
+  notes?: string | null;
+  order: number;
+}
+
+export interface RoutineSession {
+  id?: number;
+  name: string;
+  warmupPrescription?: string | null;
+  order: number;
+  entries: RoutineExerciseEntry[];
+}
+
+export interface RoutineTemplate {
+  id: number;
+  name: string;
+  description?: string | null;
+  objective?: string | null;
+  generalConsiderations?: string | null;
+  status: RoutineStatus;
+  sessions: RoutineSession[];
+}
+
+export interface RoutineTemplateSummary {
+  id: number;
+  name: string;
+  objective: string | null;
+  status: RoutineStatus;
+  sessionCount: number;
+}
+
+export interface RoutineExerciseEntryInput {
+  exerciseId: number;
+  phase: RoutinePhase;
+  block?: string | null;
+  kg?: number | null;
+  reps?: number | null;
+  series?: number | null;
+  notes?: string | null;
+  order: number;
+}
+
+export interface RoutineSessionInput {
+  name: string;
+  warmupPrescription?: string | null;
+  order: number;
+  entries: RoutineExerciseEntryInput[];
+}
+
+export interface RoutineTemplateInput {
+  name: string;
+  description?: string | null;
+  objective?: string | null;
+  generalConsiderations?: string | null;
+  sessions: RoutineSessionInput[];
+}
+
+export const routineTemplateService = {
+  list: async (): Promise<RoutineTemplateSummary[]> => {
+    const response = await api.get('/');
+    return response.data.data;
+  },
+
+  get: async (id: number): Promise<RoutineTemplate> => {
+    const response = await api.get(`/${id}`);
+    return response.data.data;
+  },
+
+  create: async (data: RoutineTemplateInput): Promise<RoutineTemplate> => {
+    const response = await api.post('/', data);
+    return response.data.data;
+  },
+
+  update: async (id: number, data: RoutineTemplateInput): Promise<RoutineTemplate> => {
+    const response = await api.put(`/${id}`, data);
+    return response.data.data;
+  },
+
+  duplicate: async (id: number): Promise<RoutineTemplate> => {
+    const response = await api.post(`/${id}/duplicate`);
+    return response.data.data;
+  },
+};

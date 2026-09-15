@@ -7,15 +7,18 @@ import { PrismaUserRepository } from './infrastructure/repositories/PrismaUserRe
 import { PrismaClientRepository } from './infrastructure/repositories/PrismaClientRepository';
 import { PrismaMedicalRecordRepository } from './infrastructure/repositories/PrismaMedicalRecordRepository';
 import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
+import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/PrismaRoutineTemplateRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
 import { MedicalRecordService } from './application/services/medicalRecordService';
 import { ExerciseService } from './application/services/exerciseService';
+import { RoutineTemplateService } from './application/services/routineTemplateService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { createExerciseRoutes } from './routes/exerciseRoutes';
+import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -51,6 +54,9 @@ export function createApp() {
   const exerciseRepository = new PrismaExerciseRepository(prisma);
   const exerciseService = new ExerciseService(exerciseRepository);
 
+  const routineTemplateRepository = new PrismaRoutineTemplateRepository(prisma);
+  const routineTemplateService = new RoutineTemplateService(routineTemplateRepository, exerciseRepository);
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
   app.use(
@@ -58,6 +64,7 @@ export function createApp() {
     createMedicalRecordRoutes(medicalRecordService, JWT_SECRET),
   );
   app.use('/api/exercises', createExerciseRoutes(exerciseService, JWT_SECRET));
+  app.use('/api/routine-templates', createRoutineTemplateRoutes(routineTemplateService, JWT_SECRET));
 
   app.use(errorHandler);
 

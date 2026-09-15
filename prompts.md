@@ -195,6 +195,15 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > formulario (min 0 + validación con mensaje claro, alineado con el rechazo
 > del backend).
 
+**Prompt 5:**
+
+> Vamos con la US-005 (plantillas de rutina): change OpenSpec
+> `add-routine-templates`, modelos anidados `RoutineTemplate` →
+> `RoutineSession` → `RoutineExerciseEntry` (+ enums), 5 endpoints
+> `/api/routine-templates` protegidos (list/get/create/update-reemplazo/
+> duplicate deep-clone), y un builder de rutinas con selector de ejercicios
+> del catálogo. Contenido de cara al usuario en español.
+
 ---
 
 ### 7. Pull Requests

@@ -28,6 +28,17 @@ enum ExerciseCategory {
   main
 }
 
+enum RoutineStatus {
+  draft
+  active
+  expired
+}
+
+enum RoutinePhase {
+  warmup
+  main
+}
+
 model Client {
   id                           Int          @id @default(autoincrement())
   firstName                    String
@@ -47,6 +58,7 @@ model Client {
   updatedAt                    DateTime     @updatedAt
 
   medicalRecord MedicalRecord?
+  routines      RoutineTemplate[]
 }
 
 model MedicalRecord {
@@ -76,4 +88,50 @@ model Exercise {
   equipment   String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+
+  routineEntries RoutineExerciseEntry[]
+}
+
+model RoutineTemplate {
+  id                    Int              @id @default(autoincrement())
+  name                  String
+  description           String?
+  objective             String?
+  generalConsiderations String?
+  clientId              Int?
+  client                Client?          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  sourceTemplateId      Int?
+  sourceTemplate        RoutineTemplate? @relation("TemplateClone", fields: [sourceTemplateId], references: [id])
+  clones                RoutineTemplate[] @relation("TemplateClone")
+  startDate             DateTime?
+  durationWeeks         Int?
+  status                RoutineStatus    @default(draft)
+  sessions              RoutineSession[]
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+}
+
+model RoutineSession {
+  id                 Int                    @id @default(autoincrement())
+  routineTemplateId  Int
+  routineTemplate    RoutineTemplate        @relation(fields: [routineTemplateId], references: [id], onDelete: Cascade)
+  name               String
+  warmupPrescription String?
+  order              Int
+  entries            RoutineExerciseEntry[]
+}
+
+model RoutineExerciseEntry {
+  id               Int            @id @default(autoincrement())
+  routineSessionId Int
+  routineSession   RoutineSession @relation(fields: [routineSessionId], references: [id], onDelete: Cascade)
+  exerciseId       Int
+  exercise         Exercise       @relation(fields: [exerciseId], references: [id])
+  phase            RoutinePhase
+  block            String?
+  kg               Float?
+  reps             Int?
+  series           Int?
+  notes            String?
+  order            Int
 }

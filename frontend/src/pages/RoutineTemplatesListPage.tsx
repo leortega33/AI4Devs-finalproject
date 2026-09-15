@@ -1,0 +1,87 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { useTranslation } from 'react-i18next';
+import {
+  routineTemplateService,
+  type RoutineTemplateSummary,
+} from '../services/routineTemplateService';
+import { BackButton } from '../components/BackButton';
+
+export function RoutineTemplatesListPage() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [templates, setTemplates] = useState<RoutineTemplateSummary[]>([]);
+  const [error, setError] = useState('');
+
+  const load = useCallback(async () => {
+    try {
+      setTemplates(await routineTemplateService.list());
+    } catch {
+      setError(t('routines.loadFailed'));
+    }
+  }, [t]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const duplicate = async (id: number) => {
+    setError('');
+    try {
+      await routineTemplateService.duplicate(id);
+      load();
+    } catch {
+      setError(t('routines.duplicateFailed'));
+    }
+  };
+
+  const columns: GridColDef<RoutineTemplateSummary>[] = [
+    { field: 'name', headerName: t('routines.columns.name'), flex: 1 },
+    { field: 'objective', headerName: t('routines.columns.objective'), width: 180 },
+    { field: 'sessionCount', headerName: t('routines.columns.sessions'), width: 110 },
+    {
+      field: 'actions',
+      headerName: t('routines.columns.actions'),
+      width: 220,
+      sortable: false,
+      renderCell: (params) => (
+        <Stack direction="row" spacing={1}>
+          <Button size="small" onClick={() => navigate(`/routines/${params.row.id}/edit`)}>
+            {t('common.edit')}
+          </Button>
+          <Button size="small" onClick={() => duplicate(params.row.id)}>
+            {t('routines.actions.duplicate')}
+          </Button>
+        </Stack>
+      ),
+    },
+  ];
+
+  return (
+    <Box>
+      <BackButton to="/" />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4">{t('routines.title')}</Typography>
+        <Button variant="contained" onClick={() => navigate('/routines/new')}>
+          {t('routines.new')}
+        </Button>
+      </Box>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      <div style={{ width: '100%' }}>
+        <DataGrid
+          autoHeight
+          rows={templates}
+          columns={columns}
+          disableRowSelectionOnClick
+          initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
+        />
+      </div>
+    </Box>
+  );
+}

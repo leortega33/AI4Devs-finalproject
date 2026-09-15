@@ -62,6 +62,35 @@ export const exerciseSchema = z.object({
   equipment: z.string().max(255, 'Equipment must be 255 characters or fewer').optional().nullable(),
 });
 
+// A routine template with nested sessions and exercise entries (US-005).
+// A template requires a name and at least one session; each session requires a
+// name; each entry references a catalog exercise with a phase.
+const routineExerciseEntrySchema = z.object({
+  exerciseId: z.number().int().positive(),
+  phase: z.enum(['warmup', 'main']),
+  block: z.string().max(255).optional().nullable(),
+  kg: z.number().nonnegative().optional().nullable(),
+  reps: z.number().int().nonnegative().optional().nullable(),
+  series: z.number().int().nonnegative().optional().nullable(),
+  notes: z.string().max(1000).optional().nullable(),
+  order: z.number().int().nonnegative(),
+});
+
+const routineSessionSchema = z.object({
+  name: z.string().min(1, 'Session name is required'),
+  warmupPrescription: z.string().max(1000).optional().nullable(),
+  order: z.number().int().nonnegative(),
+  entries: z.array(routineExerciseEntrySchema),
+});
+
+export const routineTemplateSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().max(2000).optional().nullable(),
+  objective: z.string().max(255).optional().nullable(),
+  generalConsiderations: z.string().max(2000).optional().nullable(),
+  sessions: z.array(routineSessionSchema).min(1, 'At least one session is required'),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -69,6 +98,7 @@ export type ClientInputData = z.infer<typeof clientSchema>;
 export type ClientStatusInput = z.infer<typeof clientStatusSchema>;
 export type MedicalRecordInputData = z.infer<typeof medicalRecordSchema>;
 export type ExerciseInputData = z.infer<typeof exerciseSchema>;
+export type RoutineTemplateInputData = z.infer<typeof routineTemplateSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -112,4 +142,8 @@ export function validateMedicalRecord(data: unknown): MedicalRecordInputData {
 
 export function validateExercise(data: unknown): ExerciseInputData {
   return parseOrThrow(exerciseSchema, data);
+}
+
+export function validateRoutineTemplate(data: unknown): RoutineTemplateInputData {
+  return parseOrThrow(routineTemplateSchema, data);
 }

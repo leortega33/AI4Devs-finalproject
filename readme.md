@@ -91,7 +91,11 @@ idioma y el botón de cerrar sesión.
 5. **Ejercicios** — Desde el panel, "Ejercicios" abre el catálogo (`DataGrid`
    con búsqueda por nombre y filtro por categoría). Alta/edición mediante
    formulario; sin borrado. Trae un set base sembrado al iniciar.
-6. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+6. **Rutinas** — Desde el panel, "Rutinas" abre la biblioteca de plantillas. El
+   builder permite armar una rutina con varias sesiones, cada una con entrada en
+   calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
+   series/notas). Se puede **duplicar** una plantilla en una copia independiente.
+7. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._
@@ -310,6 +314,26 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-exercise-catalog/`).
+
+**Historia de Usuario 7 — US-005: Plantillas de rutina (crear/duplicar/reutilizar)**
+
+> Como dueño/entrenador, quiero armar plantillas de rutina reutilizables
+> compuestas por una o más sesiones, y duplicar una existente, para no tener
+> que crear cada rutina desde cero para cada cliente.
+
+- **Criterios de aceptación:** una plantilla de biblioteca tiene nombre,
+  descripción/objetivo/consideraciones generales y una o más sesiones; cada
+  sesión tiene entrada en calor (prescripción + ejercicios de
+  movilidad/activación) y un bloque principal (ejercicio del catálogo, bloque
+  opcional, kg/reps/series, notas); crear/editar la plantilla guarda toda la
+  estructura anidada (la edición reemplaza sesiones/entradas de forma atómica);
+  **duplicar** crea una copia independiente (editar la copia nunca afecta al
+  original); listado de plantillas con acciones de editar y duplicar; los
+  `exerciseId` deben existir en el catálogo; todo protegido por autenticación.
+  Sin progresión semanal en el MVP (un valor de kg/reps/series por entrada).
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-routine-templates/`).
 
 ---
 

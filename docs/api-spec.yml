@@ -540,6 +540,168 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/routine-templates:
+    get:
+      summary: List library routine templates
+      description: Reusable templates (clientId is null). See US-005.
+      tags:
+        - Routine Templates
+      responses:
+        '200':
+          description: List of template summaries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RoutineTemplateSummary'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a routine template (nested)
+      description: Creates a template with its nested sessions and exercise entries in one call.
+      tags:
+        - Routine Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutineTemplateInput'
+      responses:
+        '201':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineTemplateResponse'
+        '400':
+          description: Validation error (no session, unknown exercise, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/routine-templates/{id}:
+    get:
+      summary: Get a routine template with full nested detail
+      tags:
+        - Routine Templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The template with sessions and ordered entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineTemplateResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update a routine template (full replace of nested data)
+      description: Replaces the template's sessions and entries atomically.
+      tags:
+        - Routine Templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutineTemplateInput'
+      responses:
+        '200':
+          description: Template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineTemplateResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/routine-templates/{id}/duplicate:
+    post:
+      summary: Duplicate a routine template (independent deep copy)
+      description: Creates a new library template that is a deep copy of the source; editing it never affects the original.
+      tags:
+        - Routine Templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: The new independent template copy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineTemplateResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Source template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
@@ -744,6 +906,142 @@ components:
         data:
           $ref: '#/components/schemas/Exercise'
 
+    RoutineExerciseEntryInput:
+      type: object
+      properties:
+        exerciseId:
+          type: integer
+        phase:
+          type: string
+          enum: [warmup, main]
+        block:
+          type: string
+          nullable: true
+        kg:
+          type: number
+          nullable: true
+        reps:
+          type: integer
+          nullable: true
+        series:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        order:
+          type: integer
+      required:
+        - exerciseId
+        - phase
+        - order
+
+    RoutineSessionInput:
+      type: object
+      properties:
+        name:
+          type: string
+        warmupPrescription:
+          type: string
+          nullable: true
+        order:
+          type: integer
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutineExerciseEntryInput'
+      required:
+        - name
+        - order
+        - entries
+
+    RoutineTemplateInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        objective:
+          type: string
+          nullable: true
+        generalConsiderations:
+          type: string
+          nullable: true
+        sessions:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/RoutineSessionInput'
+      required:
+        - name
+        - sessions
+
+    RoutineExerciseEntry:
+      allOf:
+        - $ref: '#/components/schemas/RoutineExerciseEntryInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            exerciseName:
+              type: string
+
+    RoutineSession:
+      allOf:
+        - $ref: '#/components/schemas/RoutineSessionInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoutineExerciseEntry'
+
+    RoutineTemplate:
+      allOf:
+        - $ref: '#/components/schemas/RoutineTemplateInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum: [draft, active, expired]
+            clientId:
+              type: integer
+              nullable: true
+            sessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoutineSession'
+
+    RoutineTemplateSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        objective:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, active, expired]
+        sessionCount:
+          type: integer
+
+    RoutineTemplateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/RoutineTemplate'
+
     ErrorResponse:
       type: object
       properties:
@@ -772,10 +1070,12 @@ tags:
     description: Client medical records (US-003)
   - name: Exercises
     description: Reusable exercise catalog (US-004)
+  - name: Routine Templates
+    description: Reusable routine templates with nested sessions and exercises (US-005)
 
-# NOTE: Additional resources (Routine Templates, Payments, Dashboard) will be
-# documented here as their corresponding user stories (US-005 through US-009)
-# are enriched and implemented via OpenSpec changes.
+# NOTE: Additional resources (Payments, Dashboard) will be documented here as
+# their corresponding user stories (US-006 through US-009) are enriched and
+# implemented via OpenSpec changes.
 # See planning/user-stories-backlog.md.
 
 

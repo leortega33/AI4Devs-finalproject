@@ -140,6 +140,56 @@
     },
     "loadFailed": "Could not load the exercise catalog."
   },
+  "routines": {
+    "title": "Routines",
+    "new": "New routine",
+    "columns": {
+      "name": "Name",
+      "objective": "Objective",
+      "sessions": "Sessions",
+      "actions": "Actions"
+    },
+    "actions": {
+      "duplicate": "Duplicate"
+    },
+    "loadFailed": "Could not load the routines.",
+    "duplicateFailed": "Could not duplicate the routine.",
+    "form": {
+      "newTitle": "New routine",
+      "editTitle": "Edit routine",
+      "name": "Name",
+      "objective": "Objective",
+      "description": "Description",
+      "generalConsiderations": "General considerations",
+      "addSession": "Add session",
+      "removeSession": "Remove session",
+      "sessionName": "Session name",
+      "warmupPrescription": "Warm-up prescription",
+      "warmupPhase": "Warm-up",
+      "mainPhase": "Main block",
+      "addExercise": "Add exercise",
+      "removeExercise": "Remove",
+      "block": "Block",
+      "kg": "Kg",
+      "reps": "Reps",
+      "series": "Sets",
+      "notes": "Notes",
+      "requiredName": "Enter a name for the routine.",
+      "requiredSession": "Add at least one named session.",
+      "saveFailed": "Could not save the routine."
+    },
+    "picker": {
+      "title": "Choose exercise",
+      "search": "Search by name",
+      "category": "Category",
+      "categoryAll": "All",
+      "categoryMobility": "Mobility",
+      "categoryActivation": "Activation",
+      "categoryMain": "Main",
+      "choose": "Choose",
+      "cancel": "Cancel"
+    }
+  },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password.",
     "INVALID_RESET_TOKEN": "This reset link is invalid or has expired.",
