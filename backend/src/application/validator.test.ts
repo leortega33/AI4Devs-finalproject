@@ -4,6 +4,7 @@ import {
   validateResetPassword,
   validateClient,
   validateClientStatus,
+  validateMedicalRecord,
   ValidationError,
 } from './validator';
 
@@ -96,6 +97,31 @@ describe('validator', () => {
 
     it('should reject an unknown status', () => {
       expect(() => validateClientStatus({ status: 'archived' })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateMedicalRecord', () => {
+    it('should accept an all-empty payload', () => {
+      expect(validateMedicalRecord({})).toEqual({});
+    });
+
+    it('should accept valid medical fields', () => {
+      const result = validateMedicalRecord({
+        preexistingConditions: 'Asthma',
+        bloodType: 'O+',
+        notes: 'Prefers morning sessions',
+      });
+
+      expect(result.preexistingConditions).toBe('Asthma');
+      expect(result.bloodType).toBe('O+');
+    });
+
+    it('should reject a free-text field longer than 1000 characters', () => {
+      expect(() => validateMedicalRecord({ injuries: 'x'.repeat(1001) })).toThrow(ValidationError);
+    });
+
+    it('should reject an oversized blood type', () => {
+      expect(() => validateMedicalRecord({ bloodType: 'x'.repeat(11) })).toThrow(ValidationError);
     });
   });
 });

@@ -39,4 +39,22 @@ model Client {
   status                       ClientStatus @default(active)
   createdAt                    DateTime     @default(now())
   updatedAt                    DateTime     @updatedAt
+
+  medicalRecord MedicalRecord?
+}
+
+model MedicalRecord {
+  id                     Int      @id @default(autoincrement())
+  clientId               Int      @unique
+  client                 Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  preexistingConditions  String?
+  injuries               String?
+  surgeriesOrProsthetics String?
+  physicalRestrictions   String?
+  medication             String?
+  allergies              String?
+  bloodType              String?
+  notes                  String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }

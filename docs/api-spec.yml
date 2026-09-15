@@ -324,6 +324,82 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/medical-record:
+    get:
+      summary: Get a client's medical record
+      description: Returns the client's medical record, or null when none exists yet. See US-003.
+      tags:
+        - Medical Records
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The medical record, or null if the client has none yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalRecordResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Create or update a client's medical record (upsert)
+      description: >
+        Creates the medical record when none exists and updates it otherwise.
+        All fields are optional free text; an all-empty payload is valid. See US-003.
+      tags:
+        - Medical Records
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicalRecordInput'
+      responses:
+        '200':
+          description: The saved medical record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalRecordResponse'
+        '400':
+          description: Validation error (e.g. a field exceeding its length limit)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
@@ -436,6 +512,55 @@ components:
         data:
           $ref: '#/components/schemas/Client'
 
+    MedicalRecordInput:
+      type: object
+      description: All fields optional free text (max 1000 chars each); bloodType max 10 chars. An all-empty payload is valid.
+      properties:
+        preexistingConditions:
+          type: string
+          nullable: true
+        injuries:
+          type: string
+          nullable: true
+        surgeriesOrProsthetics:
+          type: string
+          nullable: true
+        physicalRestrictions:
+          type: string
+          nullable: true
+        medication:
+          type: string
+          nullable: true
+        allergies:
+          type: string
+          nullable: true
+        bloodType:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    MedicalRecord:
+      allOf:
+        - $ref: '#/components/schemas/MedicalRecordInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            clientId:
+              type: integer
+
+    MedicalRecordResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/MedicalRecord'
+
     ErrorResponse:
       type: object
       properties:
@@ -460,11 +585,13 @@ tags:
     description: Authentication endpoints for the single admin user (US-001)
   - name: Clients
     description: Gym client management (US-002)
+  - name: Medical Records
+    description: Client medical records (US-003)
 
-# NOTE: Additional resources (Medical Records, Exercises, Routine Templates,
-# Payments, Dashboard) will be documented here as their corresponding user
-# stories (US-003 through US-009) are enriched and implemented via OpenSpec
-# changes. See planning/user-stories-backlog.md.
+# NOTE: Additional resources (Exercises, Routine Templates, Payments,
+# Dashboard) will be documented here as their corresponding user stories
+# (US-004 through US-009) are enriched and implemented via OpenSpec changes.
+# See planning/user-stories-backlog.md.
 
 
 

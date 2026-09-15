@@ -9,6 +9,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ClientsListPage } from './pages/ClientsListPage';
 import { ClientFormPage } from './pages/ClientFormPage';
+import { MedicalRecordPage } from './pages/MedicalRecordPage';
 
 /** Placeholder landing page for the authenticated admin (real dashboard comes in US-009). */
 function DashboardPage() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/clients" element={<ClientsListPage />} />
               <Route path="/clients/new" element={<ClientFormPage />} />
               <Route path="/clients/:id/edit" element={<ClientFormPage />} />
+              <Route path="/clients/:clientId/medical-record" element={<MedicalRecordPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

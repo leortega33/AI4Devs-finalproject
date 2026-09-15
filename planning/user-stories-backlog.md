@@ -171,7 +171,7 @@ name and filterable by status; filtering by payment status is Phase 2.
 
 ## US-003: Client medical record (ficha médica)
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-medical-record/`)
 
 **User story:** As a gym owner/trainer, I want to load and update each
 client's medical file, so that I can design safe routines and react properly

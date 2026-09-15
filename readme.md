@@ -84,7 +84,11 @@ idioma y el botón de cerrar sesión.
 3. **Clientes** — Lista con búsqueda por nombre y filtro por estado (`DataGrid`),
    alta/edición mediante formularios, y baja lógica con diálogo de confirmación.
    Cada pantalla interna ofrece un botón "Atrás" consistente para volver.
-4. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+4. **Ficha médica** — Desde el listado, la acción "Ficha médica" abre una
+   pantalla propia por cliente con condiciones, lesiones, medicación, alergias,
+   grupo sanguíneo y notas. Muestra un estado vacío cuando aún no hay ficha y
+   guarda mediante upsert.
+5. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._
@@ -266,6 +270,25 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-app-shell/`).
+
+**Historia de Usuario 5 — US-003: Ficha médica del cliente**
+
+> Como dueño/entrenador, quiero cargar y actualizar la ficha médica de cada
+> cliente, para diseñar rutinas seguras y reaccionar correctamente ante una
+> emergencia.
+
+- **Criterios de aceptación:** ficha médica opcional y única por cliente
+  (relación 1:1), con condiciones preexistentes, lesiones, cirugías/prótesis,
+  restricciones físicas, medicación, alergias, grupo sanguíneo y notas (texto
+  libre, máximo 1000 caracteres por campo); no obligatoria al alta y editable
+  después desde una pantalla propia (`/clients/:id/medical-record`) accesible
+  desde el listado de clientes; estado vacío claro cuando el cliente aún no
+  tiene ficha; se guarda mediante upsert (crea o actualiza, siempre un solo
+  registro); solo se guarda el estado actual (sin historial en el MVP); todo
+  protegido por autenticación.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-medical-record/`).
 
 ---
 

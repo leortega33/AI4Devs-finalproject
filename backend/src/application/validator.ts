@@ -34,11 +34,28 @@ export const clientStatusSchema = z.object({
   status: z.enum(['active', 'inactive']),
 });
 
+// A client's medical record (US-003). Every field is optional free text with a
+// per-field length limit; an all-empty payload is valid. Only current state is
+// stored (no history in the MVP).
+const medicalField = z.string().max(1000, 'Field must be 1000 characters or fewer').optional().nullable();
+
+export const medicalRecordSchema = z.object({
+  preexistingConditions: medicalField,
+  injuries: medicalField,
+  surgeriesOrProsthetics: medicalField,
+  physicalRestrictions: medicalField,
+  medication: medicalField,
+  allergies: medicalField,
+  bloodType: z.string().max(10, 'Blood type must be 10 characters or fewer').optional().nullable(),
+  notes: medicalField,
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ClientInputData = z.infer<typeof clientSchema>;
 export type ClientStatusInput = z.infer<typeof clientStatusSchema>;
+export type MedicalRecordInputData = z.infer<typeof medicalRecordSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -74,4 +91,8 @@ export function validateClient(data: unknown): ClientInputData {
 
 export function validateClientStatus(data: unknown): ClientStatusInput {
   return parseOrThrow(clientStatusSchema, data);
+}
+
+export function validateMedicalRecord(data: unknown): MedicalRecordInputData {
+  return parseOrThrow(medicalRecordSchema, data);
 }

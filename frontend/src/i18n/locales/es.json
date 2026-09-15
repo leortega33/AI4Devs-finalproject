@@ -63,7 +63,8 @@
     },
     "actions": {
       "deactivate": "Desactivar",
-      "reactivate": "Reactivar"
+      "reactivate": "Reactivar",
+      "medicalRecord": "Ficha médica"
     },
     "form": {
       "newTitle": "Nuevo cliente",
@@ -89,6 +90,24 @@
       "message": "¿Desactivar a {{name}}? Su historial se conserva y puede reactivarse más adelante.",
       "confirm": "Desactivar"
     }
+  },
+  "medicalRecord": {
+    "title": "Ficha médica",
+    "subtitle": "Ficha médica de {{name}}",
+    "empty": "Este cliente todavía no tiene ficha médica. Completá los campos y guardá para crearla.",
+    "fields": {
+      "preexistingConditions": "Condiciones preexistentes",
+      "injuries": "Lesiones",
+      "surgeriesOrProsthetics": "Cirugías / prótesis",
+      "physicalRestrictions": "Restricciones físicas",
+      "medication": "Medicación",
+      "allergies": "Alergias",
+      "bloodType": "Grupo sanguíneo",
+      "notes": "Notas"
+    },
+    "saved": "Ficha médica guardada.",
+    "saveFailed": "No se pudo guardar la ficha médica.",
+    "loadFailed": "No se pudo cargar la ficha médica."
   },
   "errors": {
     "INVALID_CREDENTIALS": "Email o contraseña inválidos.",

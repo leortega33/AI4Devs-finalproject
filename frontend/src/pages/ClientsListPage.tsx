@@ -67,12 +67,15 @@ export function ClientsListPage() {
     {
       field: 'actions',
       headerName: t('clients.columns.actions'),
-      width: 240,
+      width: 360,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
           <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/edit`)}>
             {t('common.edit')}
+          </Button>
+          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/medical-record`)}>
+            {t('clients.actions.medicalRecord')}
           </Button>
           {params.row.status === 'active' ? (
             <Button size="small" color="error" onClick={() => setToDeactivate(params.row)}>

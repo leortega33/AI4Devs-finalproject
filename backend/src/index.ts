@@ -5,11 +5,14 @@ import express from 'express';
 import { prisma } from './infrastructure/prismaClient';
 import { PrismaUserRepository } from './infrastructure/repositories/PrismaUserRepository';
 import { PrismaClientRepository } from './infrastructure/repositories/PrismaClientRepository';
+import { PrismaMedicalRecordRepository } from './infrastructure/repositories/PrismaMedicalRecordRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
+import { MedicalRecordService } from './application/services/medicalRecordService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
+import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -39,8 +42,15 @@ export function createApp() {
   const clientRepository = new PrismaClientRepository(prisma);
   const clientService = new ClientService(clientRepository);
 
+  const medicalRecordRepository = new PrismaMedicalRecordRepository(prisma);
+  const medicalRecordService = new MedicalRecordService(medicalRecordRepository, clientRepository);
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
+  app.use(
+    '/api/clients/:clientId/medical-record',
+    createMedicalRecordRoutes(medicalRecordService, JWT_SECRET),
+  );
 
   app.use(errorHandler);
 

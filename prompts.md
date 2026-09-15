@@ -171,6 +171,13 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 **Prompt 2:**
 
+> Avancemos con la US-003 (ficha médica): change OpenSpec `add-medical-record`,
+> modelo `MedicalRecord` 1:1 opcional con `Client` (upsert, sin historial),
+> endpoints anidados `GET`/`PUT /api/clients/:clientId/medical-record`
+> protegidos, y pantalla propia de ficha médica accesible desde el listado
+> (decisiones del usuario: pantalla aparte y límite de 1000 caracteres por
+> campo).
+
 **Prompt 3:**
 
 ---

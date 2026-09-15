@@ -63,7 +63,8 @@
     },
     "actions": {
       "deactivate": "Deactivate",
-      "reactivate": "Reactivate"
+      "reactivate": "Reactivate",
+      "medicalRecord": "Medical record"
     },
     "form": {
       "newTitle": "New client",
@@ -89,6 +90,24 @@
       "message": "Deactivate {{name}}? Their history is preserved and they can be reactivated later.",
       "confirm": "Deactivate"
     }
+  },
+  "medicalRecord": {
+    "title": "Medical record",
+    "subtitle": "{{name}}'s medical record",
+    "empty": "This client has no medical record yet. Fill in the fields and save to create one.",
+    "fields": {
+      "preexistingConditions": "Pre-existing conditions",
+      "injuries": "Injuries",
+      "surgeriesOrProsthetics": "Surgeries / prosthetics",
+      "physicalRestrictions": "Physical restrictions",
+      "medication": "Medication",
+      "allergies": "Allergies",
+      "bloodType": "Blood type",
+      "notes": "Notes"
+    },
+    "saved": "Medical record saved.",
+    "saveFailed": "Could not save the medical record.",
+    "loadFailed": "Could not load the medical record."
   },
   "errors": {
     "INVALID_CREDENTIALS": "Invalid email or password.",
