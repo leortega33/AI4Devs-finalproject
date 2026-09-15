@@ -233,7 +233,7 @@ in the client detail page, `components/MedicalRecordForm.tsx`.
 
 ## US-004: Exercise catalog
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-exercise-catalog/`)
+- **Status:** in-openspec (implemented — see `openspec/changes/add-exercise-catalog/`; polish in `openspec/changes/refine-exercise-catalog/`: Spanish base seed + non-negative sets/reps)
 
 **User story:** As a gym owner/trainer, I want a reusable catalog of
 exercises, so that I can build routines faster without retyping exercises
