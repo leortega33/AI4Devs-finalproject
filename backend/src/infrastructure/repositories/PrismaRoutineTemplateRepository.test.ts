@@ -5,8 +5,10 @@ function buildPrismaMock() {
     routineTemplate: {
       create: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
     },
     routineSession: {
       deleteMany: jest.fn(),
@@ -151,5 +153,86 @@ describe('PrismaRoutineTemplateRepository', () => {
     const repo = new PrismaRoutineTemplateRepository(prisma);
 
     expect(await repo.duplicate(999)).toBeNull();
+  });
+
+  describe('client routine assignment (US-006)', () => {
+    it('should clone the template to the client and close the previous active routine in a transaction', async () => {
+      const prisma = buildPrismaMock();
+      prisma.routineTemplate.findUnique.mockResolvedValue(nestedRecord);
+      const tx = {
+        routineTemplate: {
+          updateMany: jest.fn(),
+          create: jest.fn().mockResolvedValue({
+            ...nestedRecord,
+            id: 5,
+            clientId: 3,
+            sourceTemplateId: 1,
+            status: 'active',
+            startDate: new Date('2026-02-01'),
+            durationWeeks: 4,
+          }),
+        },
+      };
+      prisma.$transaction.mockImplementation(async (fn: any) => fn(tx));
+      const repo = new PrismaRoutineTemplateRepository(prisma);
+
+      const result = await repo.assignCloneToClient(3, 1, new Date('2026-02-01'), 4);
+
+      expect(tx.routineTemplate.updateMany).toHaveBeenCalledWith({
+        where: { clientId: 3, status: 'active' },
+        data: { status: 'expired' },
+      });
+      const createArg = tx.routineTemplate.create.mock.calls[0][0];
+      expect(createArg.data.clientId).toBe(3);
+      expect(createArg.data.sourceTemplateId).toBe(1);
+      expect(createArg.data.status).toBe('active');
+      expect(createArg.data.sessions.create[0].entries.create[0].exerciseId).toBe(7);
+      expect(result?.clientId).toBe(3);
+    });
+
+    it('should return null when assigning a non-existent template', async () => {
+      const prisma = buildPrismaMock();
+      prisma.routineTemplate.findUnique.mockResolvedValue(null);
+      const repo = new PrismaRoutineTemplateRepository(prisma);
+
+      expect(await repo.assignCloneToClient(3, 999, new Date(), 4)).toBeNull();
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('should find the active routine for a client', async () => {
+      const prisma = buildPrismaMock();
+      prisma.routineTemplate.findFirst.mockResolvedValue({ ...nestedRecord, clientId: 3, status: 'active' });
+      const repo = new PrismaRoutineTemplateRepository(prisma);
+
+      const result = await repo.findActiveByClient(3);
+
+      expect(result?.clientId).toBe(3);
+      expect(prisma.routineTemplate.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { clientId: 3, status: 'active' } }),
+      );
+    });
+
+    it('should return null when the client has no active routine', async () => {
+      const prisma = buildPrismaMock();
+      prisma.routineTemplate.findFirst.mockResolvedValue(null);
+      const repo = new PrismaRoutineTemplateRepository(prisma);
+
+      expect(await repo.findActiveByClient(3)).toBeNull();
+    });
+
+    it('should list the client non-active routines as history summaries', async () => {
+      const prisma = buildPrismaMock();
+      prisma.routineTemplate.findMany.mockResolvedValue([
+        { id: 2, name: 'Rutina anterior', objective: null, status: 'expired', _count: { sessions: 2 } },
+      ]);
+      const repo = new PrismaRoutineTemplateRepository(prisma);
+
+      const result = await repo.findHistoryByClient(3);
+
+      expect(result[0].status).toBe('expired');
+      expect(prisma.routineTemplate.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { clientId: 3, status: { not: 'active' } } }),
+      );
+    });
   });
 });

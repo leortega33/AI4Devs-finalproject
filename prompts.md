@@ -204,6 +204,16 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > duplicate deep-clone), y un builder de rutinas con selector de ejercicios
 > del catálogo. Contenido de cara al usuario en español.
 
+**Prompt 6:**
+
+> Sigamos con la US-006 (asignar rutina a un cliente): change OpenSpec
+> `assign-client-routine`. Asignar clona la plantilla en una rutina del cliente
+> (cierra la anterior, una sola activa), con endpoints anidados
+> `/api/clients/:clientId/routine` (+ `/routines/history`), vencimiento
+> computado de fecha+duración, pantalla propia de rutina del cliente, e
+> indicador en el listado de clientes de quién tiene rutina asignada
+> (`hasActiveRoutine`). Contenido en español.
+
 ---
 
 ### 7. Pull Requests

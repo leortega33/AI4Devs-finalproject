@@ -54,4 +54,20 @@ export class RoutineTemplate {
   isLibraryTemplate(): boolean {
     return this.clientId === null;
   }
+
+  /** End date of a client-assigned routine, computed from startDate + durationWeeks. */
+  get endDate(): Date | null {
+    if (!this.startDate || !this.durationWeeks) {
+      return null;
+    }
+    const end = new Date(this.startDate);
+    end.setDate(end.getDate() + this.durationWeeks * 7);
+    return end;
+  }
+
+  /** Whether the assigned routine's computed end date has passed. */
+  isExpired(now: Date = new Date()): boolean {
+    const end = this.endDate;
+    return end !== null && now.getTime() > end.getTime();
+  }
 }

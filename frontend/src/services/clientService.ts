@@ -23,6 +23,7 @@ export interface Client {
   emergencyContactPhone?: string | null;
   emergencyContactRelationship?: string | null;
   status: ClientStatus;
+  hasActiveRoutine?: boolean;
 }
 
 export interface ClientFormData {

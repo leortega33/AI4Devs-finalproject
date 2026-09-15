@@ -59,13 +59,17 @@
       "dni": "DNI",
       "phone": "Teléfono",
       "status": "Estado",
+      "routine": "Rutina",
       "actions": "Acciones"
     },
     "actions": {
       "deactivate": "Desactivar",
       "reactivate": "Reactivar",
-      "medicalRecord": "Ficha médica"
+      "medicalRecord": "Ficha médica",
+      "routine": "Rutina"
     },
+    "routineAssigned": "Asignada",
+    "routineNone": "Sin rutina",
     "form": {
       "newTitle": "Nuevo cliente",
       "editTitle": "Editar cliente",
@@ -186,6 +190,28 @@
       "categoryMobility": "Movilidad",
       "categoryActivation": "Activación",
       "categoryMain": "Principal",
+      "choose": "Elegir",
+      "cancel": "Cancelar"
+    }
+  },
+  "clientRoutine": {
+    "title": "Rutina del cliente",
+    "subtitle": "Rutina de {{name}}",
+    "empty": "Este cliente todavía no tiene una rutina asignada.",
+    "assign": "Asignar rutina",
+    "activeTitle": "Rutina activa",
+    "startDate": "Fecha de inicio",
+    "durationWeeks": "Duración (semanas)",
+    "endDate": "Vence",
+    "expired": "Vencida",
+    "historyTitle": "Historial de rutinas",
+    "historyEmpty": "Sin rutinas anteriores.",
+    "assignFailed": "No se pudo asignar la rutina.",
+    "loadFailed": "No se pudo cargar la rutina.",
+    "sessions": "Sesiones",
+    "picker": {
+      "title": "Elegir plantilla",
+      "empty": "No hay plantillas de biblioteca. Creá una en Rutinas.",
       "choose": "Elegir",
       "cancel": "Cancelar"
     }

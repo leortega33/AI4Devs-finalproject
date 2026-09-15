@@ -400,6 +400,160 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/routine:
+    get:
+      summary: Get a client's active routine
+      description: Returns the client's active routine (with computed endDate/isExpired), or null. See US-006.
+      tags:
+        - Client Routines
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The active routine, or null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientRoutineResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Assign a routine to a client
+      description: Deep-clones a library template into a client routine, closing any previous active routine.
+      tags:
+        - Client Routines
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignRoutineInput'
+      responses:
+        '201':
+          description: The newly assigned active routine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientRoutineResponse'
+        '400':
+          description: Validation error (missing/invalid fields)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client or template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Adjust a client's active routine
+      description: Replaces the active routine's sessions/entries (same payload as templates), independently of the source template.
+      tags:
+        - Client Routines
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutineTemplateInput'
+      responses:
+        '200':
+          description: The adjusted active routine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientRoutineResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client has no active routine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/routines/history:
+    get:
+      summary: List a client's previously assigned routines
+      tags:
+        - Client Routines
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The client's routine history (closed routines)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RoutineTemplateSummary'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/exercises:
     get:
       summary: List exercises
@@ -805,6 +959,9 @@ components:
             joinDate:
               type: string
               format: date-time
+            hasActiveRoutine:
+              type: boolean
+              description: Whether the client currently has an active routine assigned (present in the list response). See US-006.
 
     ClientResponse:
       type: object
@@ -1042,6 +1199,55 @@ components:
         data:
           $ref: '#/components/schemas/RoutineTemplate'
 
+    AssignRoutineInput:
+      type: object
+      properties:
+        templateId:
+          type: integer
+        startDate:
+          type: string
+          format: date
+        durationWeeks:
+          type: integer
+      required:
+        - templateId
+        - startDate
+        - durationWeeks
+
+    ClientRoutine:
+      allOf:
+        - $ref: '#/components/schemas/RoutineTemplate'
+        - type: object
+          properties:
+            sourceTemplateId:
+              type: integer
+              nullable: true
+            startDate:
+              type: string
+              format: date-time
+              nullable: true
+            durationWeeks:
+              type: integer
+              nullable: true
+            endDate:
+              type: string
+              format: date-time
+              nullable: true
+              description: Computed from startDate + durationWeeks
+            isExpired:
+              type: boolean
+              description: Computed at read time
+
+    ClientRoutineResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ClientRoutine'
+
     ErrorResponse:
       type: object
       properties:
@@ -1072,9 +1278,11 @@ tags:
     description: Reusable exercise catalog (US-004)
   - name: Routine Templates
     description: Reusable routine templates with nested sessions and exercises (US-005)
+  - name: Client Routines
+    description: Routines assigned to a client (clone of a template with a lifecycle) (US-006)
 
 # NOTE: Additional resources (Payments, Dashboard) will be documented here as
-# their corresponding user stories (US-006 through US-009) are enriched and
+# their corresponding user stories (US-007 through US-009) are enriched and
 # implemented via OpenSpec changes.
 # See planning/user-stories-backlog.md.
 

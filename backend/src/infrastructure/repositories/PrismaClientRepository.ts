@@ -47,8 +47,16 @@ export class PrismaClientRepository implements ClientRepository {
     const records = await this.prisma.client.findMany({
       where,
       orderBy: { lastName: 'asc' },
+      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
     });
-    return records.map(toDomain);
+    return records.map((record) => {
+      const { routines, ...clientRecord } = record;
+      return new Client({
+        ...clientRecord,
+        status: clientRecord.status as ClientStatus,
+        hasActiveRoutine: routines.length > 0,
+      });
+    });
   }
 
   async update(id: number, data: ClientInput): Promise<Client> {

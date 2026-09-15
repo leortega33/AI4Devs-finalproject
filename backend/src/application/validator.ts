@@ -91,6 +91,14 @@ export const routineTemplateSchema = z.object({
   sessions: z.array(routineSessionSchema).min(1, 'At least one session is required'),
 });
 
+// Assigning a routine to a client (US-006): reference a library template, a
+// start date, and a positive duration in weeks.
+export const assignRoutineSchema = z.object({
+  templateId: z.number().int().positive(),
+  startDate: z.coerce.date(),
+  durationWeeks: z.number().int().positive('Duration must be a positive number of weeks'),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -99,6 +107,7 @@ export type ClientStatusInput = z.infer<typeof clientStatusSchema>;
 export type MedicalRecordInputData = z.infer<typeof medicalRecordSchema>;
 export type ExerciseInputData = z.infer<typeof exerciseSchema>;
 export type RoutineTemplateInputData = z.infer<typeof routineTemplateSchema>;
+export type AssignRoutineInputData = z.infer<typeof assignRoutineSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -146,4 +155,8 @@ export function validateExercise(data: unknown): ExerciseInputData {
 
 export function validateRoutineTemplate(data: unknown): RoutineTemplateInputData {
   return parseOrThrow(routineTemplateSchema, data);
+}
+
+export function validateAssignRoutine(data: unknown): AssignRoutineInputData {
+  return parseOrThrow(assignRoutineSchema, data);
 }

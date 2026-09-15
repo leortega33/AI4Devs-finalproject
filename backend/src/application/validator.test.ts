@@ -7,6 +7,7 @@ import {
   validateMedicalRecord,
   validateExercise,
   validateRoutineTemplate,
+  validateAssignRoutine,
   ValidationError,
 } from './validator';
 
@@ -221,6 +222,32 @@ describe('validator', () => {
           sessions: [{ name: 'A', order: 0, entries: [{ exerciseId: 1, phase: 'main', order: 0, kg: -5 }] }],
         }),
       ).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateAssignRoutine', () => {
+    it('should accept a valid assignment and coerce the start date', () => {
+      const result = validateAssignRoutine({ templateId: 1, startDate: '2026-02-01', durationWeeks: 4 });
+
+      expect(result.templateId).toBe(1);
+      expect(result.startDate).toBeInstanceOf(Date);
+      expect(result.durationWeeks).toBe(4);
+    });
+
+    it('should reject a missing start date', () => {
+      expect(() => validateAssignRoutine({ templateId: 1, durationWeeks: 4 })).toThrow(ValidationError);
+    });
+
+    it('should reject a non-positive duration', () => {
+      expect(() => validateAssignRoutine({ templateId: 1, startDate: '2026-02-01', durationWeeks: 0 })).toThrow(
+        ValidationError,
+      );
+    });
+
+    it('should reject a non-positive templateId', () => {
+      expect(() => validateAssignRoutine({ templateId: 0, startDate: '2026-02-01', durationWeeks: 4 })).toThrow(
+        ValidationError,
+      );
     });
   });
 });

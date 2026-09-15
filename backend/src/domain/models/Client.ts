@@ -21,6 +21,7 @@ export interface ClientProps {
   emergencyContactRelationship?: string | null;
   joinDate?: Date;
   status?: ClientStatus;
+  hasActiveRoutine?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -41,6 +42,7 @@ export class Client {
   readonly emergencyContactRelationship: string | null;
   readonly joinDate?: Date;
   readonly status: ClientStatus;
+  readonly hasActiveRoutine: boolean;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 
@@ -59,6 +61,7 @@ export class Client {
     this.emergencyContactRelationship = props.emergencyContactRelationship ?? null;
     this.joinDate = props.joinDate;
     this.status = props.status ?? 'active';
+    this.hasActiveRoutine = props.hasActiveRoutine ?? false;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

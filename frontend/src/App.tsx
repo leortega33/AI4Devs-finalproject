@@ -10,6 +10,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ClientsListPage } from './pages/ClientsListPage';
 import { ClientFormPage } from './pages/ClientFormPage';
 import { MedicalRecordPage } from './pages/MedicalRecordPage';
+import { ClientRoutinePage } from './pages/ClientRoutinePage';
 import { ExerciseCatalogPage } from './pages/ExerciseCatalogPage';
 import { ExerciseFormPage } from './pages/ExerciseFormPage';
 import { RoutineTemplatesListPage } from './pages/RoutineTemplatesListPage';
@@ -54,6 +55,7 @@ function App() {
               <Route path="/clients/new" element={<ClientFormPage />} />
               <Route path="/clients/:id/edit" element={<ClientFormPage />} />
               <Route path="/clients/:clientId/medical-record" element={<MedicalRecordPage />} />
+              <Route path="/clients/:clientId/routine" element={<ClientRoutinePage />} />
               <Route path="/exercises" element={<ExerciseCatalogPage />} />
               <Route path="/exercises/new" element={<ExerciseFormPage />} />
               <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />

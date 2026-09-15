@@ -374,7 +374,7 @@ exercise catalog by category).
 
 ## US-006: Assign routine to client
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/assign-client-routine/`)
 
 **User story:** As a gym owner/trainer, I want to assign a routine to a
 specific client by cloning a template, with a start date and a fixed

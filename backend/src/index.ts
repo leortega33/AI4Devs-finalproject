@@ -14,11 +14,13 @@ import { ClientService } from './application/services/clientService';
 import { MedicalRecordService } from './application/services/medicalRecordService';
 import { ExerciseService } from './application/services/exerciseService';
 import { RoutineTemplateService } from './application/services/routineTemplateService';
+import { ClientRoutineService } from './application/services/clientRoutineService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { createExerciseRoutes } from './routes/exerciseRoutes';
 import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
+import { createClientRoutineRoutes } from './routes/clientRoutineRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -56,6 +58,11 @@ export function createApp() {
 
   const routineTemplateRepository = new PrismaRoutineTemplateRepository(prisma);
   const routineTemplateService = new RoutineTemplateService(routineTemplateRepository, exerciseRepository);
+  const clientRoutineService = new ClientRoutineService(
+    routineTemplateRepository,
+    clientRepository,
+    exerciseRepository,
+  );
 
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
@@ -63,6 +70,7 @@ export function createApp() {
     '/api/clients/:clientId/medical-record',
     createMedicalRecordRoutes(medicalRecordService, JWT_SECRET),
   );
+  app.use('/api/clients/:clientId', createClientRoutineRoutes(clientRoutineService, JWT_SECRET));
   app.use('/api/exercises', createExerciseRoutes(exerciseService, JWT_SECRET));
   app.use('/api/routine-templates', createRoutineTemplateRoutes(routineTemplateService, JWT_SECRET));
 

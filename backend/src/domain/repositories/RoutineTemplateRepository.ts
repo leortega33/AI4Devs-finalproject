@@ -44,4 +44,15 @@ export interface RoutineTemplateRepository {
   findAllLibrary(): Promise<RoutineTemplateSummary[]>;
   replaceNested(id: number, data: RoutineTemplateInput): Promise<RoutineTemplate>;
   duplicate(id: number): Promise<RoutineTemplate | null>;
+
+  // Client routine assignment (US-006). A client routine is a template row with
+  // clientId/sourceTemplateId/startDate/durationWeeks/status populated.
+  assignCloneToClient(
+    clientId: number,
+    templateId: number,
+    startDate: Date,
+    durationWeeks: number,
+  ): Promise<RoutineTemplate | null>;
+  findActiveByClient(clientId: number): Promise<RoutineTemplate | null>;
+  findHistoryByClient(clientId: number): Promise<RoutineTemplateSummary[]>;
 }

@@ -65,9 +65,22 @@ export function ClientsListPage() {
       ),
     },
     {
+      field: 'hasActiveRoutine',
+      headerName: t('clients.columns.routine'),
+      width: 130,
+      renderCell: (params) => (
+        <Chip
+          label={params.value ? t('clients.routineAssigned') : t('clients.routineNone')}
+          color={params.value ? 'primary' : 'default'}
+          variant={params.value ? 'filled' : 'outlined'}
+          size="small"
+        />
+      ),
+    },
+    {
       field: 'actions',
       headerName: t('clients.columns.actions'),
-      width: 360,
+      width: 460,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
@@ -76,6 +89,9 @@ export function ClientsListPage() {
           </Button>
           <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/medical-record`)}>
             {t('clients.actions.medicalRecord')}
+          </Button>
+          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/routine`)}>
+            {t('clients.actions.routine')}
           </Button>
           {params.row.status === 'active' ? (
             <Button size="small" color="error" onClick={() => setToDeactivate(params.row)}>

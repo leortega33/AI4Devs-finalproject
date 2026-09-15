@@ -95,7 +95,12 @@ idioma y el botón de cerrar sesión.
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
    series/notas). Se puede **duplicar** una plantilla en una copia independiente.
-7. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+7. **Rutina del cliente** — El listado de clientes muestra quién tiene rutina
+   asignada. Desde la acción "Rutina" se abre una pantalla que muestra la rutina
+   activa (o estado vacío), permite **asignar** una plantilla (con fecha de
+   inicio y duración) y ver el **historial**. Asignar una nueva cierra la
+   anterior.
+8. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._
@@ -334,6 +339,25 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-routine-templates/`).
+
+**Historia de Usuario 8 — US-006: Asignar rutina a un cliente**
+
+> Como dueño/entrenador, quiero asignar una rutina a un cliente clonando una
+> plantilla, con fecha de inicio y duración fija, para que cada cliente tenga
+> una rutina activa y rastreable.
+
+- **Criterios de aceptación:** asignar clona (copia profunda) una plantilla de
+  biblioteca en una rutina propia del cliente (`clientId` + `sourceTemplateId`),
+  con fecha de inicio y duración en semanas, marcada como activa; solo una
+  rutina activa por cliente (asignar una nueva cierra la anterior); se puede ver
+  la rutina activa (o un estado vacío) y el historial de rutinas anteriores; se
+  puede ajustar la rutina activa (reemplaza sesiones/entradas) sin afectar la
+  plantilla original; el vencimiento se calcula de `fecha de inicio + duración`
+  (sin campo extra); el listado de clientes indica quién tiene una rutina
+  asignada; todo protegido por autenticación.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/assign-client-routine/`).
 
 ---
 

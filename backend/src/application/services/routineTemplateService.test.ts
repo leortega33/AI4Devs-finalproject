@@ -15,6 +15,9 @@ function buildTemplateRepoMock(): jest.Mocked<RoutineTemplateRepository> {
     findAllLibrary: jest.fn(),
     replaceNested: jest.fn(),
     duplicate: jest.fn(),
+    assignCloneToClient: jest.fn(),
+    findActiveByClient: jest.fn(),
+    findHistoryByClient: jest.fn(),
   };
 }
 

@@ -33,15 +33,15 @@ test.describe('client management', () => {
 
     await expect(page.getByText('E2E Tester')).toBeVisible();
 
-    // Edit
-    await page.getByRole('button', { name: 'Editar' }).first().click();
+    // Edit (scoped to the E2E Tester row so other clients in the list don't interfere)
+    await page.getByRole('row', { name: /E2E Tester/ }).getByRole('button', { name: 'Editar' }).click();
     await page.getByLabel(/^teléfono(?! de)/i).fill('+542604111111');
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText('E2E Tester')).toBeVisible();
 
-    // Deactivate (confirmation dialog)
-    await page.getByRole('button', { name: 'Desactivar' }).first().click();
-    await page.getByRole('button', { name: 'Desactivar' }).last().click();
+    // Deactivate (confirmation dialog), scoped to the E2E Tester row
+    await page.getByRole('row', { name: /E2E Tester/ }).getByRole('button', { name: 'Desactivar' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Desactivar' }).click();
     await expect(page.getByText('Inactivo')).toBeVisible();
 
     // Filter by inactive status keeps it visible

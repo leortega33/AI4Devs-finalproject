@@ -59,13 +59,17 @@
       "dni": "DNI",
       "phone": "Phone",
       "status": "Status",
+      "routine": "Routine",
       "actions": "Actions"
     },
     "actions": {
       "deactivate": "Deactivate",
       "reactivate": "Reactivate",
-      "medicalRecord": "Medical record"
+      "medicalRecord": "Medical record",
+      "routine": "Routine"
     },
+    "routineAssigned": "Assigned",
+    "routineNone": "No routine",
     "form": {
       "newTitle": "New client",
       "editTitle": "Edit client",
@@ -186,6 +190,28 @@
       "categoryMobility": "Mobility",
       "categoryActivation": "Activation",
       "categoryMain": "Main",
+      "choose": "Choose",
+      "cancel": "Cancel"
+    }
+  },
+  "clientRoutine": {
+    "title": "Client routine",
+    "subtitle": "{{name}}'s routine",
+    "empty": "This client has no routine assigned yet.",
+    "assign": "Assign routine",
+    "activeTitle": "Active routine",
+    "startDate": "Start date",
+    "durationWeeks": "Duration (weeks)",
+    "endDate": "Ends",
+    "expired": "Expired",
+    "historyTitle": "Routine history",
+    "historyEmpty": "No previous routines.",
+    "assignFailed": "Could not assign the routine.",
+    "loadFailed": "Could not load the routine.",
+    "sessions": "Sessions",
+    "picker": {
+      "title": "Choose template",
+      "empty": "No library templates. Create one under Routines.",
       "choose": "Choose",
       "cancel": "Cancel"
     }

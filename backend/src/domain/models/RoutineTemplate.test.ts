@@ -55,6 +55,26 @@ describe('RoutineTemplate', () => {
     expect(template.isLibraryTemplate()).toBe(false);
   });
 
+  it('should return a null end date when it is a library template (no dates)', () => {
+    const template = new RoutineTemplate({ name: 'Biblioteca' });
+
+    expect(template.endDate).toBeNull();
+    expect(template.isExpired()).toBe(false);
+  });
+
+  it('should compute the end date from startDate + durationWeeks', () => {
+    const template = new RoutineTemplate({
+      name: 'Rutina cliente',
+      clientId: 3,
+      startDate: new Date('2026-02-01'),
+      durationWeeks: 4,
+    });
+
+    expect(template.endDate).toEqual(new Date('2026-03-01'));
+    expect(template.isExpired(new Date('2026-02-15'))).toBe(false);
+    expect(template.isExpired(new Date('2026-04-01'))).toBe(true);
+  });
+
   it('should hold nested sessions and entries', () => {
     const template = new RoutineTemplate({
       name: 'Full body',

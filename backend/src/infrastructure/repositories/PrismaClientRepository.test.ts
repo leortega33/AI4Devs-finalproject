@@ -85,7 +85,7 @@ describe('PrismaClientRepository', () => {
 
   it('should build a case-insensitive name search with a status filter', async () => {
     const prisma = buildPrismaMock();
-    prisma.client.findMany.mockResolvedValue([baseRecord]);
+    prisma.client.findMany.mockResolvedValue([{ ...baseRecord, routines: [] }]);
     const repo = new PrismaClientRepository(prisma);
 
     await repo.findAll({ search: 'jo', status: 'active' });
@@ -99,18 +99,28 @@ describe('PrismaClientRepository', () => {
         ],
       },
       orderBy: { lastName: 'asc' },
+      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
     });
   });
 
-  it('should list all clients when no filters are given', async () => {
+  it('should list all clients when no filters are given and flag an active routine', async () => {
     const prisma = buildPrismaMock();
-    prisma.client.findMany.mockResolvedValue([baseRecord]);
+    prisma.client.findMany.mockResolvedValue([
+      { ...baseRecord, routines: [] },
+      { ...baseRecord, id: 2, routines: [{ id: 99 }] },
+    ]);
     const repo = new PrismaClientRepository(prisma);
 
     const result = await repo.findAll({});
 
-    expect(result).toHaveLength(1);
-    expect(prisma.client.findMany).toHaveBeenCalledWith({ where: {}, orderBy: { lastName: 'asc' } });
+    expect(result).toHaveLength(2);
+    expect(result[0].hasActiveRoutine).toBe(false);
+    expect(result[1].hasActiveRoutine).toBe(true);
+    expect(prisma.client.findMany).toHaveBeenCalledWith({
+      where: {},
+      orderBy: { lastName: 'asc' },
+      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
+    });
   });
 
   it('should update a client', async () => {

@@ -188,4 +188,87 @@ export class PrismaRoutineTemplateRepository implements RoutineTemplateRepositor
     });
     return toDomain(record);
   }
+
+  async assignCloneToClient(
+    clientId: number,
+    templateId: number,
+    startDate: Date,
+    durationWeeks: number,
+  ): Promise<RoutineTemplate | null> {
+    const source = await this.prisma.routineTemplate.findUnique({
+      where: { id: templateId },
+      include: nestedInclude,
+    });
+    if (!source) {
+      return null;
+    }
+    const record = await this.prisma.$transaction(async (tx) => {
+      // Enforce a single active routine per client: close the previous one.
+      await tx.routineTemplate.updateMany({
+        where: { clientId, status: 'active' },
+        data: { status: 'expired' },
+      });
+      return tx.routineTemplate.create({
+        data: {
+          name: source.name,
+          description: source.description,
+          objective: source.objective,
+          generalConsiderations: source.generalConsiderations,
+          clientId,
+          sourceTemplateId: templateId,
+          startDate,
+          durationWeeks,
+          status: 'active',
+          sessions: sessionsCreate(
+            source.sessions.map((s) => ({
+              name: s.name,
+              warmupPrescription: s.warmupPrescription,
+              order: s.order,
+              entries: s.entries.map((e) => ({
+                exerciseId: e.exerciseId,
+                phase: e.phase as RoutinePhase,
+                block: e.block,
+                kg: e.kg,
+                reps: e.reps,
+                series: e.series,
+                notes: e.notes,
+                order: e.order,
+              })),
+            })),
+          ),
+        },
+        include: nestedInclude,
+      });
+    });
+    return toDomain(record);
+  }
+
+  async findActiveByClient(clientId: number): Promise<RoutineTemplate | null> {
+    const record = await this.prisma.routineTemplate.findFirst({
+      where: { clientId, status: 'active' },
+      include: nestedInclude,
+    });
+    return record ? toDomain(record) : null;
+  }
+
+  async findHistoryByClient(clientId: number): Promise<RoutineTemplateSummary[]> {
+    const records = await this.prisma.routineTemplate.findMany({
+      where: { clientId, status: { not: 'active' } },
+      orderBy: { startDate: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        objective: true,
+        status: true,
+        _count: { select: { sessions: true } },
+      },
+    });
+    return records.map((r) => ({
+      id: r.id,
+      name: r.name,
+      objective: r.objective,
+      status: r.status as RoutineStatus,
+      sessionCount: r._count.sessions,
+    }));
+  }
 }
