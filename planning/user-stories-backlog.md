@@ -725,5 +725,6 @@ Phase 1 is implemented and the MVP is validated.
 - Automatic exercise suggestions/contraindication warnings based on a client's medical record
 - Weekly progression: per-exercise KG/reps/series values across a multi-week mesocycle
 - Dynamic, editable warm-up blocks that adapt based on the client's medical record
+- Export routines (library templates and client-assigned routines) to PDF and Excel — a printable/shareable routine sheet (PDF, e.g. one page per session) and a spreadsheet export (`.xlsx`, e.g. one sheet per session). Feasible either client-side (jsPDF / SheetJS) or via a backend export endpoint (`GET /api/routine-templates/:id/export.pdf|.xlsx`).
 - Payment history summary view (total paid, months owed, etc.) in addition to the chronological list
 - Dashboard general KPI numbers (active clients count, monthly revenue, etc.)

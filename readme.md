@@ -58,7 +58,7 @@ cliente.
 **Backlog futuro (Fase 2, fuera del MVP):** recordatorios automáticos
 (email/WhatsApp), pasarela de pago online, registro de asistencia/check-in,
 seguimiento de progreso físico, planes de nutrición, soporte multi-tenant
-(varios gimnasios).
+(varios gimnasios), y exportación de rutinas a PDF/Excel.
 
 Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planning/user-stories-backlog.md).
 
