@@ -1,12 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import { Button, Stack, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppLayout } from './components/AppLayout';
 import { LoginPage } from './pages/LoginPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { DashboardPage } from './pages/DashboardPage';
 import { ClientsListPage } from './pages/ClientsListPage';
 import { ClientFormPage } from './pages/ClientFormPage';
 import { MedicalRecordPage } from './pages/MedicalRecordPage';
@@ -16,30 +15,6 @@ import { ExerciseCatalogPage } from './pages/ExerciseCatalogPage';
 import { ExerciseFormPage } from './pages/ExerciseFormPage';
 import { RoutineTemplatesListPage } from './pages/RoutineTemplatesListPage';
 import { RoutineTemplateBuilderPage } from './pages/RoutineTemplateBuilderPage';
-
-/** Placeholder landing page for the authenticated admin (real dashboard comes in US-009). */
-function DashboardPage() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  return (
-    <Stack spacing={2} alignItems="flex-start">
-      <Typography variant="h4">{t('auth.dashboard.title')}</Typography>
-      <Typography>{t('auth.dashboard.loggedInAs', { email: user?.email })}</Typography>
-      <Stack direction="row" spacing={2}>
-        <Button variant="contained" onClick={() => navigate('/clients')}>
-          {t('auth.dashboard.clients')}
-        </Button>
-        <Button variant="outlined" onClick={() => navigate('/exercises')}>
-          {t('exercises.title')}
-        </Button>
-        <Button variant="outlined" onClick={() => navigate('/routines')}>
-          {t('routines.title')}
-        </Button>
-      </Stack>
-    </Stack>
-  );
-}
 
 function App() {
   return (

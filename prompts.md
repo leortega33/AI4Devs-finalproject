@@ -235,6 +235,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > bilingüe (query `lang`, español por defecto), y casos cliente-sin-pagos /
 > 404 / 401. Contenido en español.
 
+**Prompt 9:**
+
+> Cerremos el MVP con la US-009 (panel con alertas): change OpenSpec
+> `add-dashboard-alerts`. Agregación de solo lectura (sin nueva entidad) sobre
+> clientes/pagos/rutinas expuesta en `GET /api/dashboard`, con cuatro grupos:
+> pagos vencidos, pagos por vencer (umbral `DASHBOARD_DUE_SOON_DAYS`, default 5),
+> clientes sin pagos, y rutinas por vencer/vencidas. Reutiliza
+> `computePaymentStatus` y `RoutineTemplate.endDate/isExpired`; reemplaza el
+> panel placeholder por un `DashboardPage` (conserva el encabezado "Panel") con
+> los cuatro grupos, conteos y enlaces a la pantalla de pagos/rutina de cada
+> cliente. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

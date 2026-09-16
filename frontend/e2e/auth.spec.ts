@@ -24,7 +24,7 @@ test.describe('admin authentication', () => {
     await page.getByLabel(/contraseña/i).fill(ADMIN_PASSWORD);
     await page.getByRole('button', { name: /iniciar sesión/i }).click();
 
-    await expect(page.getByText(new RegExp(`sesión iniciada como ${ADMIN_EMAIL}`, 'i'))).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
 
     await page.getByRole('button', { name: /cerrar sesión/i }).click();
     await expect(page.getByRole('heading', { name: /iniciar sesión/i })).toBeVisible();

@@ -80,7 +80,10 @@ idioma y el botón de cerrar sesión.
    marca (logo + nombre + lema) y el selector de idioma. Puede recuperar su
    contraseña desde el enlace correspondiente.
 2. **Panel** — Tras autenticarse llega al panel, dentro del shell con la barra
-   superior de marca. Desde allí navega a la gestión de clientes.
+   superior de marca. El panel muestra cuatro grupos de alertas (pagos
+   vencidos, pagos por vencer, clientes sin pagos y rutinas por vencer), cada
+   cliente enlazando directamente a su pantalla de pagos o rutina. Desde allí
+   también navega a la gestión de clientes, ejercicios y rutinas.
 3. **Clientes** — Lista con búsqueda por nombre y filtro por estado (`DataGrid`),
    alta/edición mediante formularios, y baja lógica con diálogo de confirmación.
    Cada pantalla interna ofrece un botón "Atrás" consistente para volver.
@@ -656,6 +659,25 @@ erDiagram
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-payment-history-export/`).
+
+**Historia de Usuario 11 — US-009: Panel con alertas**
+
+> Como dueño/entrenador, quiero un panel de inicio que muestre los clientes con
+> pagos vencidos/por vencer, sin pagos y con rutinas por vencer, cada uno con un
+> enlace directo a la pantalla del cliente, para actuar rápido sin revisar cliente
+> por cliente.
+
+- **Criterios de aceptación:** el panel (pantalla de inicio tras el login,
+  encabezado "Panel") es una **agregación de solo lectura** (sin nueva entidad)
+  sobre clientes, pagos y rutinas, con cuatro grupos de alertas: **pagos
+  vencidos**, **pagos por vencer** (dentro de un umbral configurable,
+  `DASHBOARD_DUE_SOON_DAYS`, por defecto 5 días), **clientes sin pagos** y
+  **rutinas por vencer** (vencidas o que vencen dentro del umbral); cada alerta
+  enlaza a la pantalla relevante del cliente (pagos o rutina); los clientes sin
+  alertas no aparecen; todo protegido por autenticación (`GET /api/dashboard`).
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-dashboard-alerts/`).
 
 ---
 

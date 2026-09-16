@@ -557,7 +557,7 @@ within the client detail "Payments" tab, "Export PDF" button.
 
 ## US-009: Dashboard with alerts
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-dashboard-alerts/`)
 
 **User story:** As a gym owner/trainer, I want a home dashboard showing
 clients with overdue/upcoming payments and expiring routines, each linking
@@ -728,3 +728,4 @@ Phase 1 is implemented and the MVP is validated.
 - Export routines (library templates and client-assigned routines) to PDF and Excel — a printable/shareable routine sheet (PDF, e.g. one page per session) and a spreadsheet export (`.xlsx`, e.g. one sheet per session). Feasible either client-side (jsPDF / SheetJS) or via a backend export endpoint (`GET /api/routine-templates/:id/export.pdf|.xlsx`).
 - Payment history summary view (total paid, months owed, etc.) in addition to the chronological list
 - Dashboard general KPI numbers (active clients count, monthly revenue, etc.)
+- Notification bell in the header: a persistent, always-visible bell icon with a badge count that surfaces the same dashboard alerts (overdue/due-soon/no-payment/expiring-routine) from any screen, with a dropdown listing them and links to each client — a "push"/at-a-glance complement to the US-009 dashboard, fed by the same `GET /api/dashboard` aggregation.

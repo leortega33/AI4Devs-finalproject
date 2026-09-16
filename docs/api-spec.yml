@@ -745,6 +745,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/dashboard:
+    get:
+      summary: Read-only alert dashboard
+      description: >
+        Aggregates active clients into four alert groups derived at query time:
+        overdue payments, payments due soon (within `DASHBOARD_DUE_SOON_DAYS`,
+        default 5), clients with no payments, and expiring/expired routines.
+        See US-009.
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: The alert groups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Dashboard'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/exercises:
     get:
       summary: List exercises
@@ -1497,6 +1526,68 @@ components:
           enum: [up_to_date, overdue, no_payments]
           description: Derived from the most recent covered period vs. today
 
+    PaymentAlert:
+      type: object
+      description: A client flagged for a payment alert (US-009).
+      properties:
+        clientId:
+          type: integer
+        clientName:
+          type: string
+        periodMonth:
+          type: integer
+          description: Present for overdue/due-soon alerts; absent for no-payments
+        periodYear:
+          type: integer
+      required:
+        - clientId
+        - clientName
+
+    RoutineAlert:
+      type: object
+      description: A client whose active routine has expired or is expiring (US-009).
+      properties:
+        clientId:
+          type: integer
+        clientName:
+          type: string
+        endDate:
+          type: string
+          format: date-time
+        expired:
+          type: boolean
+      required:
+        - clientId
+        - clientName
+        - endDate
+        - expired
+
+    Dashboard:
+      type: object
+      description: The four dashboard alert groups (US-009).
+      properties:
+        overduePayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAlert'
+        paymentsDueSoon:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAlert'
+        noPayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAlert'
+        expiringRoutines:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutineAlert'
+      required:
+        - overduePayments
+        - paymentsDueSoon
+        - noPayments
+        - expiringRoutines
+
     ErrorResponse:
       type: object
       properties:
@@ -1531,10 +1622,12 @@ tags:
     description: Routines assigned to a client (clone of a template with a lifecycle) (US-006)
   - name: Payments
     description: Client payments with a derived up-to-date/overdue status (US-007)
+  - name: Dashboard
+    description: Read-only alert aggregation over clients, payments, and routines (US-009)
 
-# NOTE: The Dashboard resource (US-009) will be documented here as its user
-# story is enriched and implemented via an OpenSpec change.
-# See planning/user-stories-backlog.md.
+# All Phase 1 (MVP) resources are documented above. Phase 2 additions
+# (see planning/user-stories-backlog.md) will be documented here as they are
+# enriched and implemented via OpenSpec changes.
 
 
 

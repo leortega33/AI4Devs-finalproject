@@ -45,24 +45,27 @@ export class Payment {
 }
 
 /**
+ * The end of the month covered by a client's most recent payment (the moment
+ * after which they become overdue), or null when there are no payments.
+ */
+export function coveredPeriodEnd(payments: Payment[]): Date | null {
+  if (payments.length === 0) {
+    return null;
+  }
+  const mostRecent = payments.reduce((a, b) => (b.periodKey > a.periodKey ? b : a));
+  // Last day of the covered month (JS month is 0-indexed; day 0 = last day of the prior month).
+  return new Date(mostRecent.periodYear, mostRecent.periodMonth, 0, 23, 59, 59, 999);
+}
+
+/**
  * Derives a client's payment status from their payments (US-007):
  * overdue when today is past the end of the month covered by the most recent
  * payment, up to date otherwise, and no_payments when there are none.
  */
 export function computePaymentStatus(payments: Payment[], now: Date = new Date()): PaymentStatus {
-  if (payments.length === 0) {
+  const end = coveredPeriodEnd(payments);
+  if (end === null) {
     return 'no_payments';
   }
-  const mostRecent = payments.reduce((a, b) => (b.periodKey > a.periodKey ? b : a));
-  // Last day of the covered month (JS month is 0-indexed; day 0 = last day of the prior month).
-  const endOfCoveredMonth = new Date(
-    mostRecent.periodYear,
-    mostRecent.periodMonth,
-    0,
-    23,
-    59,
-    59,
-    999,
-  );
-  return now.getTime() > endOfCoveredMonth.getTime() ? 'overdue' : 'up_to_date';
+  return now.getTime() > end.getTime() ? 'overdue' : 'up_to_date';
 }

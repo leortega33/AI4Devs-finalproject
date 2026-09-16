@@ -46,6 +46,17 @@
       "clients": "Clientes"
     }
   },
+  "dashboard": {
+    "overdueTitle": "Pagos vencidos",
+    "dueSoonTitle": "Pagos por vencer",
+    "noPaymentsTitle": "Clientes sin pagos",
+    "expiringRoutinesTitle": "Rutinas por vencer",
+    "empty": "Sin alertas",
+    "period": "Período {{month}}/{{year}}",
+    "routineExpired": "Rutina vencida",
+    "routineExpiresOn": "Vence el {{date}}",
+    "loadFailed": "No se pudo cargar el panel."
+  },
   "clients": {
     "title": "Clientes",
     "new": "Nuevo cliente",

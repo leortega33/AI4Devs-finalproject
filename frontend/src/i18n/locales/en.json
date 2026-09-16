@@ -46,6 +46,17 @@
       "clients": "Clients"
     }
   },
+  "dashboard": {
+    "overdueTitle": "Overdue payments",
+    "dueSoonTitle": "Payments due soon",
+    "noPaymentsTitle": "Clients with no payments",
+    "expiringRoutinesTitle": "Expiring routines",
+    "empty": "No alerts",
+    "period": "Period {{month}}/{{year}}",
+    "routineExpired": "Routine expired",
+    "routineExpiresOn": "Expires on {{date}}",
+    "loadFailed": "Could not load the dashboard."
+  },
   "clients": {
     "title": "Clients",
     "new": "New client",
