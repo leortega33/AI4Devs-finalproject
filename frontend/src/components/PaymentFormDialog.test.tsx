@@ -35,6 +35,31 @@ describe('PaymentFormDialog', () => {
     );
   });
 
+  it('should allow clearing the amount field without snapping back to 0', async () => {
+    const user = userEvent.setup();
+    render(
+      <PaymentFormDialog
+        open
+        payment={{
+          id: 1,
+          clientId: 3,
+          amount: 1000,
+          paymentDate: '2026-02-05',
+          method: 'cash',
+          periodMonth: 2,
+          periodYear: 2026,
+        }}
+        onCancel={vi.fn()}
+        onSave={vi.fn()}
+      />,
+    );
+
+    const amount = screen.getByLabelText(/monto/i);
+    await user.clear(amount);
+
+    expect(amount).toHaveValue(null);
+  });
+
   it('should preload values when editing', () => {
     render(
       <PaymentFormDialog

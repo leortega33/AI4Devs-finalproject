@@ -22,19 +22,29 @@ interface PaymentFormDialogProps {
 
 const now = new Date();
 
-function emptyForm(): PaymentFormData {
+// Numeric fields are kept as strings so the inputs can be cleared (an empty
+// field is not coerced back to 0); they are parsed to numbers on submit.
+interface FormState {
+  amount: string;
+  paymentDate: string;
+  method: PaymentMethod;
+  periodMonth: string;
+  periodYear: string;
+}
+
+function emptyForm(): FormState {
   return {
-    amount: 0,
+    amount: '',
     paymentDate: now.toISOString().slice(0, 10),
     method: 'cash',
-    periodMonth: now.getMonth() + 1,
-    periodYear: now.getFullYear(),
+    periodMonth: String(now.getMonth() + 1),
+    periodYear: String(now.getFullYear()),
   };
 }
 
 export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFormDialogProps) {
   const { t } = useTranslation();
-  const [form, setForm] = useState<PaymentFormData>(emptyForm());
+  const [form, setForm] = useState<FormState>(emptyForm());
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,11 +54,11 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
     setForm(
       payment
         ? {
-            amount: payment.amount,
+            amount: String(payment.amount),
             paymentDate: payment.paymentDate.slice(0, 10),
             method: payment.method,
-            periodMonth: payment.periodMonth,
-            periodYear: payment.periodYear,
+            periodMonth: String(payment.periodMonth),
+            periodYear: String(payment.periodYear),
           }
         : emptyForm(),
     );
@@ -57,13 +67,34 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError('');
-    if (!form.amount || form.amount <= 0 || !form.paymentDate || !form.method) {
+    const amount = Number(form.amount);
+    const periodMonth = Number(form.periodMonth);
+    const periodYear = Number(form.periodYear);
+    if (
+      form.amount.trim() === '' ||
+      Number.isNaN(amount) ||
+      amount <= 0 ||
+      !form.paymentDate ||
+      !form.method ||
+      !Number.isInteger(periodMonth) ||
+      periodMonth < 1 ||
+      periodMonth > 12 ||
+      !Number.isInteger(periodYear) ||
+      periodYear < 2000 ||
+      periodYear > 2100
+    ) {
       setError(t('payments.form.requiredFields'));
       return;
     }
     setSubmitting(true);
     try {
-      await onSave(form);
+      await onSave({
+        amount,
+        paymentDate: form.paymentDate,
+        method: form.method,
+        periodMonth,
+        periodYear,
+      });
     } catch {
       setError(t('payments.form.saveFailed'));
     } finally {
@@ -90,7 +121,7 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
                 required
                 inputProps={{ min: 0, step: '0.01' }}
                 value={form.amount}
-                onChange={(e) => setForm((p) => ({ ...p, amount: Number(e.target.value) }))}
+                onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -126,7 +157,7 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
                 required
                 inputProps={{ min: 1, max: 12 }}
                 value={form.periodMonth}
-                onChange={(e) => setForm((p) => ({ ...p, periodMonth: Number(e.target.value) }))}
+                onChange={(e) => setForm((p) => ({ ...p, periodMonth: e.target.value }))}
               />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -137,7 +168,7 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
                 required
                 inputProps={{ min: 2000, max: 2100 }}
                 value={form.periodYear}
-                onChange={(e) => setForm((p) => ({ ...p, periodYear: Number(e.target.value) }))}
+                onChange={(e) => setForm((p) => ({ ...p, periodYear: e.target.value }))}
               />
             </Grid>
           </Grid>
