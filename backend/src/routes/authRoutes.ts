@@ -4,9 +4,15 @@ import { AuthController } from '../presentation/controllers/authController';
 import { AuthService } from '../application/services/authService';
 import { createAuthMiddleware } from '../middleware/authMiddleware';
 
+// Rate limiting can be disabled only outside production (e.g. for E2E runs that
+// log in many times); in production the flag is ignored and limits always apply.
+const rateLimitDisabled =
+  process.env.NODE_ENV !== 'production' && process.env.RATE_LIMIT_DISABLED === 'true';
+
 const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,
+  skip: () => rateLimitDisabled,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { message: 'Too many login attempts, try again later.', code: 'RATE_LIMITED' } },
@@ -15,6 +21,7 @@ const loginRateLimiter = rateLimit({
 const forgotPasswordRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
+  skip: () => rateLimitDisabled,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
