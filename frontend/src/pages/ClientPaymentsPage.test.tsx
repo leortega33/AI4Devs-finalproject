@@ -8,7 +8,7 @@ import { paymentService } from '../services/paymentService';
 
 vi.mock('../services/clientService', () => ({ clientService: { get: vi.fn() } }));
 vi.mock('../services/paymentService', () => ({
-  paymentService: { list: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn() },
+  paymentService: { list: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn(), exportPdf: vi.fn() },
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -71,5 +71,18 @@ describe('ClientPaymentsPage', () => {
     await waitFor(() =>
       expect(paymentService.create).toHaveBeenCalledWith(3, expect.objectContaining({ amount: 5000 })),
     );
+  });
+
+  it('should export the payment history as PDF', async () => {
+    vi.mocked(paymentService.list).mockResolvedValue({ payments: [], status: 'no_payments' } as never);
+    vi.mocked(paymentService.exportPdf).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+
+    renderPage();
+    await screen.findByText(/todavía no tiene pagos registrados/i);
+
+    await user.click(screen.getByRole('button', { name: /exportar pdf/i }));
+
+    await waitFor(() => expect(paymentService.exportPdf).toHaveBeenCalledWith(3, 'es'));
   });
 });

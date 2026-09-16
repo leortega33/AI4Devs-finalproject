@@ -175,4 +175,26 @@ describe('PaymentService', () => {
       expect(paymentRepo.delete).not.toHaveBeenCalled();
     });
   });
+
+  describe('getExportData', () => {
+    it('should return the client, payments and derived status', async () => {
+      const client = makeClient();
+      clientRepo.findById.mockResolvedValue(client);
+      paymentRepo.findByClient.mockResolvedValue([makePayment()]);
+
+      const result = await service.getExportData(3);
+
+      expect(result.client).toBe(client);
+      expect(result.payments).toHaveLength(1);
+      expect(['up_to_date', 'overdue', 'no_payments']).toContain(result.status);
+      expect(paymentRepo.findByClient).toHaveBeenCalledWith(3);
+    });
+
+    it('should throw when the client does not exist', async () => {
+      clientRepo.findById.mockResolvedValue(null);
+
+      await expect(service.getExportData(999)).rejects.toThrow(ClientNotFoundError);
+      expect(paymentRepo.findByClient).not.toHaveBeenCalled();
+    });
+  });
 });

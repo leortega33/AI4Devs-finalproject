@@ -104,6 +104,8 @@ idioma y el botón de cerrar sesión.
    (al día / vencido / sin pagos). Desde la acción "Pagos" se abre una pantalla
    que lista los pagos y permite **registrar / editar / eliminar** pagos (monto,
    fecha, método, período mes/año). El estado se recalcula automáticamente.
+   Además, el botón **"Exportar PDF"** descarga el historial de pagos del
+   cliente como un documento PDF (bilingüe, según el idioma activo).
 9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
@@ -635,6 +637,25 @@ erDiagram
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/add-payment-registration/`).
+
+**Historia de Usuario 10 — US-008: Historial de pagos y exportación a PDF**
+
+> Como dueño/entrenador, quiero ver el historial de pagos de un cliente y
+> exportarlo/imprimirlo en PDF, para revisar pagos pasados, resolver reclamos y
+> entregar un comprobante al cliente.
+
+- **Criterios de aceptación:** el listado cronológico de pagos ya existe
+  (US-007); esta historia agrega la **exportación a PDF**: un endpoint
+  `GET /api/clients/:clientId/payments/export` que devuelve un PDF descargable
+  con el nombre del cliente, su estado de pago derivado y los pagos (más
+  reciente primero, con fecha, período, método y monto); botón **"Exportar
+  PDF"** en la pantalla de pagos del cliente; PDF **bilingüe** (español por
+  defecto / inglés según el idioma de la interfaz); cliente sin pagos igual
+  produce un PDF válido; todo protegido por autenticación. Sin cambios de modelo
+  de datos (reutiliza `Payment`); PDF generado con `pdfkit`.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-payment-history-export/`).
 
 ---
 

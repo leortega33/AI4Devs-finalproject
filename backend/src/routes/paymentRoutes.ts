@@ -5,7 +5,8 @@ import { createAuthMiddleware } from '../middleware/authMiddleware';
 
 /**
  * Client-scoped payment routes nested under a client
- * (`/api/clients/:clientId/payments`): register and list. Protected (US-007).
+ * (`/api/clients/:clientId/payments`): register, list, and export the history
+ * as PDF. Protected (US-007, US-008).
  */
 export function createClientPaymentRoutes(paymentService: PaymentService, jwtSecret: string): Router {
   const router = Router({ mergeParams: true });
@@ -15,6 +16,7 @@ export function createClientPaymentRoutes(paymentService: PaymentService, jwtSec
   router.use(authMiddleware);
   router.post('/', controller.register);
   router.get('/', controller.list);
+  router.get('/export', controller.exportHistory);
 
   return router;
 }

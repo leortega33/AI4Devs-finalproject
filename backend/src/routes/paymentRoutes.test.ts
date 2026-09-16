@@ -6,6 +6,7 @@ import { createClientPaymentRoutes, createPaymentRoutes } from './paymentRoutes'
 import { PaymentService, PaymentNotFoundError } from '../application/services/paymentService';
 import { ClientNotFoundError } from '../application/services/clientService';
 import { Payment } from '../domain/models/Payment';
+import { Client } from '../domain/models/Client';
 import { errorHandler } from '../middleware/errorHandler';
 
 const JWT_SECRET = 'test-secret';
@@ -53,8 +54,21 @@ describe('paymentRoutes', () => {
       listByClient: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      getExportData: jest.fn(),
     } as unknown as jest.Mocked<PaymentService>;
   });
+
+  function sampleClient() {
+    return new Client({
+      id: 3,
+      firstName: 'John',
+      lastName: 'Doe',
+      dni: '12345678',
+      phone: '+542604000000',
+      email: 'john@example.com',
+      birthDate: new Date('1990-01-01'),
+    });
+  }
 
   it('should reject a client-scoped request without a session cookie with 401', async () => {
     const app = buildApp(service);
@@ -169,6 +183,47 @@ describe('paymentRoutes', () => {
       const response = await request(app).delete('/api/payments/999').set('Cookie', authCookie());
 
       expect(response.status).toBe(404);
+    });
+  });
+
+  describe('GET /api/clients/:clientId/payments/export', () => {
+    it('should return a PDF document for an existing client', async () => {
+      service.getExportData.mockResolvedValue({
+        client: sampleClient(),
+        payments: [samplePayment()],
+        status: 'up_to_date',
+      });
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/clients/3/payments/export')
+        .set('Cookie', authCookie());
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toBe('application/pdf');
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.subarray(0, 5).toString('latin1')).toBe('%PDF-');
+      expect(service.getExportData).toHaveBeenCalledWith(3);
+    });
+
+    it('should return 404 when the client does not exist', async () => {
+      service.getExportData.mockRejectedValue(new ClientNotFoundError());
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/clients/999/payments/export')
+        .set('Cookie', authCookie());
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should return 401 without a session cookie', async () => {
+      const app = buildApp(service);
+
+      const response = await request(app).get('/api/clients/3/payments/export');
+
+      expect(response.status).toBe(401);
+      expect(service.getExportData).not.toHaveBeenCalled();
     });
   });
 });

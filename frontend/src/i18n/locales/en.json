@@ -225,6 +225,8 @@
     "title": "Client payments",
     "subtitle": "{{name}}'s payments",
     "register": "Register payment",
+    "exportPdf": "Export PDF",
+    "exportFailed": "Could not export the PDF.",
     "empty": "This client has no payments yet.",
     "statusUpToDate": "Up to date",
     "statusOverdue": "Overdue",

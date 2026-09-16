@@ -12,6 +12,7 @@ import {
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DownloadIcon from '@mui/icons-material/Download';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '../components/BackButton';
 import { PaymentFormDialog } from '../components/PaymentFormDialog';
@@ -37,13 +38,14 @@ const METHOD_LABELS: Record<string, string> = {
 
 export function ClientPaymentsPage() {
   const { clientId } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [client, setClient] = useState<Client | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [status, setStatus] = useState<PaymentStatus>('no_payments');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Payment | null>(null);
   const [error, setError] = useState('');
+  const [exporting, setExporting] = useState(false);
 
   const load = useCallback(async () => {
     if (!clientId) return;
@@ -79,6 +81,18 @@ export function ClientPaymentsPage() {
     if (!window.confirm(t('payments.deleteConfirm'))) return;
     await paymentService.remove(id);
     load();
+  };
+
+  const exportPdf = async () => {
+    if (!clientId) return;
+    setExporting(true);
+    try {
+      await paymentService.exportPdf(Number(clientId), i18n.language);
+    } catch {
+      setError(t('payments.exportFailed'));
+    } finally {
+      setExporting(false);
+    }
   };
 
   const columns: GridColDef<Payment>[] = [
@@ -134,15 +148,25 @@ export function ClientPaymentsPage() {
       <BackButton to="/clients" />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography variant="h4">{t('payments.title')}</Typography>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setEditing(null);
-            setDialogOpen(true);
-          }}
-        >
-          {t('payments.register')}
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            disabled={exporting}
+            onClick={exportPdf}
+          >
+            {t('payments.exportPdf')}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setEditing(null);
+              setDialogOpen(true);
+            }}
+          >
+            {t('payments.register')}
+          </Button>
+        </Stack>
       </Box>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
         {clientName && <Typography color="text.secondary">{t('payments.subtitle', { name: clientName })}</Typography>}

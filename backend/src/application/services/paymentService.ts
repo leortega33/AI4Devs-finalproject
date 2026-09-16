@@ -1,6 +1,7 @@
 import { Payment, PaymentStatus, computePaymentStatus } from '../../domain/models/Payment';
 import { PaymentRepository, PaymentInput } from '../../domain/repositories/PaymentRepository';
 import { ClientRepository } from '../../domain/repositories/ClientRepository';
+import { Client } from '../../domain/models/Client';
 import { ClientNotFoundError } from './clientService';
 
 export { computePaymentStatus };
@@ -14,6 +15,12 @@ export class PaymentNotFoundError extends Error {
 }
 
 export interface ClientPayments {
+  payments: Payment[];
+  status: PaymentStatus;
+}
+
+export interface PaymentExportData {
+  client: Client;
   payments: Payment[];
   status: PaymentStatus;
 }
@@ -34,6 +41,16 @@ export class PaymentService {
     await this.ensureClientExists(clientId);
     const payments = await this.paymentRepository.findByClient(clientId);
     return { payments, status: computePaymentStatus(payments) };
+  }
+
+  /** Gathers the data needed to export a client's payment history (US-008). */
+  async getExportData(clientId: number): Promise<PaymentExportData> {
+    const client = await this.clientRepository.findById(clientId);
+    if (!client) {
+      throw new ClientNotFoundError();
+    }
+    const payments = await this.paymentRepository.findByClient(clientId);
+    return { client, payments, status: computePaymentStatus(payments) };
   }
 
   async update(id: number, data: PaymentInput): Promise<Payment> {

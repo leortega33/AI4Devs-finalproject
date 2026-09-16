@@ -224,6 +224,17 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > de registro/edición, e indicador de estado de pago en el listado de clientes
 > (`paymentStatus`). Contenido en español.
 
+**Prompt 8:**
+
+> Sigamos con la US-008 (historial de pagos + exportación a PDF): change
+> OpenSpec `add-payment-history-export`. Reutiliza el `Payment` de US-007 (sin
+> cambios de modelo); agrega un endpoint
+> `GET /api/clients/:clientId/payments/export` que genera con `pdfkit` un PDF
+> descargable del historial (nombre del cliente, estado derivado, pagos más
+> recientes primero), botón "Exportar PDF" en la pantalla de pagos, PDF
+> bilingüe (query `lang`, español por defecto), y casos cliente-sin-pagos /
+> 404 / 401. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

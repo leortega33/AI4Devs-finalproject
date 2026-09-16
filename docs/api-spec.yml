@@ -632,6 +632,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/payments/export:
+    get:
+      summary: Export a client's payment history as a PDF
+      description: >
+        Streams a downloadable PDF listing the client's payments (newest first)
+        with the client's name and current derived payment status. See US-008.
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: lang
+          required: false
+          description: PDF language (defaults to Spanish; any other value falls back to `es`).
+          schema:
+            type: string
+            enum: [es, en]
+            default: es
+      responses:
+        '200':
+          description: The payment history PDF document
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/payments/{id}:
     put:
       summary: Edit a payment
@@ -1489,9 +1532,8 @@ tags:
   - name: Payments
     description: Client payments with a derived up-to-date/overdue status (US-007)
 
-# NOTE: Additional resources (payment history PDF export, Dashboard) will be
-# documented here as their corresponding user stories (US-008, US-009) are
-# enriched and implemented via OpenSpec changes.
+# NOTE: The Dashboard resource (US-009) will be documented here as its user
+# story is enriched and implemented via an OpenSpec change.
 # See planning/user-stories-backlog.md.
 
 

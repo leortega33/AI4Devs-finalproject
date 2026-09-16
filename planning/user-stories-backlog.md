@@ -506,7 +506,7 @@ helper), `application/validator.ts` (additions),
 
 ## US-008: Payment history per client
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-payment-history-export/`)
 
 **User story:** As a gym owner/trainer, I want to see the full chronological
 payment history of a client and export/print it, so that I can review past
