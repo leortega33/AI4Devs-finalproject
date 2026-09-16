@@ -214,6 +214,16 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > indicador en el listado de clientes de quién tiene rutina asignada
 > (`hasActiveRoutine`). Contenido en español.
 
+**Prompt 7:**
+
+> Vamos con la US-007 (registro de pagos): change OpenSpec
+> `add-payment-registration`. Modelo `Payment` + enum `PaymentMethod`
+> (cash/bank_transfer/card), CRUD (registrar/editar/borrar) + listado, estado
+> derivado (al día/vencido/sin pagos) computado del período más reciente vs.
+> hoy (recalculado tras cada cambio), pantalla de pagos del cliente con diálogo
+> de registro/edición, e indicador de estado de pago en el listado de clientes
+> (`paymentStatus`). Contenido en español.
+
 ---
 
 ### 7. Pull Requests

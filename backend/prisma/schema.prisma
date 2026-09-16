@@ -39,6 +39,12 @@ enum RoutinePhase {
   main
 }
 
+enum PaymentMethod {
+  cash
+  bank_transfer
+  card
+}
+
 model Client {
   id                           Int          @id @default(autoincrement())
   firstName                    String
@@ -59,6 +65,7 @@ model Client {
 
   medicalRecord MedicalRecord?
   routines      RoutineTemplate[]
+  payments      Payment[]
 }
 
 model MedicalRecord {
@@ -134,4 +141,17 @@ model RoutineExerciseEntry {
   series           Int?
   notes            String?
   order            Int
+}
+
+model Payment {
+  id          Int           @id @default(autoincrement())
+  clientId    Int
+  client      Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  amount      Decimal       @db.Decimal(10, 2)
+  paymentDate DateTime
+  method      PaymentMethod
+  periodMonth Int
+  periodYear  Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }

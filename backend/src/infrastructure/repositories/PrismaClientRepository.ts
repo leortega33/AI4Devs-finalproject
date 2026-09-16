@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { Client, ClientStatus } from '../../domain/models/Client';
+import { Payment, PaymentMethod, computePaymentStatus } from '../../domain/models/Payment';
 import {
   ClientRepository,
   ClientInput,
@@ -47,14 +48,29 @@ export class PrismaClientRepository implements ClientRepository {
     const records = await this.prisma.client.findMany({
       where,
       orderBy: { lastName: 'asc' },
-      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
+      include: {
+        routines: { where: { status: 'active' }, select: { id: true }, take: 1 },
+        payments: { select: { periodMonth: true, periodYear: true } },
+      },
     });
     return records.map((record) => {
-      const { routines, ...clientRecord } = record;
+      const { routines, payments, ...clientRecord } = record;
+      const domainPayments = payments.map(
+        (p) =>
+          new Payment({
+            clientId: record.id,
+            amount: 0,
+            paymentDate: new Date(),
+            method: 'cash' as PaymentMethod,
+            periodMonth: p.periodMonth,
+            periodYear: p.periodYear,
+          }),
+      );
       return new Client({
         ...clientRecord,
         status: clientRecord.status as ClientStatus,
         hasActiveRoutine: routines.length > 0,
+        paymentStatus: computePaymentStatus(domainPayments),
       });
     });
   }

@@ -554,6 +554,154 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/payments:
+    get:
+      summary: List a client's payments with the derived status
+      description: Payments newest first, plus the client's derived payment status. See US-007.
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The client's payments and derived status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ClientPayments'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Register a payment for a client
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInput'
+      responses:
+        '201':
+          description: Payment registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/payments/{id}:
+    put:
+      summary: Edit a payment
+      description: Editing recomputes the client's derived status.
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInput'
+      responses:
+        '200':
+          description: Payment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a payment
+      description: Deleting recomputes the client's derived status.
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Payment deleted
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/exercises:
     get:
       summary: List exercises
@@ -962,6 +1110,10 @@ components:
             hasActiveRoutine:
               type: boolean
               description: Whether the client currently has an active routine assigned (present in the list response). See US-006.
+            paymentStatus:
+              type: string
+              enum: [up_to_date, overdue, no_payments]
+              description: Derived payment status (present in the list response). See US-007.
 
     ClientResponse:
       type: object
@@ -1248,6 +1400,60 @@ components:
           allOf:
             - $ref: '#/components/schemas/ClientRoutine'
 
+    PaymentInput:
+      type: object
+      properties:
+        amount:
+          type: number
+        paymentDate:
+          type: string
+          format: date
+        method:
+          type: string
+          enum: [cash, bank_transfer, card]
+        periodMonth:
+          type: integer
+          minimum: 1
+          maximum: 12
+        periodYear:
+          type: integer
+      required:
+        - amount
+        - paymentDate
+        - method
+        - periodMonth
+        - periodYear
+
+    Payment:
+      allOf:
+        - $ref: '#/components/schemas/PaymentInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            clientId:
+              type: integer
+
+    PaymentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Payment'
+
+    ClientPayments:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        status:
+          type: string
+          enum: [up_to_date, overdue, no_payments]
+          description: Derived from the most recent covered period vs. today
+
     ErrorResponse:
       type: object
       properties:
@@ -1280,10 +1486,12 @@ tags:
     description: Reusable routine templates with nested sessions and exercises (US-005)
   - name: Client Routines
     description: Routines assigned to a client (clone of a template with a lifecycle) (US-006)
+  - name: Payments
+    description: Client payments with a derived up-to-date/overdue status (US-007)
 
-# NOTE: Additional resources (Payments, Dashboard) will be documented here as
-# their corresponding user stories (US-007 through US-009) are enriched and
-# implemented via OpenSpec changes.
+# NOTE: Additional resources (payment history PDF export, Dashboard) will be
+# documented here as their corresponding user stories (US-008, US-009) are
+# enriched and implemented via OpenSpec changes.
 # See planning/user-stories-backlog.md.
 
 

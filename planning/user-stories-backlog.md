@@ -440,7 +440,7 @@ client detail page showing the active routine + "Assign routine" action
 
 ## US-007: Payment registration
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-payment-registration/`)
 
 **User story:** As a gym owner/trainer, I want to register a payment for a
 client and edit or delete it later if I made a mistake, so that I can keep

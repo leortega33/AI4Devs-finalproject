@@ -8,6 +8,7 @@ const client = axios.create({
 });
 
 export type ClientStatus = 'active' | 'inactive';
+export type ClientPaymentStatus = 'up_to_date' | 'overdue' | 'no_payments';
 
 export interface Client {
   id: number;
@@ -24,6 +25,7 @@ export interface Client {
   emergencyContactRelationship?: string | null;
   status: ClientStatus;
   hasActiveRoutine?: boolean;
+  paymentStatus?: ClientPaymentStatus;
 }
 
 export interface ClientFormData {

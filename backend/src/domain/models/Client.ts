@@ -1,3 +1,5 @@
+import { PaymentStatus } from './Payment';
+
 export type ClientStatus = 'active' | 'inactive';
 
 export interface EmergencyContact {
@@ -22,6 +24,7 @@ export interface ClientProps {
   joinDate?: Date;
   status?: ClientStatus;
   hasActiveRoutine?: boolean;
+  paymentStatus?: PaymentStatus;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -43,6 +46,7 @@ export class Client {
   readonly joinDate?: Date;
   readonly status: ClientStatus;
   readonly hasActiveRoutine: boolean;
+  readonly paymentStatus: PaymentStatus;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 
@@ -62,6 +66,7 @@ export class Client {
     this.joinDate = props.joinDate;
     this.status = props.status ?? 'active';
     this.hasActiveRoutine = props.hasActiveRoutine ?? false;
+    this.paymentStatus = props.paymentStatus ?? 'no_payments';
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

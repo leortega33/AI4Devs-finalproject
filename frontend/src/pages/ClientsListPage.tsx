@@ -78,9 +78,25 @@ export function ClientsListPage() {
       ),
     },
     {
+      field: 'paymentStatus',
+      headerName: t('clients.columns.payment'),
+      width: 120,
+      renderCell: (params) => {
+        const value = params.value as string | undefined;
+        const label =
+          value === 'up_to_date'
+            ? t('clients.paymentUpToDate')
+            : value === 'overdue'
+              ? t('clients.paymentOverdue')
+              : t('clients.paymentNone');
+        const color = value === 'up_to_date' ? 'success' : value === 'overdue' ? 'error' : 'default';
+        return <Chip label={label} color={color} variant={value ? 'filled' : 'outlined'} size="small" />;
+      },
+    },
+    {
       field: 'actions',
       headerName: t('clients.columns.actions'),
-      width: 460,
+      width: 560,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
@@ -92,6 +108,9 @@ export function ClientsListPage() {
           </Button>
           <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/routine`)}>
             {t('clients.actions.routine')}
+          </Button>
+          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/payments`)}>
+            {t('clients.actions.payments')}
           </Button>
           {params.row.status === 'active' ? (
             <Button size="small" color="error" onClick={() => setToDeactivate(params.row)}>

@@ -100,7 +100,11 @@ idioma y el botón de cerrar sesión.
    activa (o estado vacío), permite **asignar** una plantilla (con fecha de
    inicio y duración) y ver el **historial**. Asignar una nueva cierra la
    anterior.
-8. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+8. **Pagos del cliente** — El listado de clientes muestra el estado de pago
+   (al día / vencido / sin pagos). Desde la acción "Pagos" se abre una pantalla
+   que lista los pagos y permite **registrar / editar / eliminar** pagos (monto,
+   fecha, método, período mes/año). El estado se recalcula automáticamente.
+9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._
@@ -358,6 +362,24 @@ su spec a `openspec/specs/`.
 - **Estado:** Implementada (ver
   [detalle completo](planning/user-stories-backlog.md) y el change
   `openspec/changes/assign-client-routine/`).
+
+**Historia de Usuario 9 — US-007: Registro de pagos**
+
+> Como dueño/entrenador, quiero registrar un pago de un cliente y editarlo o
+> eliminarlo si me equivoqué, para llevar el control de quién pagó y por qué
+> período.
+
+- **Criterios de aceptación:** registro manual de pagos (sin pasarela),
+  periodicidad mensual fija; cada pago tiene monto, fecha, método
+  (efectivo/transferencia/tarjeta) y período (mes + año); los pagos son
+  editables/eliminables; el listado muestra los pagos del cliente (más reciente
+  primero); el estado de pago del cliente (al día/vencido/sin pagos) se **deriva
+  automáticamente** del período más reciente vs. hoy y se recalcula tras cada
+  cambio; el listado de clientes muestra el estado de pago de cada uno; todo
+  protegido por autenticación.
+- **Estado:** Implementada (ver
+  [detalle completo](planning/user-stories-backlog.md) y el change
+  `openspec/changes/add-payment-registration/`).
 
 ---
 

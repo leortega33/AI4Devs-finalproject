@@ -6,6 +6,7 @@ import {
   RoutineTemplateNotFoundError,
   UnknownExerciseError,
 } from '../application/services/routineTemplateService';
+import { PaymentNotFoundError } from '../application/services/paymentService';
 import { logger } from '../infrastructure/logger';
 
 /** Centralized error handler: maps known errors to HTTP responses, logs unexpected ones. */
@@ -27,6 +28,11 @@ export function errorHandler(error: Error, req: Request, res: Response, next: Ne
   }
 
   if (error instanceof RoutineTemplateNotFoundError) {
+    res.status(404).json({ success: false, error: { message: error.message, code: 'NOT_FOUND' } });
+    return;
+  }
+
+  if (error instanceof PaymentNotFoundError) {
     res.status(404).json({ success: false, error: { message: error.message, code: 'NOT_FOUND' } });
     return;
   }

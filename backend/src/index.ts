@@ -8,6 +8,7 @@ import { PrismaClientRepository } from './infrastructure/repositories/PrismaClie
 import { PrismaMedicalRecordRepository } from './infrastructure/repositories/PrismaMedicalRecordRepository';
 import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
 import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/PrismaRoutineTemplateRepository';
+import { PrismaPaymentRepository } from './infrastructure/repositories/PrismaPaymentRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
@@ -15,12 +16,14 @@ import { MedicalRecordService } from './application/services/medicalRecordServic
 import { ExerciseService } from './application/services/exerciseService';
 import { RoutineTemplateService } from './application/services/routineTemplateService';
 import { ClientRoutineService } from './application/services/clientRoutineService';
+import { PaymentService } from './application/services/paymentService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { createExerciseRoutes } from './routes/exerciseRoutes';
 import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
 import { createClientRoutineRoutes } from './routes/clientRoutineRoutes';
+import { createClientPaymentRoutes, createPaymentRoutes } from './routes/paymentRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -64,6 +67,9 @@ export function createApp() {
     exerciseRepository,
   );
 
+  const paymentRepository = new PrismaPaymentRepository(prisma);
+  const paymentService = new PaymentService(paymentRepository, clientRepository);
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
   app.use(
@@ -71,6 +77,8 @@ export function createApp() {
     createMedicalRecordRoutes(medicalRecordService, JWT_SECRET),
   );
   app.use('/api/clients/:clientId', createClientRoutineRoutes(clientRoutineService, JWT_SECRET));
+  app.use('/api/clients/:clientId/payments', createClientPaymentRoutes(paymentService, JWT_SECRET));
+  app.use('/api/payments', createPaymentRoutes(paymentService, JWT_SECRET));
   app.use('/api/exercises', createExerciseRoutes(exerciseService, JWT_SECRET));
   app.use('/api/routine-templates', createRoutineTemplateRoutes(routineTemplateService, JWT_SECRET));
 

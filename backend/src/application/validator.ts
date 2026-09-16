@@ -99,6 +99,16 @@ export const assignRoutineSchema = z.object({
   durationWeeks: z.number().int().positive('Duration must be a positive number of weeks'),
 });
 
+// A client payment (US-007): positive amount, method enum, and the covered
+// period (month 1-12, plausible year).
+export const paymentSchema = z.object({
+  amount: z.number().positive('Amount must be greater than 0'),
+  paymentDate: z.coerce.date(),
+  method: z.enum(['cash', 'bank_transfer', 'card']),
+  periodMonth: z.number().int().min(1).max(12),
+  periodYear: z.number().int().min(2000).max(2100),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -108,6 +118,7 @@ export type MedicalRecordInputData = z.infer<typeof medicalRecordSchema>;
 export type ExerciseInputData = z.infer<typeof exerciseSchema>;
 export type RoutineTemplateInputData = z.infer<typeof routineTemplateSchema>;
 export type AssignRoutineInputData = z.infer<typeof assignRoutineSchema>;
+export type PaymentInputData = z.infer<typeof paymentSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -159,4 +170,8 @@ export function validateRoutineTemplate(data: unknown): RoutineTemplateInputData
 
 export function validateAssignRoutine(data: unknown): AssignRoutineInputData {
   return parseOrThrow(assignRoutineSchema, data);
+}
+
+export function validatePayment(data: unknown): PaymentInputData {
+  return parseOrThrow(paymentSchema, data);
 }

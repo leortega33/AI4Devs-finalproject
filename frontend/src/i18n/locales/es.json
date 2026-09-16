@@ -60,16 +60,21 @@
       "phone": "Teléfono",
       "status": "Estado",
       "routine": "Rutina",
+      "payment": "Pagos",
       "actions": "Acciones"
     },
     "actions": {
       "deactivate": "Desactivar",
       "reactivate": "Reactivar",
       "medicalRecord": "Ficha médica",
-      "routine": "Rutina"
+      "routine": "Rutina",
+      "payments": "Pagos"
     },
     "routineAssigned": "Asignada",
     "routineNone": "Sin rutina",
+    "paymentUpToDate": "Al día",
+    "paymentOverdue": "Vencido",
+    "paymentNone": "Sin pagos",
     "form": {
       "newTitle": "Nuevo cliente",
       "editTitle": "Editar cliente",
@@ -214,6 +219,40 @@
       "empty": "No hay plantillas de biblioteca. Creá una en Rutinas.",
       "choose": "Elegir",
       "cancel": "Cancelar"
+    }
+  },
+  "payments": {
+    "title": "Pagos del cliente",
+    "subtitle": "Pagos de {{name}}",
+    "register": "Registrar pago",
+    "empty": "Este cliente todavía no tiene pagos registrados.",
+    "statusUpToDate": "Al día",
+    "statusOverdue": "Vencido",
+    "statusNone": "Sin pagos",
+    "loadFailed": "No se pudo cargar los pagos.",
+    "columns": {
+      "period": "Período",
+      "amount": "Monto",
+      "method": "Método",
+      "date": "Fecha",
+      "actions": "Acciones"
+    },
+    "methodCash": "Efectivo",
+    "methodTransfer": "Transferencia",
+    "methodCard": "Tarjeta",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar este pago?",
+    "form": {
+      "newTitle": "Registrar pago",
+      "editTitle": "Editar pago",
+      "amount": "Monto",
+      "paymentDate": "Fecha de pago",
+      "method": "Método",
+      "periodMonth": "Mes del período",
+      "periodYear": "Año del período",
+      "requiredFields": "Ingresá un monto válido, fecha, método y período.",
+      "saveFailed": "No se pudo guardar el pago."
     }
   },
   "errors": {

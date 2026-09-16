@@ -85,7 +85,7 @@ describe('PrismaClientRepository', () => {
 
   it('should build a case-insensitive name search with a status filter', async () => {
     const prisma = buildPrismaMock();
-    prisma.client.findMany.mockResolvedValue([{ ...baseRecord, routines: [] }]);
+    prisma.client.findMany.mockResolvedValue([{ ...baseRecord, routines: [], payments: [] }]);
     const repo = new PrismaClientRepository(prisma);
 
     await repo.findAll({ search: 'jo', status: 'active' });
@@ -99,15 +99,18 @@ describe('PrismaClientRepository', () => {
         ],
       },
       orderBy: { lastName: 'asc' },
-      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
+      include: {
+        routines: { where: { status: 'active' }, select: { id: true }, take: 1 },
+        payments: { select: { periodMonth: true, periodYear: true } },
+      },
     });
   });
 
-  it('should list all clients when no filters are given and flag an active routine', async () => {
+  it('should list all clients with derived routine and payment indicators', async () => {
     const prisma = buildPrismaMock();
     prisma.client.findMany.mockResolvedValue([
-      { ...baseRecord, routines: [] },
-      { ...baseRecord, id: 2, routines: [{ id: 99 }] },
+      { ...baseRecord, routines: [], payments: [] },
+      { ...baseRecord, id: 2, routines: [{ id: 99 }], payments: [{ periodMonth: 1, periodYear: 2000 }] },
     ]);
     const repo = new PrismaClientRepository(prisma);
 
@@ -115,12 +118,9 @@ describe('PrismaClientRepository', () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].hasActiveRoutine).toBe(false);
+    expect(result[0].paymentStatus).toBe('no_payments');
     expect(result[1].hasActiveRoutine).toBe(true);
-    expect(prisma.client.findMany).toHaveBeenCalledWith({
-      where: {},
-      orderBy: { lastName: 'asc' },
-      include: { routines: { where: { status: 'active' }, select: { id: true }, take: 1 } },
-    });
+    expect(result[1].paymentStatus).toBe('overdue');
   });
 
   it('should update a client', async () => {

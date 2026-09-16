@@ -60,16 +60,21 @@
       "phone": "Phone",
       "status": "Status",
       "routine": "Routine",
+      "payment": "Payments",
       "actions": "Actions"
     },
     "actions": {
       "deactivate": "Deactivate",
       "reactivate": "Reactivate",
       "medicalRecord": "Medical record",
-      "routine": "Routine"
+      "routine": "Routine",
+      "payments": "Payments"
     },
     "routineAssigned": "Assigned",
     "routineNone": "No routine",
+    "paymentUpToDate": "Up to date",
+    "paymentOverdue": "Overdue",
+    "paymentNone": "No payments",
     "form": {
       "newTitle": "New client",
       "editTitle": "Edit client",
@@ -214,6 +219,40 @@
       "empty": "No library templates. Create one under Routines.",
       "choose": "Choose",
       "cancel": "Cancel"
+    }
+  },
+  "payments": {
+    "title": "Client payments",
+    "subtitle": "{{name}}'s payments",
+    "register": "Register payment",
+    "empty": "This client has no payments yet.",
+    "statusUpToDate": "Up to date",
+    "statusOverdue": "Overdue",
+    "statusNone": "No payments",
+    "loadFailed": "Could not load the payments.",
+    "columns": {
+      "period": "Period",
+      "amount": "Amount",
+      "method": "Method",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "methodCash": "Cash",
+    "methodTransfer": "Bank transfer",
+    "methodCard": "Card",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this payment?",
+    "form": {
+      "newTitle": "Register payment",
+      "editTitle": "Edit payment",
+      "amount": "Amount",
+      "paymentDate": "Payment date",
+      "method": "Method",
+      "periodMonth": "Period month",
+      "periodYear": "Period year",
+      "requiredFields": "Enter a valid amount, date, method and period.",
+      "saveFailed": "Could not save the payment."
     }
   },
   "errors": {

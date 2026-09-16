@@ -8,6 +8,7 @@ import {
   validateExercise,
   validateRoutineTemplate,
   validateAssignRoutine,
+  validatePayment,
   ValidationError,
 } from './validator';
 
@@ -248,6 +249,40 @@ describe('validator', () => {
       expect(() => validateAssignRoutine({ templateId: 0, startDate: '2026-02-01', durationWeeks: 4 })).toThrow(
         ValidationError,
       );
+    });
+  });
+
+  describe('validatePayment', () => {
+    const validPayment = {
+      amount: 5000,
+      paymentDate: '2026-02-05',
+      method: 'cash',
+      periodMonth: 2,
+      periodYear: 2026,
+    };
+
+    it('should accept a valid payment and coerce the date', () => {
+      const result = validatePayment(validPayment);
+
+      expect(result.amount).toBe(5000);
+      expect(result.method).toBe('cash');
+      expect(result.paymentDate).toBeInstanceOf(Date);
+    });
+
+    it('should reject a non-positive amount', () => {
+      expect(() => validatePayment({ ...validPayment, amount: 0 })).toThrow(ValidationError);
+    });
+
+    it('should reject an invalid method', () => {
+      expect(() => validatePayment({ ...validPayment, method: 'crypto' })).toThrow(ValidationError);
+    });
+
+    it('should reject an out-of-range month', () => {
+      expect(() => validatePayment({ ...validPayment, periodMonth: 13 })).toThrow(ValidationError);
+    });
+
+    it('should reject an implausible year', () => {
+      expect(() => validatePayment({ ...validPayment, periodYear: 1999 })).toThrow(ValidationError);
     });
   });
 });
