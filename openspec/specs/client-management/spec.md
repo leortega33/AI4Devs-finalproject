@@ -67,7 +67,8 @@ history.
 ### Requirement: List, search, and filter clients
 The system SHALL provide a client list that can be searched by name and
 filtered by status (active or inactive), and that indicates, for each client,
-whether they currently have an active routine assigned.
+whether they currently have an active routine assigned and their derived
+payment status (up to date / overdue / no payments).
 
 #### Scenario: Search by name
 - **WHEN** the trainer searches the client list by a name fragment
@@ -81,6 +82,11 @@ whether they currently have an active routine assigned.
 - **WHEN** the trainer views the client list
 - **THEN** each client shows whether they currently have an active routine
   assigned (assigned or not)
+
+#### Scenario: Payment status indicator
+- **WHEN** the trainer views the client list
+- **THEN** each client shows their derived payment status (up to date, overdue,
+  or no payments)
 
 ### Requirement: Protected access
 The system SHALL require an authenticated session for every client-management
