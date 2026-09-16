@@ -142,6 +142,92 @@ Credenciales por defecto del admin (definidas en `backend/.env`):
 
 > Detalle ampliado en [docs/development_guide.md](docs/development_guide.md).
 
+### **1.5. Casos de uso principales:**
+
+A continuación se describen los casos de uso más representativos del MVP. Cada
+uno incluye un diagrama de secuencia (Administrador ↔ Frontend ↔ API ↔ Base de
+datos) y una breve explicación.
+
+#### Caso 1 — Alta de cliente con ficha médica
+
+```mermaid
+sequenceDiagram
+    actor Admin as Administrador
+    participant FE as Frontend (SPA)
+    participant API as API REST
+    participant DB as PostgreSQL
+
+    Admin->>FE: Completa el formulario de nuevo cliente
+    FE->>API: POST /api/clients
+    API->>DB: Inserta Client (status=active)
+    DB-->>API: Client creado
+    API-->>FE: 201 Created
+    Admin->>FE: Abre "Ficha médica" del cliente
+    FE->>API: PUT /api/clients/:id/medical-record
+    API->>DB: Upsert MedicalRecord (clientId)
+    DB-->>API: MedicalRecord guardada
+    API-->>FE: 200 OK
+    FE-->>Admin: Ficha médica actualizada
+```
+
+- El administrador da de alta al cliente y, opcionalmente, registra su ficha
+  médica (relación uno-a-uno opcional).
+- La ficha se guarda mediante *upsert*: crea o actualiza según exista o no.
+
+#### Caso 2 — Armar una plantilla de rutina y asignarla a un cliente
+
+```mermaid
+sequenceDiagram
+    actor Admin as Administrador
+    participant FE as Frontend (SPA)
+    participant API as API REST
+    participant DB as PostgreSQL
+
+    Admin->>FE: Arma la plantilla en el builder (sesiones y ejercicios)
+    FE->>API: POST /api/routine-templates
+    API->>DB: Inserta RoutineTemplate + sesiones + entradas
+    DB-->>API: Plantilla creada
+    API-->>FE: 201 Created
+    Admin->>FE: Asigna la plantilla a un cliente (fecha + duración)
+    FE->>API: POST /api/clients/:id/routine
+    API->>DB: Clona la plantilla (clientId, status=active) y cierra la anterior
+    DB-->>API: Rutina del cliente creada
+    API-->>FE: 201 Created
+    FE-->>Admin: Rutina activa asignada
+```
+
+- Las plantillas son reutilizables; al asignarlas se **clonan** en una instancia
+  propia del cliente, de modo que editar la plantilla no afecta rutinas ya
+  asignadas.
+- Solo puede haber una rutina activa por cliente: asignar una nueva cierra la
+  anterior.
+
+#### Caso 3 — Registrar un pago y derivar el estado
+
+```mermaid
+sequenceDiagram
+    actor Admin as Administrador
+    participant FE as Frontend (SPA)
+    participant API as API REST
+    participant DB as PostgreSQL
+
+    Admin->>FE: Registra un pago (monto, fecha, método, período)
+    FE->>API: POST /api/clients/:id/payments
+    API->>DB: Inserta Payment (periodMonth/periodYear)
+    DB-->>API: Pago creado
+    API-->>FE: 201 Created
+    Admin->>FE: Abre el listado de clientes
+    FE->>API: GET /api/clients
+    API->>DB: Lee clientes y sus pagos
+    DB-->>API: Datos
+    API-->>FE: 200 OK (paymentStatus derivado)
+    FE-->>Admin: Estado "al día / vencido / sin pagos" por cliente
+```
+
+- El estado de pago no se almacena: se **deriva** en consulta a partir del
+  período más reciente frente a la fecha actual, y se recalcula tras cada
+  registro, edición o borrado.
+
 ---
 
 ## 2. Arquitectura del Sistema
@@ -149,10 +235,53 @@ Credenciales por defecto del admin (definidas en `backend/.env`):
 ### **2.1. Diagrama de arquitectura:**
 > Usa el formato que consideres más adecuado para representar los componentes principales de la aplicación y las tecnologías utilizadas. Explica si sigue algún patrón predefinido, justifica por qué se ha elegido esta arquitectura, y destaca los beneficios principales que aportan al proyecto y justifican su uso, así como sacrificios o déficits que implica.
 
+La aplicación es un monorepo con una SPA (frontend) que consume una API REST
+(backend) respaldada por PostgreSQL. La arquitectura sigue el **modelo C4** a
+nivel de contenedor (C2) y, en el backend, el patrón **Domain-Driven Design
+(DDD) por capas**.
+
+```mermaid
+flowchart TB
+    admin["Administrador / Entrenador<br/>(usuario único)"]
+
+    subgraph system["Sistema de gestión de gimnasio"]
+        spa["SPA Frontend<br/>React 18 · TypeScript · Vite · MUI<br/>Interfaz bilingüe (es/en)"]
+        api["API REST Backend<br/>Node.js · Express · TypeScript · DDD<br/>Autenticación JWT (cookie httpOnly)"]
+        db[("PostgreSQL<br/>Prisma ORM")]
+    end
+
+    admin -->|HTTPS| spa
+    spa -->|"JSON / REST (withCredentials)"| api
+    api -->|"SQL (Prisma)"| db
+```
+
+**Por qué esta arquitectura:**
+- **Separación SPA + API REST**: permite evolucionar frontend y backend de forma
+  independiente y facilita el testeo por capas.
+- **DDD por capas en el backend** (dominio → aplicación → infraestructura →
+  presentación): aísla la lógica de negocio de los detalles de framework y base
+  de datos, mejorando la mantenibilidad y la testabilidad.
+- **Prisma + PostgreSQL**: tipado fuerte de extremo a extremo y migraciones
+  versionadas.
+
+**Sacrificios / límites (MVP):** despliegue local (Docker Compose) sin capa de
+orquestación cloud todavía; usuario único; sin multi-tenant. Ver el backlog de
+Fase 2 en [planning/user-stories-backlog.md](planning/user-stories-backlog.md).
 
 ### **2.2. Descripción de componentes principales:**
 
 > Describe los componentes más importantes, incluyendo la tecnología utilizada
+
+- **SPA Frontend** (`frontend/`): React 18 + TypeScript + Vite, UI con Material
+  UI (MUI) y un tema de marca centralizado, enrutado con React Router, estado de
+  sesión por contexto e internacionalización (español/inglés) con
+  `react-i18next`. Se comunica con el backend vía Axios (`withCredentials`).
+- **API REST Backend** (`backend/`): Node.js + Express + TypeScript siguiendo
+  DDD por capas (dominio, aplicación, infraestructura, presentación).
+  Autenticación por JWT en cookie `httpOnly`/`secure`/`sameSite=strict`,
+  validación de entrada con Zod y *rate limiting* en el login.
+- **Base de datos PostgreSQL**: accedida mediante Prisma ORM (schema y
+  migraciones versionadas); se levanta localmente con Docker Compose.
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
@@ -207,10 +336,136 @@ su spec a `openspec/specs/`.
 
 > Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
 
+El siguiente diagrama entidad-relación refleja el modelo del MVP. La fuente de
+verdad detallada (tipos, restricciones y reglas de validación) está en
+[docs/data-model.md](docs/data-model.md).
+
+```mermaid
+erDiagram
+    User {
+        Int id PK
+        String email UK
+        String passwordHash
+        String passwordResetTokenHash
+        DateTime passwordResetExpiresAt
+    }
+    Client {
+        Int id PK
+        String firstName
+        String lastName
+        String dni
+        String phone
+        String email
+        DateTime birthDate
+        String address
+        String goal
+        String emergencyContactName
+        String emergencyContactPhone
+        String emergencyContactRelationship
+        DateTime joinDate
+        String status
+    }
+    MedicalRecord {
+        Int id PK
+        Int clientId FK
+        String preexistingConditions
+        String injuries
+        String surgeriesOrProsthetics
+        String physicalRestrictions
+        String medication
+        String allergies
+        String bloodType
+        String notes
+    }
+    Exercise {
+        Int id PK
+        String name
+        String muscleGroup
+        String category
+        Int defaultSets
+        Int defaultReps
+        String technique
+        String equipment
+    }
+    RoutineTemplate {
+        Int id PK
+        String name
+        String description
+        String objective
+        String generalConsiderations
+        Int clientId FK
+        Int sourceTemplateId FK
+        DateTime startDate
+        Int durationWeeks
+        String status
+    }
+    RoutineSession {
+        Int id PK
+        Int routineTemplateId FK
+        String name
+        String warmupPrescription
+        Int order
+    }
+    RoutineExerciseEntry {
+        Int id PK
+        Int routineSessionId FK
+        Int exerciseId FK
+        String phase
+        String block
+        Float kg
+        Int reps
+        Int series
+        String notes
+        Int order
+    }
+    Payment {
+        Int id PK
+        Int clientId FK
+        Float amount
+        DateTime paymentDate
+        String method
+        Int periodMonth
+        Int periodYear
+    }
+
+    Client ||--o| MedicalRecord : "has"
+    Client ||--o{ RoutineTemplate : "is assigned (clientId set)"
+    Client ||--o{ Payment : "makes"
+    RoutineTemplate ||--o{ RoutineSession : "has"
+    RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
+    RoutineSession ||--o{ RoutineExerciseEntry : "has"
+    Exercise ||--o{ RoutineExerciseEntry : "used in"
+```
 
 ### **3.2. Descripción de entidades principales:**
 
 > Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+
+- **User** — Usuario administrador único (dueño/entrenador) que inicia sesión.
+  `email` es único; la contraseña se almacena como hash. Modelado como tabla
+  normal para facilitar multiusuario en el futuro.
+- **Client** — Cliente del gimnasio. Incluye datos de contacto, objetivo y el
+  contacto de emergencia embebido (Value Object). Baja lógica vía `status`
+  (`active`/`inactive`), sin borrado físico.
+- **MedicalRecord** — Ficha médica del cliente. Relación uno-a-uno **opcional**
+  con `Client` (`clientId` único); guarda condiciones, lesiones, medicación,
+  alergias, grupo sanguíneo y notas.
+- **Exercise** — Entrada del catálogo reutilizable de ejercicios, clasificada
+  por `category` (`mobility`/`activation`/`main`). Sin borrado físico para no
+  romper rutinas que la referencian.
+- **RoutineTemplate** — Plantilla de rutina reutilizable (`clientId` nulo) o
+  instancia asignada a un cliente (`clientId` seteado, clon de una plantilla vía
+  `sourceTemplateId`). Una sola instancia `active` por cliente.
+- **RoutineSession** — Día de entrenamiento dentro de una rutina, con su entrada
+  en calor y su orden de visualización.
+- **RoutineExerciseEntry** — Ejercicio dentro de una sesión, en fase `warmup` o
+  `main`, con prescripción (`kg`/`reps`/`series`), bloque opcional y notas.
+- **Payment** — Pago registrado para un cliente (monto, fecha, método y período
+  mes/año). Editable/eliminable; el estado de pago (al día/vencido) se **deriva**
+  en consulta a partir del período más reciente vs. la fecha actual.
+
+> Detalle completo de tipos, restricciones y reglas de validación en
+> [docs/data-model.md](docs/data-model.md).
 
 ---
 

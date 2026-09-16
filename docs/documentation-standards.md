@@ -27,7 +27,32 @@ When updating documentation, I will:
 4. Ensure all documentation is properly formatted and follows the established structure
 5. Verify that all changes are accurately reflected in the documentation
 6. Report which files were updated and what changes were made
+## Project README & Architecture Documentation
 
+The project README and architecture docs should follow a consistent structure and diagramming conventions, so product, architecture, and data are documented the same way across changes. Treat the structure below as a recommended template, not a rigid mandate — adapt sections to the project's needs while keeping the conventions. When a fixed template is imposed externally (for example a course/deliverable README), keep that template's section structure and apply these conventions inside its existing sections rather than restructuring it.
+
+### Recommended structure
+
+When documenting the product and its architecture (in the README or a linked `docs/` file), prefer this order:
+
+1. Product overview — what it is, who it is for, and the problem it solves.
+2. Value proposition / competitive advantages.
+3. Core functionalities — a numbered list of the main capabilities.
+4. Business model canvas (e.g. Lean Canvas) when relevant.
+5. Principal use cases — each with a diagram and a short explanation.
+6. Entity-relationship diagram (data model).
+7. System architecture — deployment view (e.g. cloud provider) and the C4 model.
+
+### Diagram conventions
+
+- **Entity-relationship diagrams**: use Mermaid (` ```mermaid erDiagram `) embedded directly in the Markdown, annotating primary keys (PK), foreign keys (FK), and unique keys (UK). Keep any README ERD in sync with `docs/data-model.md`, which is the source of truth.
+- **Architecture**: describe it with the C4 model, from the top down — Context (C1), Container (C2), and Component (C3) — adding only the levels that add value. Prefer Mermaid where practical; static images (SVG/PNG) are acceptable for richer diagrams.
+- **Diagram + explanation pattern**: every diagram must be accompanied by a short explanation (a few bullet points) describing what it shows and why it matters. Never leave a diagram without context.
+
+### Assets and single source of truth
+
+- Store diagram assets (SVG/PNG) in the repository and reference them with relative paths; prefer SVG for scalable diagrams.
+- Keep a single canonical README as the entry point. When a section grows too large (e.g. an extensive architecture write-up or large C4 diagrams), move it to a dedicated file under `docs/` and link to it from the README rather than duplicating content, to avoid documentation drift.
 ## AI specs
 
 This rule establishes a mandatory process for the AI to:
