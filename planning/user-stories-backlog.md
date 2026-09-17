@@ -1090,6 +1090,114 @@ revisit indexing/caching only if slow.
 
 ---
 
+## US-021: Medical record change history
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want to see the history of changes to
+a client's medical record, so that I can track how their condition evolves over
+time.
+
+**Functional description:** today the medical record stores only the **current**
+state (the save is an upsert that overwrites, US-003). This adds **versioning**:
+each save keeps the prior state, and the medical record screen shows a history/
+timeline of past versions with timestamps.
+
+**Data model (Prisma):** new `MedicalRecordVersion` table (a full snapshot of the
+record fields + `createdAt`, FK to `Client`/`MedicalRecord`). Migration required.
+
+**Endpoints:** `GET /api/clients/:clientId/medical-record/history`; the existing
+upsert also writes a version.
+
+**Files/modules:** `schema.prisma` + migration, the version model/repository, the
+medical-record service (write a version on save), controller/route, and a history
+view on the medical record page.
+
+**Definition of done:** every save creates a version; the history is viewable
+(newest first) with timestamps; the current state is unchanged.
+
+**Tests:** service/repository (a version is created on save), controller, and a
+frontend history render.
+
+**Non-functional requirements:** protected by auth; storage growth acceptable at
+MVP scale.
+
+**Open technical decisions:** full-snapshot versions vs field-level diffs.
+Proposed: **full snapshots** (simpler, easy to display).
+
+---
+
+## US-022: Medical-aware exercise warnings
+
+- **Status:** enriched (needs product definition before implementation)
+
+**User story:** As the gym owner/trainer, when I build or assign a routine, I want
+a warning if an exercise may be contraindicated by the client's medical record,
+so that I avoid unsafe prescriptions.
+
+**Functional description:** map medical conditions/injuries/restrictions to
+potentially risky exercises (by muscle group / category / tags) and show
+**advisory, non-blocking** warnings while building a client's routine. Requires a
+rules source and some exercise tagging. **This needs a product-definition pass**
+(which conditions, which exercises, how strict) before implementation — the entry
+here captures intent and shape, not final rules.
+
+**Data model (Prisma):** likely exercise tags/contraindication flags + a rules
+table or config. Migration TBD during definition.
+
+**Endpoints:** computed server-side when building/assigning, or a validation
+endpoint. TBD.
+
+**Files/modules:** a rules/domain service, exercise tagging, warning UI in the
+client-routine builder.
+
+**Definition of done (draft):** relevant warnings appear for a client whose
+medical record flags risk for an exercise; warnings are advisory only.
+
+**Tests:** rules-engine unit tests; UI warning render.
+
+**Non-functional requirements:** advisory (never blocks saving); clear,
+non-alarming wording; i18n.
+
+**Open technical decisions:** rules source (curated config vs editable), tagging
+granularity, medical-liability wording. Proposed: a **curated config + exercise
+tags**, advisory only — finalize during the definition pass.
+
+---
+
+## US-023: Medical-aware warm-up suggestions
+
+- **Status:** enriched (needs product definition; depends on US-022)
+
+**User story:** As the gym owner/trainer, I want warm-up blocks to suggest/adapt
+based on the client's medical record (e.g. mobility work for a restricted area),
+so that warm-ups are relevant and safe.
+
+**Functional description:** building on US-022's medical mapping, suggest warm-up
+exercises for the areas a client's medical record flags, editable by the trainer.
+Depends on the rules/tagging defined in US-022, so it inherits the same
+**product-definition** requirement.
+
+**Data model (Prisma):** reuses US-022's mapping/tags; likely no new tables.
+
+**Endpoints:** suggestions computed when building the client's routine. TBD with
+US-022.
+
+**Files/modules:** the warm-up section of the client-routine builder + the shared
+medical-rules service from US-022.
+
+**Definition of done (draft):** the builder proposes relevant warm-up exercises
+for flagged areas; the trainer can accept/edit them.
+
+**Tests:** suggestion logic unit; builder UI.
+
+**Non-functional requirements:** suggestions are editable, never forced; i18n.
+
+**Open technical decisions:** shared with US-022 (rules source/granularity).
+Sequence US-022 first.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
@@ -1113,11 +1221,11 @@ external dependencies).
 - Nutrition plans
 - Multi-tenant support (multiple gyms/sedes) — deferred to the end.
 - Filter client list by payment status (up to date / overdue) — enriched as **US-014** (see above).
-- Medical record change history (track evolution over time, not just current state)
+- Medical record change history (track evolution over time, not just current state) — enriched as **US-021** (see above).
 - Video/image reference per exercise in the catalog — enriched as **US-019** (see above).
-- Automatic exercise suggestions/contraindication warnings based on a client's medical record
+- Automatic exercise suggestions/contraindication warnings based on a client's medical record — enriched as **US-022** (see above).
 - Weekly progression: per-exercise KG/reps/series values across a multi-week mesocycle — enriched as **US-018** (see above).
-- Dynamic, editable warm-up blocks that adapt based on the client's medical record
+- Dynamic, editable warm-up blocks that adapt based on the client's medical record — enriched as **US-023** (see above).
 - Export routines (library templates and client-assigned routines) to PDF and Excel — enriched as **US-017** (see above).
 - Payment history summary view (total paid, months owed, etc.) in addition to the chronological list — enriched as **US-016** (see above).
 - Dashboard general KPI numbers (active clients count, monthly revenue, etc.) — enriched as **US-020** (see above).
