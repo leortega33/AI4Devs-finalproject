@@ -713,12 +713,32 @@ file placed under `frontend/src/assets/`).
 Captured for visibility only. Do not start any OpenSpec work on these until
 Phase 1 is implemented and the MVP is validated.
 
-- Automated reminders (email/WhatsApp) for payments/routines
-- Online payment gateway integration (Mercado Pago/Stripe)
+**Planned Phase 2 order** (agreed): (1) UI/UX design refresh, then the smaller
+wins and product-depth items below, with **online payment gateway** and
+**multi-tenant support** deliberately deferred to the very end (largest scope /
+external dependencies).
+
+- UI/UX design refresh: a visual/UX polish pass implemented **in MUI** (keep the
+  current stack; do not migrate to Tailwind/shadcn — v0.app may be used for
+  mockups/inspiration only, not generated code). Scope: a refined MUI theme
+  (typography e.g. Inter/Poppins, spacing, radius, subtle elevation, color
+  tokens, optional dark mode), a persistent left **sidebar** navigation (Panel /
+  Clientes / Ejercicios / Rutinas) replacing the top-bar-only nav, a more visual
+  **dashboard** (cards with icons + large counts, optional small charts), a
+  reusable page-header component, loading **skeletons**, action **snackbars**,
+  better tables/empty states, and responsive/mobile layout. Incremental, keeping
+  all unit/E2E tests green (preserve MUI roles/labels the tests rely on).
+- Automated reminders for payments/routines: start with **email** via a free
+  provider (**Resend**, 3k/month free) plugged into the existing `EmailService`
+  abstraction (today `ConsoleEmailService`), scheduled with an in-process
+  scheduler (**node-cron**) that checks overdue/due-soon payments and
+  expiring routines. **WhatsApp** (Meta WhatsApp Cloud API free tier) is an
+  optional later addition (needs a Meta business number + approved templates).
+- Online payment gateway integration (Mercado Pago/Stripe) — deferred to the end.
 - Attendance / check-in tracking
 - Physical progress tracking (measurements, photos, evolution over time)
 - Nutrition plans
-- Multi-tenant support (multiple gyms/sedes)
+- Multi-tenant support (multiple gyms/sedes) — deferred to the end.
 - Filter client list by payment status (up to date / overdue)
 - Medical record change history (track evolution over time, not just current state)
 - Video/image reference per exercise in the catalog
