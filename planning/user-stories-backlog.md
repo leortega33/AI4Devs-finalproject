@@ -1198,6 +1198,145 @@ Sequence US-022 first.
 
 ---
 
+## US-024: Automated reminders (email)
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want automatic email reminders for
+clients with overdue/due-soon payments and expiring routines, so that I don't
+have to chase them manually.
+
+**Functional description:** a scheduled job (**node-cron**) periodically reuses
+the dashboard aggregation (US-009) to find clients with alerts and sends them
+**emails** through the existing `EmailService` abstraction — implemented with a
+free provider (**Resend**, 3k/month free). Per-alert templates (overdue/due-soon
+payment, expiring routine). Disabled by default when no API key is set. WhatsApp
+(Meta WhatsApp Cloud API free tier) is a later, optional addition.
+
+**Data model (Prisma):** optional `NotificationLog` (clientId, type, sentAt) to
+dedupe/avoid spam. Client `email` already exists (optional).
+
+**Endpoints:** none user-facing (internal job); optionally a manual "send now"
+trigger and an on/off config.
+
+**Files/modules:** `infrastructure/email/ResendEmailService.ts` (implements
+`EmailService`), a `scheduler` (node-cron) wiring, a `reminderService` reusing the
+dashboard read model, config/env (`RESEND_API_KEY`, cadence, toggles), optional
+`NotificationLog` model/repository.
+
+**Definition of done:** on schedule, clients with alerts receive the right email;
+no duplicate spam within a window; provider pluggable via env; no-op without a
+key; clients without an email are skipped.
+
+**Tests:** `reminderService` (selects the right clients, composes messages),
+`EmailService` (mocked provider), dedupe logic.
+
+**Non-functional requirements:** `RESEND_API_KEY` via env/secrets (never
+committed); opt-in; rate/dedupe; structured logs; skip clients without email.
+
+**Open technical decisions:** cadence (daily?), dedupe window, whether to add
+`NotificationLog`, and whether payment reminders need the client's email to be
+required. WhatsApp via Meta Cloud API deferred.
+
+---
+
+## US-025: Attendance / check-in tracking
+
+- **Status:** enriched (greenfield module — needs product definition)
+
+**User story:** As the gym owner/trainer, I want to record client check-ins, so
+that I can track attendance and frequency.
+
+**Functional description:** record a check-in (date/time) per client and view
+attendance history/frequency. A **new module** whose details (manual check-in vs
+QR/self-service, which metrics) need a product-definition pass before
+implementation.
+
+**Data model (Prisma):** new `Attendance` table (`clientId` FK, `checkInAt`).
+Migration required.
+
+**Endpoints (draft):** `POST /api/clients/:clientId/attendance`,
+`GET /api/clients/:clientId/attendance`.
+
+**Files/modules:** the attendance model/repository/service/controller/route and a
+client attendance view.
+
+**Definition of done (draft):** check-ins can be recorded and listed per client;
+basic frequency shown.
+
+**Tests:** model/service/route + a frontend view test.
+
+**Non-functional requirements:** protected by auth; i18n.
+
+**Open technical decisions:** manual vs QR/self-service; metrics to surface;
+whether to integrate with the dashboard. Define before implementing.
+
+---
+
+## US-026: Physical progress tracking
+
+- **Status:** enriched (greenfield module — needs product definition)
+
+**User story:** As the gym owner/trainer, I want to record a client's measurements
+(and optionally photos) over time, so that I can track physical progress.
+
+**Functional description:** record measurements (e.g. weight, body measurements)
+and optionally photos at dated entries; view the evolution (table and, later,
+charts). A **new module**; the **photo storage** approach (URL vs upload/object
+storage) is a key decision requiring a product/infra pass.
+
+**Data model (Prisma):** new `ProgressEntry` table (`clientId` FK, `date`,
+metrics…) and, if photos, a storage reference. Migration required.
+
+**Endpoints (draft):** `POST/GET /api/clients/:clientId/progress`.
+
+**Files/modules:** the progress model/repository/service/controller/route and a
+client progress view (table/chart).
+
+**Definition of done (draft):** dated measurement entries can be recorded and
+listed per client; evolution is visible.
+
+**Tests:** model/service/route + a frontend view test.
+
+**Non-functional requirements:** protected; photo storage/privacy considered if
+included; i18n.
+
+**Open technical decisions:** which metrics; photos URL-only vs upload (needs
+object storage); charting. Define before implementing.
+
+---
+
+## US-027: Nutrition plans
+
+- **Status:** enriched (greenfield module — needs product definition)
+
+**User story:** As the gym owner/trainer, I want to create simple nutrition plans
+for clients, so that I can complement their training.
+
+**Functional description:** a nutrition plan per client (meals/notes). A **new
+module** whose scope (structured meals vs free text, macros, templates) needs a
+product-definition pass before implementation.
+
+**Data model (Prisma):** new `NutritionPlan` (+ possibly `Meal`) tables tied to
+`Client`. Migration required.
+
+**Endpoints (draft):** `POST/GET/PUT /api/clients/:clientId/nutrition-plan`.
+
+**Files/modules:** the nutrition model(s)/repository/service/controller/route and
+a client nutrition view/editor.
+
+**Definition of done (draft):** a nutrition plan can be created/edited and viewed
+per client.
+
+**Tests:** model/service/route + a frontend editor test.
+
+**Non-functional requirements:** protected; i18n.
+
+**Open technical decisions:** structured vs free-text; macros/calories; reusable
+plan templates. Define before implementing.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
@@ -1209,16 +1348,11 @@ wins and product-depth items below, with **online payment gateway** and
 external dependencies).
 
 - UI/UX design refresh — enriched as **US-012** (see above).
-- Automated reminders for payments/routines: start with **email** via a free
-  provider (**Resend**, 3k/month free) plugged into the existing `EmailService`
-  abstraction (today `ConsoleEmailService`), scheduled with an in-process
-  scheduler (**node-cron**) that checks overdue/due-soon payments and
-  expiring routines. **WhatsApp** (Meta WhatsApp Cloud API free tier) is an
-  optional later addition (needs a Meta business number + approved templates).
+- Automated reminders for payments/routines — enriched as **US-024** (email via Resend + node-cron; WhatsApp deferred). See above.
 - Online payment gateway integration (Mercado Pago/Stripe) — deferred to the end.
-- Attendance / check-in tracking
-- Physical progress tracking (measurements, photos, evolution over time)
-- Nutrition plans
+- Attendance / check-in tracking — enriched as **US-025** (see above).
+- Physical progress tracking (measurements, photos, evolution over time) — enriched as **US-026** (see above).
+- Nutrition plans — enriched as **US-027** (see above).
 - Multi-tenant support (multiple gyms/sedes) — deferred to the end.
 - Filter client list by payment status (up to date / overdue) — enriched as **US-014** (see above).
 - Medical record change history (track evolution over time, not just current state) — enriched as **US-021** (see above).
