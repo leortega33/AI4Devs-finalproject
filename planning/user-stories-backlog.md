@@ -948,6 +948,148 @@ Proposed: the latter; "months owed" deferred.
 
 ---
 
+## US-017: Export routines to PDF/Excel
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want to export a routine (a library
+template or a client's assigned routine) to PDF and Excel, so that I can print or
+share a clean routine sheet.
+
+**Functional description:** a printable **PDF** (e.g. one page per session) and a
+**spreadsheet** (`.xlsx`, e.g. one sheet per session) of a routine. The PDF
+reuses the `pdfkit` approach already built for payments (US-008); the Excel
+export uses a light library (e.g. `exceljs`). Can be a backend export endpoint
+(consistent with US-008) or client-side (`jsPDF`/`SheetJS`).
+
+**Data model (Prisma):** none. **Endpoints:** `GET /api/routine-templates/:id/export.pdf`
+and `.xlsx` (backend option), or client-side generation.
+
+**Files/modules:** backend `infrastructure/pdf/routinePdf.ts` +
+`infrastructure/xlsx/routineXlsx.ts`, a controller action + route, and an
+"Export" control on the routine template and client-routine screens (or the
+frontend equivalents if client-side).
+
+**Definition of done:** export buttons on a template and on a client's routine;
+both PDF and `.xlsx` download with the sessions/exercises and prescriptions;
+protected by auth (backend option).
+
+**Tests:** smoke tests for PDF and xlsx generation (non-empty, expected
+sheets/rows); a frontend test for the export action.
+
+**Non-functional requirements:** protected (backend), i18n of labels, reasonable
+file size.
+
+**Open technical decisions:** backend endpoint (reuse `pdfkit`, add `exceljs`)
+vs client-side (`jsPDF`/`SheetJS`). Proposed: **backend PDF via `pdfkit`** for
+consistency with US-008; evaluate `exceljs` for the `.xlsx`.
+
+---
+
+## US-018: Weekly progression (mesocycle)
+
+- **Status:** enriched (larger — needs a data-model change)
+
+**User story:** As the gym owner/trainer, I want each exercise's kg/reps/series to
+vary across the weeks of a routine, so that the plan reflects a real progression.
+
+**Functional description:** today `RoutineExerciseEntry` stores a single
+kg/reps/series value (US-005). This adds **per-week** values across the routine's
+`durationWeeks`, editable in the routine builder and shown per week in the
+client's routine view. Existing single-value routines must keep working
+(backward compatible).
+
+**Data model (Prisma):** new `RoutineExerciseWeek` table (`entryId` FK, `week`,
+`kg`, `reps`, `series`) — or a structured JSON column on the entry. Migration
+required.
+
+**Endpoints:** extends the routine-template create/update (nested weeks).
+
+**Files/modules:** `schema.prisma` + migration, `RoutineExerciseEntry`/new model,
+its repository/service mapping, the builder UI (per-week inputs), and the client
+routine view (per-week display).
+
+**Definition of done:** the builder lets the trainer set weekly progression; the
+client routine shows values per week; old routines still render.
+
+**Tests:** model/repository/service for the weekly values; builder unit; a
+migration/backward-compat check.
+
+**Non-functional requirements:** backward compatibility; no change to unrelated
+routine behavior.
+
+**Open technical decisions:** separate `RoutineExerciseWeek` table vs JSON
+column; how to present per-week in the client view (tabs/table). Proposed:
+separate table; a compact per-week table in the view.
+
+---
+
+## US-019: Exercise media reference (video/image)
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want to attach a reference video or
+image to each exercise, so that the correct technique is easy to review.
+
+**Functional description:** add an optional **media URL** (e.g. a YouTube link
+and/or an image URL) to `Exercise` (US-004); show a thumbnail/link in the catalog
+and in routine views. MVP stores a **URL only** (no file upload/storage); native
+uploads are a later addition.
+
+**Data model (Prisma):** add `videoUrl String?` and/or `imageUrl String?` to
+`Exercise`. Migration required.
+
+**Endpoints:** extends the exercise create/update payload.
+
+**Files/modules:** `schema.prisma` + migration, `Exercise` model/repository,
+`validator` (URL validation), `ExerciseForm`, and the catalog/routine display.
+
+**Definition of done:** an exercise can store a media URL; it is shown as a
+link/thumbnail in the catalog and where the exercise appears in routines.
+
+**Tests:** model/validator (URL), form unit, catalog render.
+
+**Non-functional requirements:** validate the URL; i18n; no upload/storage in
+this story.
+
+**Open technical decisions:** URL-only vs file upload (needs object storage).
+Proposed: **URL-only** for the MVP (paste a YouTube/image link).
+
+---
+
+## US-020: Dashboard KPIs
+
+- **Status:** enriched
+- **Dependency:** presented within the US-012 dashboard cards.
+
+**User story:** As the gym owner/trainer, I want key numbers on the dashboard
+(active clients, how many are up to date/overdue, monthly income), so that I see
+the business at a glance.
+
+**Functional description:** extend the dashboard (US-009) with **aggregate KPIs**:
+active client count, counts by derived payment status, and the sum of payments in
+the current month (income). Rendered as KPI cards alongside the alert groups.
+
+**Data model (Prisma):** none (derived at query time). **Endpoints:** extend
+`GET /api/dashboard` with a `kpis` object (or a `GET /api/dashboard/kpis`).
+
+**Files/modules:** `dashboardService` (KPI aggregation reusing the existing read
+model + payments), controller, and dashboard KPI cards (frontend).
+
+**Definition of done:** KPI cards on the dashboard with correct figures; protected
+by auth.
+
+**Tests:** service aggregation (counts, monthly income) + render.
+
+**Non-functional requirements:** simple aggregation is fine at MVP scale; i18n;
+revisit indexing/caching only if slow.
+
+**Open technical decisions:** income definition — sum of `Payment.amount` by
+`paymentDate` in the current month vs by covered period. Proposed: by
+`paymentDate` in the current month.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
@@ -972,12 +1114,12 @@ external dependencies).
 - Multi-tenant support (multiple gyms/sedes) — deferred to the end.
 - Filter client list by payment status (up to date / overdue) — enriched as **US-014** (see above).
 - Medical record change history (track evolution over time, not just current state)
-- Video/image reference per exercise in the catalog
+- Video/image reference per exercise in the catalog — enriched as **US-019** (see above).
 - Automatic exercise suggestions/contraindication warnings based on a client's medical record
-- Weekly progression: per-exercise KG/reps/series values across a multi-week mesocycle
+- Weekly progression: per-exercise KG/reps/series values across a multi-week mesocycle — enriched as **US-018** (see above).
 - Dynamic, editable warm-up blocks that adapt based on the client's medical record
-- Export routines (library templates and client-assigned routines) to PDF and Excel — a printable/shareable routine sheet (PDF, e.g. one page per session) and a spreadsheet export (`.xlsx`, e.g. one sheet per session). Feasible either client-side (jsPDF / SheetJS) or via a backend export endpoint (`GET /api/routine-templates/:id/export.pdf|.xlsx`).
+- Export routines (library templates and client-assigned routines) to PDF and Excel — enriched as **US-017** (see above).
 - Payment history summary view (total paid, months owed, etc.) in addition to the chronological list — enriched as **US-016** (see above).
-- Dashboard general KPI numbers (active clients count, monthly revenue, etc.)
+- Dashboard general KPI numbers (active clients count, monthly revenue, etc.) — enriched as **US-020** (see above).
 - Smarter payment-period entry — enriched as **US-015** (see above).
 - Notification bell in the header — enriched as **US-013** (see above).
