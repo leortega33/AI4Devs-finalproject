@@ -708,6 +708,91 @@ file placed under `frontend/src/assets/`).
 
 ---
 
+## US-012: UI/UX design refresh
+
+- **Status:** enriched
+- **Priority:** first Phase 2 item (visual/UX polish over the whole app).
+
+**User story:** As the gym owner/trainer, I want a more modern, consistent, and
+polished interface, so that the app feels professional, is easier to navigate,
+and is comfortable to use on desktop and mobile.
+
+**Functional description:** a **frontend-only** visual/UX refresh implemented **in
+MUI** (no stack change; no Tailwind/shadcn; v0.app only for visual inspiration,
+not generated code). No new API and no data-model change — it restyles and
+reorganizes the existing screens without changing their functional behavior.
+
+**Scope:**
+1. **Design system / theme** (`theme/theme.ts`): refined palette on the existing
+   brand (black + leaf green + white) with proper color tokens; a modern
+   typography scale (Inter, self-hosted via `@fontsource`); consistent spacing,
+   border-radius and subtle elevations; themed `MuiButton`/`MuiCard`/`MuiChip`/
+   `MuiDataGrid`. Optional dark mode (see open decisions).
+2. **Navigation:** replace the top-bar-only nav with a **persistent left
+   sidebar** (`Panel`, `Clientes`, `Ejercicios`, `Rutinas`) that collapses to a
+   drawer on mobile; keep the top bar for brand, language switcher and logout.
+3. **Dashboard** (`pages/DashboardPage.tsx`): the four alert groups become
+   **cards with icons, large counts and colored accents**; optional small chart
+   (see open decisions); keep the "Panel" heading and the links.
+4. **Reusable primitives:** a `PageHeader` (title + actions + optional back), a
+   global **Snackbar** provider/hook for action feedback (create/edit/delete/
+   errors), and **loading skeletons** for data-fetching pages.
+5. **Tables & empty states:** consistent `DataGrid` theming (row hover, density)
+   and friendlier empty states.
+6. **Responsive:** usable layouts down to ~360px (sidebar → drawer; tables
+   scroll/stack).
+
+**Data model (Prisma):** none.
+
+**Endpoints:** none (no backend change).
+
+**Files/modules to create/modify (frontend):**
+- *Modify:* `theme/theme.ts`, `components/AppLayout.tsx`, `pages/DashboardPage.tsx`,
+  `components/AlertList.tsx`, page components (adopt `PageHeader` + skeletons +
+  snackbars), `index.html`/font setup, `i18n` locale files for any new labels.
+- *Create:* `components/Sidebar.tsx`, `components/PageHeader.tsx`,
+  `components/SnackbarProvider.tsx` (+ `useSnackbar` hook), `components/skeletons/*`
+  (or a shared `LoadingSkeleton`).
+
+**Definition of done:**
+- Refined theme applied app-wide; sidebar navigation working on desktop and
+  collapsing on mobile.
+- Dashboard shown as cards with counts/icons; links still navigate correctly.
+- Consistent `PageHeader` across internal pages; skeletons on data loads;
+  snackbars on create/edit/delete and on errors.
+- Responsive from ~360px up.
+- **All existing unit (Vitest) and E2E (Playwright) tests pass**, adjusting only
+  selectors that must change while **preserving the accessible roles/names the
+  tests rely on** (e.g. the "Panel" heading, button names, DataGrid roles).
+- All new user-facing strings go through `react-i18next` (es default / en).
+
+**Tests:**
+- Unit tests for the new shared components: `PageHeader`, `Sidebar` (links,
+  active state, mobile drawer toggle), `SnackbarProvider`/`useSnackbar`, and a
+  skeleton render.
+- Keep all existing component/page tests green; update queries only where markup
+  changes, without weakening assertions.
+- E2E: the main flows stay green; if navigation moves to the sidebar, update the
+  specs' navigation steps while keeping role-based selectors.
+
+**Non-functional requirements:**
+- **Accessibility:** semantic roles, WCAG AA contrast, keyboard-navigable
+  sidebar/menus, `aria-label`s on icon buttons.
+- **Performance / bundle:** self-hosted fonts, a lightweight charts lib loaded
+  lazily (if used); skeletons improve perceived performance; watch the existing
+  bundle-size warning.
+- **Consistency:** single source of truth in the theme; no ad-hoc inline colors.
+- **i18n:** no hardcoded strings.
+
+**Open technical decisions:**
+- **Dark mode:** build the theme with tokens that make dark mode easy, but ship
+  **light-only first** (add the toggle later) unless the toggle is wanted now.
+- **Dashboard charts:** start with **icon+count cards**; add a small chart (MUI X
+  Charts) only if it adds value.
+- **Font:** **Inter self-hosted** (`@fontsource/inter`, offline-friendly).
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
@@ -718,16 +803,7 @@ wins and product-depth items below, with **online payment gateway** and
 **multi-tenant support** deliberately deferred to the very end (largest scope /
 external dependencies).
 
-- UI/UX design refresh: a visual/UX polish pass implemented **in MUI** (keep the
-  current stack; do not migrate to Tailwind/shadcn — v0.app may be used for
-  mockups/inspiration only, not generated code). Scope: a refined MUI theme
-  (typography e.g. Inter/Poppins, spacing, radius, subtle elevation, color
-  tokens, optional dark mode), a persistent left **sidebar** navigation (Panel /
-  Clientes / Ejercicios / Rutinas) replacing the top-bar-only nav, a more visual
-  **dashboard** (cards with icons + large counts, optional small charts), a
-  reusable page-header component, loading **skeletons**, action **snackbars**,
-  better tables/empty states, and responsive/mobile layout. Incremental, keeping
-  all unit/E2E tests green (preserve MUI roles/labels the tests rely on).
+- UI/UX design refresh — enriched as **US-012** (see above).
 - Automated reminders for payments/routines: start with **email** via a free
   provider (**Resend**, 3k/month free) plugged into the existing `EmailService`
   abstraction (today `ConsoleEmailService`), scheduled with an in-process
