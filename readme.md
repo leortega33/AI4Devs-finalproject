@@ -66,13 +66,16 @@ Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planni
 
 > Proporciona imágenes y/o videotutorial mostrando la experiencia del usuario desde que aterriza en la aplicación, pasando por todas las funcionalidades principales.
 
-**Sistema de diseño (US-011).** La app usa una identidad visual de marca
-inspirada en el material del gimnasio (negro + verde hoja + blanco), centralizada
-en un tema MUI (`frontend/src/theme/theme.ts`): verde hoja como color primario
-para acciones y marca, superficies claras y tipografía consistente. Todas las
-pantallas comparten un *app shell* (`components/AppLayout.tsx`) con una barra
-superior persistente que incluye el logo/marca "SPORT – FITNESS", el selector de
-idioma y el botón de cerrar sesión.
+**Sistema de diseño (US-011, refinado en US-012).** La app usa una identidad
+visual de marca inspirada en el material del gimnasio (negro + verde hoja +
+blanco), centralizada en un tema MUI (`frontend/src/theme/theme.ts`) con
+tipografía **Inter** auto-alojada, tokens de color y overrides de componentes.
+Todas las pantallas comparten un *app shell* (`components/AppLayout.tsx`) con una
+**barra superior** persistente (logo/marca "SPORT – FITNESS", selector de idioma
+y cerrar sesión) y una **barra lateral de navegación** (Panel / Clientes /
+Ejercicios / Rutinas) que en pantallas chicas se colapsa en un menú. Las páginas
+internas comparten un encabezado consistente (`PageHeader`), muestran
+*skeletons* de carga y notifican las acciones con *snackbars*.
 
 **Recorrido del usuario:**
 
@@ -80,10 +83,11 @@ idioma y el botón de cerrar sesión.
    marca (logo + nombre + lema) y el selector de idioma. Puede recuperar su
    contraseña desde el enlace correspondiente.
 2. **Panel** — Tras autenticarse llega al panel, dentro del shell con la barra
-   superior de marca. El panel muestra cuatro grupos de alertas (pagos
-   vencidos, pagos por vencer, clientes sin pagos y rutinas por vencer), cada
-   cliente enlazando directamente a su pantalla de pagos o rutina. Desde allí
-   también navega a la gestión de clientes, ejercicios y rutinas.
+   superior de marca y la **barra lateral de navegación** (Panel / Clientes /
+   Ejercicios / Rutinas). El panel muestra cuatro grupos de alertas como
+   **tarjetas** (con icono, conteo y color: pagos vencidos, pagos por vencer,
+   clientes sin pagos y rutinas por vencer), cada cliente enlazando directamente
+   a su pantalla de pagos o rutina.
 3. **Clientes** — Lista con búsqueda por nombre y filtro por estado (`DataGrid`),
    alta/edición mediante formularios, y baja lógica con diálogo de confirmación.
    Cada pantalla interna ofrece un botón "Atrás" consistente para volver.

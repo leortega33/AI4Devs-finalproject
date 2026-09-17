@@ -17,7 +17,7 @@ test.describe('client management', () => {
     await login(page);
 
     // Go to clients
-    await page.getByRole('button', { name: 'Clientes' }).click();
+    await page.getByRole('link', { name: 'Clientes' }).click();
     await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
 
     // Create

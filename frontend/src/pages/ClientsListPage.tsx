@@ -7,13 +7,12 @@ import {
   MenuItem,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { clientService, type Client, type ClientStatus } from '../services/clientService';
 import { DeactivateClientDialog } from '../components/DeactivateClientDialog';
-import { BackButton } from '../components/BackButton';
+import { PageHeader } from '../components/PageHeader';
 
 type StatusFilter = 'all' | ClientStatus;
 
@@ -128,13 +127,15 @@ export function ClientsListPage() {
 
   return (
     <Box>
-      <BackButton to="/" />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h4">{t('clients.title')}</Typography>
-        <Button variant="contained" onClick={() => navigate('/clients/new')}>
-          {t('clients.new')}
-        </Button>
-      </Box>
+      <PageHeader
+        title={t('clients.title')}
+        backTo="/"
+        actions={
+          <Button variant="contained" onClick={() => navigate('/clients/new')}>
+            {t('clients.new')}
+          </Button>
+        }
+      />
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <TextField
           label={t('clients.search')}

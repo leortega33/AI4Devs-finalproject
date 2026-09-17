@@ -14,8 +14,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useTranslation } from 'react-i18next';
-import { BackButton } from '../components/BackButton';
+import { PageHeader } from '../components/PageHeader';
 import { PaymentFormDialog } from '../components/PaymentFormDialog';
+import { useSnackbar } from '../components/SnackbarProvider';
+import { LoadingSkeleton } from '../components/skeletons/LoadingSkeleton';
 import { clientService, type Client } from '../services/clientService';
 import {
   paymentService,
@@ -39,6 +41,7 @@ const METHOD_LABELS: Record<string, string> = {
 export function ClientPaymentsPage() {
   const { clientId } = useParams();
   const { t, i18n } = useTranslation();
+  const { notify } = useSnackbar();
   const [client, setClient] = useState<Client | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [status, setStatus] = useState<PaymentStatus>('no_payments');
@@ -46,6 +49,7 @@ export function ClientPaymentsPage() {
   const [editing, setEditing] = useState<Payment | null>(null);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!clientId) return;
@@ -55,6 +59,8 @@ export function ClientPaymentsPage() {
       setStatus(result.status);
     } catch {
       setError(t('payments.loadFailed'));
+    } finally {
+      setLoading(false);
     }
   }, [clientId, t]);
 
@@ -73,6 +79,7 @@ export function ClientPaymentsPage() {
     }
     setDialogOpen(false);
     setEditing(null);
+    notify(t('payments.saved'));
     load();
   };
 
@@ -80,6 +87,7 @@ export function ClientPaymentsPage() {
     // eslint-disable-next-line no-alert
     if (!window.confirm(t('payments.deleteConfirm'))) return;
     await paymentService.remove(id);
+    notify(t('payments.deleted'));
     load();
   };
 
@@ -145,29 +153,31 @@ export function ClientPaymentsPage() {
 
   return (
     <Box>
-      <BackButton to="/clients" />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-        <Typography variant="h4">{t('payments.title')}</Typography>
-        <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            disabled={exporting}
-            onClick={exportPdf}
-          >
-            {t('payments.exportPdf')}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setEditing(null);
-              setDialogOpen(true);
-            }}
-          >
-            {t('payments.register')}
-          </Button>
-        </Stack>
-      </Box>
+      <PageHeader
+        title={t('payments.title')}
+        backTo="/clients"
+        actions={
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              disabled={exporting}
+              onClick={exportPdf}
+            >
+              {t('payments.exportPdf')}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setEditing(null);
+                setDialogOpen(true);
+              }}
+            >
+              {t('payments.register')}
+            </Button>
+          </>
+        }
+      />
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
         {clientName && <Typography color="text.secondary">{t('payments.subtitle', { name: clientName })}</Typography>}
         <Chip label={t(statusMeta.key)} color={statusMeta.color} size="small" />
@@ -177,7 +187,9 @@ export function ClientPaymentsPage() {
           {error}
         </Alert>
       )}
-      {payments.length === 0 ? (
+      {loading ? (
+        <LoadingSkeleton variant="table" count={4} />
+      ) : payments.length === 0 ? (
         <Alert severity="info">{t('payments.empty')}</Alert>
       ) : (
         <div style={{ width: '100%' }}>

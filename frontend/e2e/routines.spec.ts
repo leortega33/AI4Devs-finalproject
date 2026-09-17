@@ -17,7 +17,7 @@ test.describe('routine templates', () => {
     await login(page);
 
     // Open the routines library from the dashboard.
-    await page.getByRole('button', { name: 'Rutinas' }).click();
+    await page.getByRole('link', { name: 'Rutinas' }).click();
     await expect(page.getByRole('heading', { name: 'Rutinas' })).toBeVisible();
 
     // Build a new routine with a session and a main exercise from the picker.

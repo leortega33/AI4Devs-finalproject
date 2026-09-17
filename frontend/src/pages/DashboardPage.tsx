@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Box } from '@mui/material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { useTranslation } from 'react-i18next';
+import { PageHeader } from '../components/PageHeader';
 import { AlertList, type AlertItem } from '../components/AlertList';
+import { LoadingSkeleton } from '../components/skeletons/LoadingSkeleton';
 import {
   dashboardService,
   type Dashboard,
@@ -18,16 +23,17 @@ const EMPTY_DASHBOARD: Dashboard = {
 };
 
 export function DashboardPage() {
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState<Dashboard>(EMPTY_DASHBOARD);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dashboardService
       .get()
       .then(setDashboard)
-      .catch(() => setError(t('dashboard.loadFailed')));
+      .catch(() => setError(t('dashboard.loadFailed')))
+      .finally(() => setLoading(false));
   }, [t]);
 
   const paymentItems = (alerts: PaymentAlert[]): AlertItem[] =>
@@ -55,21 +61,7 @@ export function DashboardPage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        {t('auth.dashboard.title')}
-      </Typography>
-
-      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-        <Button variant="contained" onClick={() => navigate('/clients')}>
-          {t('auth.dashboard.clients')}
-        </Button>
-        <Button variant="outlined" onClick={() => navigate('/exercises')}>
-          {t('exercises.title')}
-        </Button>
-        <Button variant="outlined" onClick={() => navigate('/routines')}>
-          {t('routines.title')}
-        </Button>
-      </Stack>
+      <PageHeader title={t('auth.dashboard.title')} />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -77,22 +69,42 @@ export function DashboardPage() {
         </Alert>
       )}
 
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-        }}
-      >
-        <AlertList title={t('dashboard.overdueTitle')} items={paymentItems(dashboard.overduePayments)} color="error" />
-        <AlertList title={t('dashboard.dueSoonTitle')} items={paymentItems(dashboard.paymentsDueSoon)} color="warning" />
-        <AlertList title={t('dashboard.noPaymentsTitle')} items={paymentItems(dashboard.noPayments)} color="default" />
-        <AlertList
-          title={t('dashboard.expiringRoutinesTitle')}
-          items={routineItems(dashboard.expiringRoutines)}
-          color="warning"
-        />
-      </Box>
+      {loading ? (
+        <LoadingSkeleton variant="cards" count={4} />
+      ) : (
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          }}
+        >
+          <AlertList
+            title={t('dashboard.overdueTitle')}
+            items={paymentItems(dashboard.overduePayments)}
+            color="error"
+            icon={<ErrorOutlineIcon />}
+          />
+          <AlertList
+            title={t('dashboard.dueSoonTitle')}
+            items={paymentItems(dashboard.paymentsDueSoon)}
+            color="warning"
+            icon={<WarningAmberIcon />}
+          />
+          <AlertList
+            title={t('dashboard.noPaymentsTitle')}
+            items={paymentItems(dashboard.noPayments)}
+            color="info"
+            icon={<MoneyOffIcon />}
+          />
+          <AlertList
+            title={t('dashboard.expiringRoutinesTitle')}
+            items={routineItems(dashboard.expiringRoutines)}
+            color="warning"
+            icon={<EventBusyIcon />}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

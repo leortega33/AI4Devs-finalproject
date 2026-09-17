@@ -17,7 +17,7 @@ test.describe('medical record', () => {
     await login(page);
 
     // Create a client to attach the medical record to.
-    await page.getByRole('button', { name: 'Clientes' }).click();
+    await page.getByRole('link', { name: 'Clientes' }).click();
     await page.getByRole('button', { name: 'Nuevo cliente' }).click();
     await expect(page.getByRole('heading', { name: 'Nuevo cliente' })).toBeVisible();
     await page.getByLabel(/nombre/i).fill('Med');

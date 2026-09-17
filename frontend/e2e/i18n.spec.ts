@@ -22,11 +22,11 @@ test.describe('internationalization', () => {
     await page.getByRole('combobox', { name: /idioma/i }).click();
     await page.getByRole('option', { name: 'Inglés' }).click();
 
-    await expect(page.getByRole('button', { name: 'Clients' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Clients' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible();
 
     // Persist across reload
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Clients' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Clients' })).toBeVisible();
   });
 });

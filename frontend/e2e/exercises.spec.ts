@@ -17,7 +17,7 @@ test.describe('exercise catalog', () => {
     await login(page);
 
     // Open the catalog from the dashboard.
-    await page.getByRole('button', { name: 'Ejercicios' }).click();
+    await page.getByRole('link', { name: 'Ejercicios' }).click();
     await expect(page.getByRole('heading', { name: 'Ejercicios' })).toBeVisible();
     // Seeded exercise is present.
     await expect(page.getByText('Sentadilla')).toBeVisible();

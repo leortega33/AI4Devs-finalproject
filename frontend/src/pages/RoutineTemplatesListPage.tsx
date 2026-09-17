@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Stack } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
   routineTemplateService,
   type RoutineTemplateSummary,
 } from '../services/routineTemplateService';
-import { BackButton } from '../components/BackButton';
+import { PageHeader } from '../components/PageHeader';
 
 export function RoutineTemplatesListPage() {
   const navigate = useNavigate();
@@ -61,13 +61,15 @@ export function RoutineTemplatesListPage() {
 
   return (
     <Box>
-      <BackButton to="/" />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h4">{t('routines.title')}</Typography>
-        <Button variant="contained" onClick={() => navigate('/routines/new')}>
-          {t('routines.new')}
-        </Button>
-      </Box>
+      <PageHeader
+        title={t('routines.title')}
+        backTo="/"
+        actions={
+          <Button variant="contained" onClick={() => navigate('/routines/new')}>
+            {t('routines.new')}
+          </Button>
+        }
+      />
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}

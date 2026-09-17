@@ -260,6 +260,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > §2.4/2.5/2.6 + `docs/deployment.md`) sin secretos en el repo. Contenido en
 > español.
 
+**Prompt 11:**
+
+> Arranquemos la Fase 2 con la US-012 (refresh de UI/UX): change OpenSpec
+> `refresh-ui-design`, **solo frontend en MUI** (sin migrar a Tailwind/shadcn),
+> con `skip_specs`. Tema refinado con **Inter** auto-alojada + tokens + overrides
+> de MUI; **barra lateral** de navegación (Panel/Clientes/Ejercicios/Rutinas) que
+> colapsa en mobile; **dashboard con tarjetas** (icono + conteo + color);
+> primitivas reutilizables `PageHeader`, `SnackbarProvider`/`useSnackbar` y
+> `LoadingSkeleton`; adopción por página preservando los roles/nombres que usan
+> los tests. Sin dark mode/gráficos/cambios funcionales. Mantener unit y E2E en
+> verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

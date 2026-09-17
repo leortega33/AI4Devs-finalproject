@@ -710,7 +710,7 @@ file placed under `frontend/src/assets/`).
 
 ## US-012: UI/UX design refresh
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/refresh-ui-design/`)
 - **Priority:** first Phase 2 item (visual/UX polish over the whole app).
 
 **User story:** As the gym owner/trainer, I want a more modern, consistent, and

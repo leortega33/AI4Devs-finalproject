@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Chip, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, MenuItem, Stack, TextField } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { exerciseService, type Exercise, type ExerciseCategory } from '../services/exerciseService';
-import { BackButton } from '../components/BackButton';
+import { PageHeader } from '../components/PageHeader';
 
 type CategoryFilter = 'all' | ExerciseCategory;
 
@@ -58,13 +58,15 @@ export function ExerciseCatalogPage() {
 
   return (
     <Box>
-      <BackButton to="/" />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h4">{t('exercises.title')}</Typography>
-        <Button variant="contained" onClick={() => navigate('/exercises/new')}>
-          {t('exercises.new')}
-        </Button>
-      </Box>
+      <PageHeader
+        title={t('exercises.title')}
+        backTo="/"
+        actions={
+          <Button variant="contained" onClick={() => navigate('/exercises/new')}>
+            {t('exercises.new')}
+          </Button>
+        }
+      />
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <TextField
           label={t('exercises.search')}

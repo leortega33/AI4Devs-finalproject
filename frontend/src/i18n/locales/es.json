@@ -1,10 +1,17 @@
 {
+  "nav": {
+    "dashboard": "Panel",
+    "clients": "Clientes",
+    "exercises": "Ejercicios",
+    "routines": "Rutinas"
+  },
   "common": {
     "appName": "SPORT – FITNESS",
     "appTagline": "Entrenamiento Físico Integral",
     "logoAlt": "Logo de SPORT – FITNESS",
     "back": "Atrás",
     "home": "Inicio",
+    "menu": "Menú",
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Editar",
@@ -238,6 +245,8 @@
     "register": "Registrar pago",
     "exportPdf": "Exportar PDF",
     "exportFailed": "No se pudo exportar el PDF.",
+    "saved": "Pago guardado.",
+    "deleted": "Pago eliminado.",
     "empty": "Este cliente todavía no tiene pagos registrados.",
     "statusUpToDate": "Al día",
     "statusOverdue": "Vencido",

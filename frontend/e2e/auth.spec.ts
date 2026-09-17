@@ -53,7 +53,7 @@ test.describe('admin authentication', () => {
     await expect(page.getByRole('banner').getByText('SPORT – FITNESS')).toBeVisible();
 
     // Navigate into clients, then use the back button to return home.
-    await page.getByRole('button', { name: 'Clientes' }).click();
+    await page.getByRole('link', { name: 'Clientes' }).click();
     await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
     await page.getByRole('button', { name: /atrás/i }).click();
     await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();

@@ -1,21 +1,35 @@
-import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
+import { useState } from 'react';
+import { AppBar, Box, Button, Drawer, IconButton, Toolbar, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { BrandLogo } from './BrandLogo';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { Sidebar } from './Sidebar';
 
-/** Shared shell for authenticated screens: branded AppBar + page content. */
+const DRAWER_WIDTH = 240;
+
+/** Shared shell for authenticated screens: branded AppBar + sidebar nav + content. */
 export function AppLayout() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static" color="inherit" elevation={1}>
-        <Toolbar sx={{ gap: 2 }}>
+      <AppBar position="fixed" color="inherit" elevation={0} sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+        <Toolbar sx={{ gap: 1 }}>
+          {!isDesktop && (
+            <IconButton edge="start" aria-label={t('common.menu')} onClick={() => setMobileOpen(true)}>
+              <MenuIcon />
+            </IconButton>
+          )}
           <Box
             component="button"
             onClick={() => navigate('/')}
@@ -36,9 +50,41 @@ export function AppLayout() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Container sx={{ py: 4 }}>
+
+      {isDesktop ? (
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: DRAWER_WIDTH,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: DRAWER_WIDTH,
+              boxSizing: 'border-box',
+              borderRight: 1,
+              borderColor: 'divider',
+            },
+          }}
+        >
+          <Sidebar offsetToolbar />
+        </Drawer>
+      ) : (
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
+          sx={{ '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' } }}
+        >
+          <Sidebar onNavigate={() => setMobileOpen(false)} />
+        </Drawer>
+      )}
+
+      <Box
+        component="main"
+        sx={{ ml: { md: `${DRAWER_WIDTH}px` }, px: { xs: 2, sm: 3 }, py: 4, mt: '64px' }}
+      >
         <Outlet />
-      </Container>
+      </Box>
     </Box>
   );
 }
