@@ -793,6 +793,161 @@ reorganizes the existing screens without changing their functional behavior.
 
 ---
 
+## US-013: Notification bell
+
+- **Status:** enriched
+- **Dependency:** build after US-012 (lives in the refreshed shell).
+
+**User story:** As the gym owner/trainer, I want a bell icon in the top bar with
+a badge showing how many clients need attention and a dropdown listing them, so
+that I can spot alerts from any screen without opening the dashboard.
+
+**Functional description:** a persistent notification bell fed by the **existing**
+`GET /api/dashboard` aggregation (US-009) — **frontend-only, no new endpoint**.
+The badge shows the total number of alerts (overdue + due-soon + no-payment +
+expiring-routine, or a chosen subset); the dropdown groups them with links to
+each client's payments/routine screen. Data is (re)fetched on mount, on a light
+interval, and/or on route change.
+
+**Data model (Prisma):** none. **Endpoints:** none (reuses `GET /api/dashboard`).
+
+**Files/modules (frontend):** `components/NotificationBell.tsx` (MUI `Badge` +
+`IconButton` + `Menu`/`Popover`), a `useDashboardAlerts` hook (fetch + total
+count) reusing `dashboardService`, integration in `components/AppLayout.tsx` top
+bar, and `nav`/`notifications` i18n keys.
+
+**Definition of done:**
+- Bell with a live badge count on all authenticated screens; dropdown lists the
+  grouped alerts with working links; empty state when there are none.
+- Count refreshes (on mount + interval and/or route change).
+
+**Tests:** `NotificationBell` unit (renders the count, opens the dropdown, links
+navigate) with `dashboardService` mocked; keep existing tests green.
+
+**Non-functional requirements:** a11y (`aria-label`, badge announced,
+keyboard-openable), no excessive polling (e.g. ~60s or refetch-on-navigation),
+i18n, no backend change.
+
+**Open technical decisions:**
+- Which groups feed the badge (all four vs payments-only). Proposed: all four.
+- Refresh strategy: light polling vs refetch-on-route-change. Proposed:
+  refetch-on-navigation + optional slow interval.
+
+---
+
+## US-014: Filter client list by payment status
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want to filter the client list by
+payment status (up to date / overdue / no payments), so that I can quickly find
+who owes.
+
+**Functional description:** extend the existing client-list controls (search by
+name + active/inactive filter, US-002) with a **payment-status filter**. The list
+response already includes each client's derived `paymentStatus` (US-007), so the
+MVP can filter **client-side** without a backend change; a backend
+`paymentStatus` query param on `GET /api/clients` is the alternative if
+server-side filtering/pagination is later needed.
+
+**Data model (Prisma):** none. **Endpoints:** none for the client-side approach
+(optional `paymentStatus` query param on `GET /api/clients`).
+
+**Files/modules (frontend):** `pages/ClientsListPage.tsx` (an MUI `Select`
+filter combining with the existing search/status filters), `i18n` keys. (If
+backend: `ClientRepository.findAll` + validator + controller.)
+
+**Definition of done:** a payment-status filter on the client list that combines
+with the name search and the active/inactive filter; clearing shows all.
+
+**Tests:** `ClientsListPage` unit (selecting a payment status filters the rows;
+combines with the other filters).
+
+**Non-functional requirements:** i18n, a11y, no regression to the existing
+filters.
+
+**Open technical decisions:** client-side vs backend filter. Proposed:
+**client-side** for MVP scale (the data is already present).
+
+---
+
+## US-015: Smarter payment-period entry
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, when I register a payment I want the
+period pre-filled to the next month the client owes and the payment date
+defaulted to today, so that I don't create incoherent entries (e.g. a November
+period paid in July).
+
+**Functional description:** improve the "register payment" dialog
+(`PaymentFormDialog`, US-007) so the **period defaults** to the next period the
+client owes — the most recent covered period + 1 month, or the **current month**
+when they have none / are up to date — and the **payment date defaults to
+today**. The period stays **editable** for late/advance payments. Optionally warn
+when the chosen period is clearly incoherent with the payment date. The covered
+period remains the source of truth for the derived up-to-date/overdue status
+(US-007) — no change to that logic.
+
+**Data model (Prisma):** none. **Endpoints:** none (uses the existing per-client
+payments already loaded on the payments page).
+
+**Files/modules (frontend):** `components/PaymentFormDialog.tsx` (default-period
+logic), `pages/ClientPaymentsPage.tsx` (pass the current payments/status), a
+small helper to compute the next owed period, `i18n` keys for the optional
+warning.
+
+**Definition of done:** opening "Registrar pago" pre-fills the next owed period
+and today's date; the field is still editable; the optional coherence warning
+appears on a clearly inconsistent period/date; the derived status is unchanged.
+
+**Tests:** `PaymentFormDialog` unit (default = current month when up to date;
+default = most-recent + 1 when there are payments; warning shows on incoherent
+period/date).
+
+**Non-functional requirements:** no change to the derived-status rule; i18n.
+
+**Open technical decisions:** the exact "next owed" computation. Proposed:
+**most recent covered period + 1 month**, or current month if none — a full
+gap/arrears analysis using the client's join date is deferred.
+
+---
+
+## US-016: Payment history summary
+
+- **Status:** enriched
+
+**User story:** As the gym owner/trainer, I want a summary of a client's payments
+(total paid, number of payments, covered-period range, current status) alongside
+the chronological list, so that I can see the big picture at a glance.
+
+**Functional description:** add a **summary panel** to the client payments page
+(and optionally to the US-008 PDF) computed from the payments already listed —
+**client-side, no backend change**. Fields: total amount paid, payment count,
+first/last covered period, and the current derived payment status.
+
+**Data model (Prisma):** none. **Endpoints:** none (client-side from the existing
+list; could later be a backend summary).
+
+**Files/modules (frontend):** `pages/ClientPaymentsPage.tsx` (summary cards using
+the refreshed design system), a small pure helper for the aggregation, `i18n`
+keys; optionally extend `infrastructure/pdf/paymentHistoryPdf.ts` (backend) to
+include the summary in the PDF.
+
+**Definition of done:** the summary is shown above/beside the history; totals and
+period range are correct; status matches the derived status.
+
+**Tests:** unit for the aggregation helper + the summary render.
+
+**Non-functional requirements:** i18n, a11y, consistent with the refreshed UI
+(US-012).
+
+**Open technical decisions:** include "months owed" (needs join-date/arrears
+logic, tied to US-015) or keep to total/count/period-range/status for now.
+Proposed: the latter; "months owed" deferred.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
@@ -815,14 +970,14 @@ external dependencies).
 - Physical progress tracking (measurements, photos, evolution over time)
 - Nutrition plans
 - Multi-tenant support (multiple gyms/sedes) — deferred to the end.
-- Filter client list by payment status (up to date / overdue)
+- Filter client list by payment status (up to date / overdue) — enriched as **US-014** (see above).
 - Medical record change history (track evolution over time, not just current state)
 - Video/image reference per exercise in the catalog
 - Automatic exercise suggestions/contraindication warnings based on a client's medical record
 - Weekly progression: per-exercise KG/reps/series values across a multi-week mesocycle
 - Dynamic, editable warm-up blocks that adapt based on the client's medical record
 - Export routines (library templates and client-assigned routines) to PDF and Excel — a printable/shareable routine sheet (PDF, e.g. one page per session) and a spreadsheet export (`.xlsx`, e.g. one sheet per session). Feasible either client-side (jsPDF / SheetJS) or via a backend export endpoint (`GET /api/routine-templates/:id/export.pdf|.xlsx`).
-- Payment history summary view (total paid, months owed, etc.) in addition to the chronological list
+- Payment history summary view (total paid, months owed, etc.) in addition to the chronological list — enriched as **US-016** (see above).
 - Dashboard general KPI numbers (active clients count, monthly revenue, etc.)
-- Smarter payment-period entry: today the covered period and the payment date are chosen independently, which allows incoherent combinations (e.g. period 11/2026 with a July payment date). Improve the "register payment" flow so the period is pre-filled to the next period the client owes (the oldest unpaid month, or the current month when up to date), the payment date defaults to today, and the period stays editable for late/advance payments — optionally warning when the chosen period is clearly incoherent with the payment date. The covered period remains the source of truth for the derived up-to-date/overdue status (US-007).
-- Notification bell in the header: a persistent, always-visible bell icon with a badge count that surfaces the same dashboard alerts (overdue/due-soon/no-payment/expiring-routine) from any screen, with a dropdown listing them and links to each client — a "push"/at-a-glance complement to the US-009 dashboard, fed by the same `GET /api/dashboard` aggregation.
+- Smarter payment-period entry — enriched as **US-015** (see above).
+- Notification bell in the header — enriched as **US-013** (see above).
