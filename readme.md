@@ -325,13 +325,70 @@ su spec a `openspec/specs/`.
 
 > Detalla la infraestructura del proyecto, incluyendo un diagrama en el formato que creas conveniente, y explica el proceso de despliegue que se sigue
 
+La aplicación se despliega **single-origin**: el backend sirve el build del
+frontend como archivos estáticos, de modo que la cookie de sesión
+(`httpOnly` + `secure` + `sameSite=strict`) queda del mismo origen sin relajar
+CORS. Todo se empaqueta en una imagen Docker multi-stage.
+
+```mermaid
+flowchart LR
+    user["Navegador"] -->|HTTPS| tunnel["Cloudflare Tunnel<br/>(URL pública)"]
+    tunnel -->|HTTP| app["Contenedor app<br/>Express + SPA compilada<br/>(mismo origen, puerto 3000)"]
+    app -->|SQL| db[("PostgreSQL<br/>contenedor")]
+```
+
+**Proceso de despliegue (opción recomendada, gratis):**
+1. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build`
+   (las migraciones se aplican solas al iniciar con `prisma migrate deploy`).
+2. Seed del admin único: `... run --rm app npx prisma db seed`.
+3. URL pública con **Cloudflare Tunnel**: `cloudflared tunnel --url http://localhost:3000`.
+
+Como alternativa cloud (free tier) hay un **`render.yaml`** (Blueprint: web
+service Docker + PostgreSQL gestionado). Detalle completo, variables y gestión de
+secretos en **[docs/deployment.md](docs/deployment.md)**.
+
+**Sacrificios / límites:** el despliegue lo ejecuta el responsable de forma
+local + túnel (no hay entorno cloud permanente en el MVP); los free tiers cloud
+tienen *cold starts* / expiración de la BD.
+
 ### **2.5. Seguridad**
 
 > Enumera y describe las prácticas de seguridad principales que se han implementado en el proyecto, añadiendo ejemplos si procede
 
+- **Autenticación por sesión JWT en cookie `httpOnly` + `secure` +
+  `sameSite=strict`**: el token no es accesible desde JavaScript (mitiga XSS de
+  robo de sesión) y no viaja cross-site (mitiga CSRF). `trust proxy` permite la
+  cookie `secure` detrás del túnel HTTPS.
+- **Contraseñas con hash bcrypt** (nunca en texto plano); token de recuperación
+  almacenado hasheado y con expiración.
+- **Rutas protegidas por middleware de autenticación**; el frontend usa un
+  `ProtectedRoute` que redirige a `/login`.
+- **Validación de entrada con Zod** en todos los endpoints de escritura.
+- **Rate limiting** en `login` y `forgot-password` (10 y 5 intentos / 15 min);
+  desactivable **solo fuera de producción** vía `RATE_LIMIT_DISABLED`.
+- **Prisma ORM**: consultas parametrizadas (evita inyección SQL).
+- **Sin secretos en el repositorio**: variables por entorno / secrets de la
+  plataforma; `.env`/`.env.prod` están en `.gitignore`.
+- **Baja lógica** (soft delete) en clientes y catálogo, preservando integridad
+  referencial.
+
 ### **2.6. Tests**
 
 > Describe brevemente algunos de los tests realizados
+
+- **Backend (Jest, 268 tests, cobertura ~98%, umbral 90%)**: unitarios de
+  dominio (estado de pago derivado, vencimiento de rutina), servicios (con
+  repositorios mockeados) e **integración** de rutas con `supertest` (códigos
+  200/201/204/400/401/404, autenticación, y el servido single-origin).
+- **Frontend (Vitest + Testing Library, 65 tests)**: componentes, diálogos,
+  páginas y servicios (con axios mockeado), incluyendo estados vacíos, errores y
+  navegación.
+- **E2E (Playwright)**: 14 tests que cubren los flujos principales (login,
+  clientes, ficha médica, ejercicios, rutinas, pagos + export PDF, dashboard,
+  i18n). Se pueden apuntar a cualquier destino con `PLAYWRIGHT_BASE_URL` (se
+  validó el flujo principal contra la imagen Docker de producción).
+- **Comandos:** `cd backend && npm test` · `cd frontend && npm test` ·
+  `cd frontend && npm run test:e2e`.
 
 ---
 

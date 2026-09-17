@@ -247,6 +247,19 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > los cuatro grupos, conteos y enlaces a la pantalla de pagos/rutina de cada
 > cliente. Contenido en español.
 
+**Prompt 10:**
+
+> Preparemos infra y despliegue (artefacto del curso): change OpenSpec
+> `add-deployment-infra` (solo configuración commiteada, sin desplegar nada ni
+> pagar suscripciones). Despliegue **single-origin**: el backend sirve el build
+> del frontend (flag `SERVE_FRONTEND`, `trust proxy`, `GET /api/health`) para
+> conservar la cookie `sameSite=strict`. Agregá `Dockerfile` multi-stage +
+> `docker-compose.prod.yml`, URL pública gratis con **Cloudflare Tunnel**,
+> `render.yaml` como opción cloud free tier, CI con **GitHub Actions**
+> (tests backend/frontend + build de la imagen), y documentá todo (readme
+> §2.4/2.5/2.6 + `docs/deployment.md`) sin secretos en el repo. Contenido en
+> español.
+
 ---
 
 ### 7. Pull Requests

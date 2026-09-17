@@ -1,0 +1,47 @@
+# Production-like single-origin stack: Postgres + the combined app image
+# (backend serving the built frontend). Secrets are read from an untracked
+# .env.prod file (see docs/deployment.md). Never commit real secrets.
+#
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up --build
+#
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gym-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - gym_prod_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gym-app:latest
+    container_name: gym-prod-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      SERVE_FRONTEND: "true"
+      PORT: ${PORT:-3000}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      DASHBOARD_DUE_SOON_DAYS: ${DASHBOARD_DUE_SOON_DAYS:-5}
+    ports:
+      - "${PORT:-3000}:3000"
+
+volumes:
+  gym_prod_db_data:

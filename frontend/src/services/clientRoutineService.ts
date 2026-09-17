@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { RoutineTemplate, RoutineTemplateInput } from './routineTemplateService';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { API_BASE_URL } from './apiBaseUrl';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/clients`,

@@ -160,3 +160,7 @@ npm run test:e2e:ui
 
 This guide will be filled in with real details (exact seed data, deployment steps) as each user story is implemented via OpenSpec changes. See [docs/backend-standards.md](./backend-standards.md#deployment) for the current status of the deployment decision.
 
+## Deployment
+
+The app is packaged as a single-origin Docker image (the backend serves the built frontend). To run the production-like stack locally, expose a public URL (Cloudflare Tunnel), and for the CI pipeline and secrets management, see [docs/deployment.md](./deployment.md). The local dev workflow above is unaffected — the `SERVE_FRONTEND` flag is off in dev.
+

@@ -11,6 +11,9 @@ coverage/
 # Env files (never commit secrets)
 .env
 .env.local
+.env.prod
+.env.*.local
+*.env.prod
 
 # Prisma
 backend/prisma/migrations/dev.db
