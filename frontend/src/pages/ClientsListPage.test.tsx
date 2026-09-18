@@ -42,9 +42,30 @@ describe('ClientsListPage', () => {
     render(<MemoryRouter><ClientsListPage /></MemoryRouter>);
     await screen.findByText('John Doe');
 
-    await user.click(screen.getByRole('combobox', { name: /estado/i }));
+    await user.click(screen.getByRole('combobox', { name: 'Estado' }));
     await user.click(await screen.findByRole('option', { name: /inactivo/i }));
 
     await waitFor(() => expect(clientService.list).toHaveBeenLastCalledWith({ status: 'inactive' }));
+  });
+
+  it('should filter the list by payment status client-side', async () => {
+    vi.mocked(clientService.list).mockResolvedValue([
+      { ...sample, id: 1, firstName: 'Al', lastName: 'Dia', paymentStatus: 'up_to_date' },
+      { ...sample, id: 2, firstName: 'Ven', lastName: 'Cido', paymentStatus: 'overdue' },
+      { ...sample, id: 3, firstName: 'Sin', lastName: 'Pagos', paymentStatus: 'no_payments' },
+    ]);
+    const user = userEvent.setup();
+
+    render(<MemoryRouter><ClientsListPage /></MemoryRouter>);
+    await screen.findByText('Ven Cido');
+
+    await user.click(screen.getByRole('combobox', { name: /estado de pago/i }));
+    await user.click(await screen.findByRole('option', { name: 'Vencido' }));
+
+    expect(await screen.findByText('Ven Cido')).toBeInTheDocument();
+    expect(screen.queryByText('Al Dia')).not.toBeInTheDocument();
+    expect(screen.queryByText('Sin Pagos')).not.toBeInTheDocument();
+    // The payment filter does not trigger a re-query (client-side).
+    expect(clientService.list).toHaveBeenCalledTimes(1);
   });
 });

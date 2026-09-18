@@ -837,7 +837,7 @@ i18n, no backend change.
 
 ## US-014: Filter client list by payment status
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/filter-clients-by-payment`)
 
 **User story:** As the gym owner/trainer, I want to filter the client list by
 payment status (up to date / overdue / no payments), so that I can quickly find

@@ -111,11 +111,12 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    inicio y duración) y ver el **historial**. Asignar una nueva cierra la
    anterior.
 8. **Pagos del cliente** — El listado de clientes muestra el estado de pago
-   (al día / vencido / sin pagos). Desde la acción "Pagos" se abre una pantalla
-   que lista los pagos y permite **registrar / editar / eliminar** pagos (monto,
-   fecha, método, período mes/año). El estado se recalcula automáticamente.
-   Además, el botón **"Exportar PDF"** descarga el historial de pagos del
-   cliente como un documento PDF (bilingüe, según el idioma activo).
+   (al día / vencido / sin pagos) y permite **filtrar** por ese estado además de
+   por nombre y estado (activo/inactivo). Desde la acción "Pagos" se abre una
+   pantalla que lista los pagos y permite **registrar / editar / eliminar** pagos
+   (monto, fecha, método, período mes/año). El estado se recalcula
+   automáticamente. Además, el botón **"Exportar PDF"** descarga el historial de
+   pagos del cliente como un documento PDF (bilingüe, según el idioma activo).
 9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 

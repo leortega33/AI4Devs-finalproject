@@ -98,6 +98,7 @@
     "paymentUpToDate": "Al día",
     "paymentOverdue": "Vencido",
     "paymentNone": "Sin pagos",
+    "paymentFilter": "Estado de pago",
     "form": {
       "newTitle": "Nuevo cliente",
       "editTitle": "Editar cliente",

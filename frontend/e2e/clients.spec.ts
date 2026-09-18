@@ -45,8 +45,18 @@ test.describe('client management', () => {
     await expect(page.getByText('Inactivo')).toBeVisible();
 
     // Filter by inactive status keeps it visible
-    await page.getByRole('combobox', { name: /estado/i }).click();
+    await page.getByRole('combobox', { name: /^Estado (Todos|Activo|Inactivo)/ }).click();
     await page.getByRole('option', { name: 'Inactivo' }).click();
     await expect(page.getByText('E2E Tester')).toBeVisible();
+
+    // Payment-status filter (client-side): the new client has no payments
+    await page.getByRole('combobox', { name: 'Estado de pago' }).click();
+    await page.getByRole('option', { name: 'Sin pagos' }).click();
+    await expect(page.getByText('E2E Tester')).toBeVisible();
+
+    // Switching to "Al día" hides the client (it has no payments)
+    await page.getByRole('combobox', { name: 'Estado de pago' }).click();
+    await page.getByRole('option', { name: 'Al día' }).click();
+    await expect(page.getByText('E2E Tester')).toHaveCount(0);
   });
 });

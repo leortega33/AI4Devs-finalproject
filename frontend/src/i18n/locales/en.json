@@ -98,6 +98,7 @@
     "paymentUpToDate": "Up to date",
     "paymentOverdue": "Overdue",
     "paymentNone": "No payments",
+    "paymentFilter": "Payment status",
     "form": {
       "newTitle": "New client",
       "editTitle": "Edit client",

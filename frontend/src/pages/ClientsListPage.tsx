@@ -10,11 +10,12 @@ import {
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { clientService, type Client, type ClientStatus } from '../services/clientService';
+import { clientService, type Client, type ClientStatus, type ClientPaymentStatus } from '../services/clientService';
 import { DeactivateClientDialog } from '../components/DeactivateClientDialog';
 import { PageHeader } from '../components/PageHeader';
 
 type StatusFilter = 'all' | ClientStatus;
+type PaymentFilter = 'all' | ClientPaymentStatus;
 
 export function ClientsListPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export function ClientsListPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>('all');
   const [toDeactivate, setToDeactivate] = useState<Client | null>(null);
 
   const load = useCallback(async () => {
@@ -125,6 +127,9 @@ export function ClientsListPage() {
     },
   ];
 
+  // The payment-status filter is applied client-side over the already-loaded list.
+  const rows = clients.filter((c) => paymentFilter === 'all' || c.paymentStatus === paymentFilter);
+
   return (
     <Box>
       <PageHeader
@@ -155,11 +160,24 @@ export function ClientsListPage() {
           <MenuItem value="active">{t('clients.statusActive')}</MenuItem>
           <MenuItem value="inactive">{t('clients.statusInactive')}</MenuItem>
         </TextField>
+        <TextField
+          label={t('clients.paymentFilter')}
+          size="small"
+          select
+          sx={{ minWidth: 160 }}
+          value={paymentFilter}
+          onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)}
+        >
+          <MenuItem value="all">{t('clients.statusAll')}</MenuItem>
+          <MenuItem value="up_to_date">{t('clients.paymentUpToDate')}</MenuItem>
+          <MenuItem value="overdue">{t('clients.paymentOverdue')}</MenuItem>
+          <MenuItem value="no_payments">{t('clients.paymentNone')}</MenuItem>
+        </TextField>
       </Stack>
       <div style={{ width: '100%' }}>
         <DataGrid
           autoHeight
-          rows={clients}
+          rows={rows}
           columns={columns}
           disableRowSelectionOnClick
           initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}

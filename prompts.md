@@ -283,6 +283,17 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > Tests unitarios del hook y del componente; E2E que verifique el badge. Mantener
 > todo en verde. Contenido en español.
 
+**Prompt 13:**
+
+> Sigamos con la US-014 (filtrar clientes por estado de pago): change OpenSpec
+> `filter-clients-by-payment`, **frontend-only** con `skip_specs`, sin cambio de
+> backend (el listado ya devuelve `paymentStatus`, US-007). En
+> `ClientsListPage` agregar un `Select` "Estado de pago" (Todos / Al día /
+> Vencido / Sin pagos) que filtra las filas **del lado del cliente** y combina
+> con la búsqueda por nombre y el filtro activo/inactivo; claves i18n. Test
+> unitario que verifique que el filtro acota las filas sin re-consultar; extender
+> el E2E de clientes. Mantener unit y E2E en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests
