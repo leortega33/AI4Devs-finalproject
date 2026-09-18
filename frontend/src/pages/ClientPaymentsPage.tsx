@@ -7,6 +7,7 @@ import {
   Chip,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
@@ -130,19 +131,23 @@ export function ClientPaymentsPage() {
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row">
-          <IconButton
-            size="small"
-            aria-label={t('payments.edit')}
-            onClick={() => {
-              setEditing(params.row);
-              setDialogOpen(true);
-            }}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" aria-label={t('payments.delete')} onClick={() => remove(params.row.id)}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title={t('payments.edit')}>
+            <IconButton
+              size="small"
+              aria-label={t('payments.edit')}
+              onClick={() => {
+                setEditing(params.row);
+                setDialogOpen(true);
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('payments.delete')}>
+            <IconButton size="small" aria-label={t('payments.delete')} onClick={() => remove(params.row.id)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
       ),
     },

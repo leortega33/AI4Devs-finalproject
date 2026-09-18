@@ -306,6 +306,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > Reactivar aparece para clientes inactivos. Mantener todo en verde. Contenido en
 > español.
 
+**Prompt 15:**
+
+> Apliquemos el patrón de acciones-icono (US-028) a todas las tablas del sistema
+> (US-029): change OpenSpec `unify-table-action-icons`, **frontend-only** con
+> `skip_specs`, sin cambio de backend. Convertir a `IconButton` + `Tooltip` las
+> acciones del catálogo de ejercicios (Editar) y de las plantillas de rutinas
+> (Editar/Duplicar), y envolver en `Tooltip` los iconos editar/eliminar ya
+> existentes de la tabla de pagos. Preservar el `aria-label` con los mismos
+> textos para no romper tests ni E2E (incluido el test de "Duplicar"). Tests
+> unitarios de las acciones-icono de ejercicios y rutinas. Mantener todo en
+> verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

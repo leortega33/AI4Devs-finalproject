@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Chip, MenuItem, Stack, TextField } from '@mui/material';
+import { Box, Button, Chip, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { exerciseService, type Exercise, type ExerciseCategory } from '../services/exerciseService';
@@ -46,12 +47,14 @@ export function ExerciseCatalogPage() {
     {
       field: 'actions',
       headerName: t('exercises.columns.actions'),
-      width: 140,
+      width: 100,
       sortable: false,
       renderCell: (params) => (
-        <Button size="small" onClick={() => navigate(`/exercises/${params.row.id}/edit`)}>
-          {t('common.edit')}
-        </Button>
+        <Tooltip title={t('common.edit')}>
+          <IconButton size="small" aria-label={t('common.edit')} onClick={() => navigate(`/exercises/${params.row.id}/edit`)}>
+            <EditOutlinedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       ),
     },
   ];

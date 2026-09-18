@@ -1370,6 +1370,41 @@ action set grows).
 
 ---
 
+## US-029: Unify table action icons
+
+- **Status:** in-openspec (`openspec/changes/unify-table-action-icons`)
+
+**User story:** As the gym owner/trainer, I want every table's row actions to use
+the same compact icon + tooltip pattern, so that the UI is consistent and no
+table needs horizontal scrolling to reach an action.
+
+**Functional description:** extend the US-028 icon-action pattern to the three
+remaining tables: the exercise catalog ("Editar") and routine templates
+("Editar"/"Duplicar") swap text buttons for `IconButton` + `Tooltip`; the client
+payments table wraps its existing edit/delete icon buttons in `Tooltip`. Each
+action keeps the same handler/destination and the same accessible name
+(`aria-label`).
+
+**Data model (Prisma):** none. **Endpoints:** none.
+
+**Files/modules (frontend):** `pages/ExerciseCatalogPage.tsx`,
+`pages/RoutineTemplatesListPage.tsx`, `pages/ClientPaymentsPage.tsx`. No i18n
+keys added (reuses existing labels).
+
+**Definition of done:** all four tables (clients, exercises, routines, payments)
+render icon-only actions with tooltips; every action works as before; all suites
+stay green.
+
+**Tests:** unit for the exercise/routines icon actions (icon-only, accessible
+name, click behavior); existing routines "Duplicar" and payments E2E unaffected.
+
+**Non-functional requirements:** a11y (aria-label + tooltip), i18n, no regression
+to existing actions.
+
+**Open technical decisions:** none.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until

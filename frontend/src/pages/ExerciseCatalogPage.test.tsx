@@ -62,4 +62,16 @@ describe('ExerciseCatalogPage', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/exercises/new');
   });
+
+  it('should render the row edit action as an icon-only button that navigates', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText('Back squat');
+
+    const edit = screen.getByRole('button', { name: 'Editar' });
+    expect(edit).toHaveTextContent('');
+
+    await user.click(edit);
+    expect(mockNavigate).toHaveBeenCalledWith('/exercises/1/edit');
+  });
 });

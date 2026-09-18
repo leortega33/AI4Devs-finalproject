@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Stack } from '@mui/material';
+import { Alert, Box, Button, IconButton, Stack, Tooltip } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
@@ -44,16 +46,20 @@ export function RoutineTemplatesListPage() {
     {
       field: 'actions',
       headerName: t('routines.columns.actions'),
-      width: 220,
+      width: 120,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
-          <Button size="small" onClick={() => navigate(`/routines/${params.row.id}/edit`)}>
-            {t('common.edit')}
-          </Button>
-          <Button size="small" onClick={() => duplicate(params.row.id)}>
-            {t('routines.actions.duplicate')}
-          </Button>
+        <Stack direction="row" spacing={0.5}>
+          <Tooltip title={t('common.edit')}>
+            <IconButton size="small" aria-label={t('common.edit')} onClick={() => navigate(`/routines/${params.row.id}/edit`)}>
+              <EditOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('routines.actions.duplicate')}>
+            <IconButton size="small" aria-label={t('routines.actions.duplicate')} onClick={() => duplicate(params.row.id)}>
+              <ContentCopyOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
       ),
     },

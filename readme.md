@@ -100,11 +100,13 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    guarda mediante upsert.
 5. **Ejercicios** — Desde el panel, "Ejercicios" abre el catálogo (`DataGrid`
    con búsqueda por nombre y filtro por categoría). Alta/edición mediante
-   formulario; sin borrado. Trae un set base sembrado al iniciar.
+   formulario; sin borrado. Trae un set base sembrado al iniciar. La acción de
+   editar de cada fila es un **icono con tooltip**.
 6. **Rutinas** — Desde el panel, "Rutinas" abre la biblioteca de plantillas. El
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
    series/notas). Se puede **duplicar** una plantilla en una copia independiente.
+   Las acciones de cada fila (editar, duplicar) son **iconos con tooltip**.
 7. **Rutina del cliente** — El listado de clientes muestra quién tiene rutina
    asignada. Desde la acción "Rutina" se abre una pantalla que muestra la rutina
    activa (o estado vacío), permite **asignar** una plantilla (con fecha de
@@ -114,10 +116,12 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    (al día / vencido / sin pagos) y permite **filtrar** por ese estado además de
    por nombre y estado (activo/inactivo). Las acciones de cada fila (editar, ficha
    médica, rutina, pagos, desactivar/reactivar) son **iconos compactos con
-   tooltip**, de modo que caben sin scroll horizontal. Desde la acción "Pagos" se
-   abre una pantalla que lista los pagos y permite **registrar / editar /
-   eliminar** pagos (monto, fecha, método, período mes/año). El estado se
-   recalcula automáticamente. Además, el botón **"Exportar PDF"** descarga el
+   tooltip**, de modo que caben sin scroll horizontal; este mismo patrón de
+   acciones-icono es **consistente en todas las tablas del sistema** (clientes,
+   ejercicios, rutinas y pagos). Desde la acción "Pagos" se abre una pantalla que
+   lista los pagos y permite **registrar / editar / eliminar** pagos (monto,
+   fecha, método, período mes/año). El estado se recalcula automáticamente.
+   Además, el botón **"Exportar PDF"** descarga el
    historial de pagos del cliente como un documento PDF (bilingüe, según el
    idioma activo).
 9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés

@@ -59,4 +59,18 @@ describe('RoutineTemplatesListPage', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/routines/new');
   });
+
+  it('should render row actions as icon-only buttons and edit navigates', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText('Hipertrofia');
+
+    const edit = screen.getByRole('button', { name: 'Editar' });
+    const duplicate = screen.getByRole('button', { name: 'Duplicar' });
+    expect(edit).toHaveTextContent('');
+    expect(duplicate).toHaveTextContent('');
+
+    await user.click(edit);
+    expect(mockNavigate).toHaveBeenCalledWith('/routines/1/edit');
+  });
 });
