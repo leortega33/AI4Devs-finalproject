@@ -272,6 +272,17 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > los tests. Sin dark mode/gráficos/cambios funcionales. Mantener unit y E2E en
 > verde. Contenido en español.
 
+**Prompt 12:**
+
+> Sigamos con la US-013 (campanita de notificaciones): change OpenSpec
+> `add-notification-bell`, **frontend-only** con `skip_specs`, reutilizando
+> `GET /api/dashboard` (sin cambio de backend). Hook `useDashboardAlerts` (fetch
+> en montaje + cambio de ruta), componente `NotificationBell` (Badge sobre un
+> IconButton de campana + Menú con las alertas agrupadas enlazando a
+> pagos/rutina + estado vacío), integrado en la barra superior del `AppLayout`.
+> Tests unitarios del hook y del componente; E2E que verifique el badge. Mantener
+> todo en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

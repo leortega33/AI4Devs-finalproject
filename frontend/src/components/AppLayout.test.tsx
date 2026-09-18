@@ -9,6 +9,17 @@ vi.mock('../context/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+vi.mock('../services/dashboardService', () => ({
+  dashboardService: {
+    get: vi.fn().mockResolvedValue({
+      overduePayments: [],
+      paymentsDueSoon: [],
+      noPayments: [],
+      expiringRoutines: [],
+    }),
+  },
+}));
+
 function renderLayout() {
   return render(
     <MemoryRouter initialEntries={['/clients']}>

@@ -5,6 +5,11 @@
     "exercises": "Exercises",
     "routines": "Routines"
   },
+  "notifications": {
+    "aria": "Notifications",
+    "title": "Notifications",
+    "empty": "No alerts"
+  },
   "common": {
     "appName": "SPORT – FITNESS",
     "appTagline": "Integral Physical Training",

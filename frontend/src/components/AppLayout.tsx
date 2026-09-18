@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { BrandLogo } from './BrandLogo';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { NotificationBell } from './NotificationBell';
 import { Sidebar } from './Sidebar';
 
 const DRAWER_WIDTH = 240;
@@ -40,6 +41,7 @@ export function AppLayout() {
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <LanguageSwitcher />
+          <NotificationBell />
           <Button
             color="inherit"
             startIcon={<LogoutIcon />}

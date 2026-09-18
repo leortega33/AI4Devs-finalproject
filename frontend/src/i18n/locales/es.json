@@ -5,6 +5,11 @@
     "exercises": "Ejercicios",
     "routines": "Rutinas"
   },
+  "notifications": {
+    "aria": "Notificaciones",
+    "title": "Notificaciones",
+    "empty": "No hay alertas"
+  },
   "common": {
     "appName": "SPORT – FITNESS",
     "appTagline": "Entrenamiento Físico Integral",

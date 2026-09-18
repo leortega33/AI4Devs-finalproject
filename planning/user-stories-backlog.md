@@ -795,7 +795,7 @@ reorganizes the existing screens without changing their functional behavior.
 
 ## US-013: Notification bell
 
-- **Status:** enriched
+- **Status:** in-openspec (implemented — see `openspec/changes/add-notification-bell/`)
 - **Dependency:** build after US-012 (lives in the refreshed shell).
 
 **User story:** As the gym owner/trainer, I want a bell icon in the top bar with

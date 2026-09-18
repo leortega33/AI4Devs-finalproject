@@ -73,8 +73,11 @@ tipografía **Inter** auto-alojada, tokens de color y overrides de componentes.
 Todas las pantallas comparten un *app shell* (`components/AppLayout.tsx`) con una
 **barra superior** persistente (logo/marca "SPORT – FITNESS", selector de idioma
 y cerrar sesión) y una **barra lateral de navegación** (Panel / Clientes /
-Ejercicios / Rutinas) que en pantallas chicas se colapsa en un menú. Las páginas
-internas comparten un encabezado consistente (`PageHeader`), muestran
+Ejercicios / Rutinas) que en pantallas chicas se colapsa en un menú. La barra
+superior incluye además una **campanita de notificaciones** con un contador de
+alertas (pagos vencidos/por vencer, clientes sin pagos y rutinas por vencer) y
+un desplegable que enlaza a cada cliente, visible desde cualquier pantalla. Las
+páginas internas comparten un encabezado consistente (`PageHeader`), muestran
 *skeletons* de carga y notifican las acciones con *snackbars*.
 
 **Recorrido del usuario:**

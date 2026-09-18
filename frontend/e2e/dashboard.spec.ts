@@ -48,6 +48,14 @@ test.describe('dashboard alerts', () => {
     // Back to the dashboard: the client is in the overdue group and links to payments.
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
+
+    // The top-bar notification bell shows a non-zero badge and lists the alert (US-013).
+    const bell = page.getByRole('button', { name: 'Notificaciones' });
+    await expect(bell).toBeVisible();
+    await bell.click();
+    await expect(page.getByRole('menuitem', { name: /Dashboard Overdue/ })).toBeVisible();
+    await page.keyboard.press('Escape');
+
     const overdueLink = page.getByRole('link', { name: /Dashboard Overdue/ });
     await expect(overdueLink).toBeVisible();
     await overdueLink.click();
