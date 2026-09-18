@@ -15,6 +15,8 @@ export function createRoutineTemplateRoutes(
   router.use(authMiddleware);
   router.get('/', controller.list);
   router.get('/:id', controller.get);
+  router.get('/:id/export.pdf', controller.exportPdf);
+  router.get('/:id/export.xlsx', controller.exportXlsx);
   router.post('/', controller.create);
   router.put('/:id', controller.update);
   router.post('/:id/duplicate', controller.duplicate);

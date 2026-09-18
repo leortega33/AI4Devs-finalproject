@@ -106,7 +106,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
    series/notas). Se puede **duplicar** una plantilla en una copia independiente.
-   Las acciones de cada fila (editar, duplicar) son **iconos con tooltip**.
+   Las acciones de cada fila (editar, duplicar) son **iconos con tooltip**, e
+   incluyen **exportar la rutina a PDF y a Excel** (`.xlsx`). La misma exportación
+   está disponible sobre la rutina activa de un cliente.
 7. **Rutina del cliente** — El listado de clientes muestra quién tiene rutina
    asignada. Desde la acción "Rutina" se abre una pantalla que muestra la rutina
    activa (o estado vacío), permite **asignar** una plantilla (con fecha de

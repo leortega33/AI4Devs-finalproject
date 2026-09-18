@@ -1076,6 +1076,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/routine-templates/{id}/export.pdf:
+    get:
+      summary: Export a routine as a PDF
+      description: >
+        Streams a downloadable PDF of a routine (a library template or a client's
+        assigned routine, by its routine-template id): the routine name and
+        objective, and per session its warm-up and ordered exercise entries with
+        their prescriptions. See US-017.
+      tags:
+        - Routine Templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: lang
+          required: false
+          description: PDF language (defaults to Spanish; any other value falls back to `es`).
+          schema:
+            type: string
+            enum: [es, en]
+            default: es
+      responses:
+        '200':
+          description: The routine PDF document
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Routine not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/routine-templates/{id}/export.xlsx:
+    get:
+      summary: Export a routine as an Excel workbook
+      description: >
+        Streams a downloadable `.xlsx` workbook of a routine (by its
+        routine-template id) with one worksheet per session, each listing its
+        exercise entries (phase, block, exercise, kg, reps, series, notes).
+        See US-017.
+      tags:
+        - Routine Templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: lang
+          required: false
+          description: Sheet-label language (defaults to Spanish; any other value falls back to `es`).
+          schema:
+            type: string
+            enum: [es, en]
+            default: es
+      responses:
+        '200':
+          description: The routine spreadsheet workbook
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Routine not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:

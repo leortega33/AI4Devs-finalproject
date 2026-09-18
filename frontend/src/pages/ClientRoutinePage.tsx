@@ -8,13 +8,17 @@ import {
   CardContent,
   Chip,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemText,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import GridOnOutlinedIcon from '@mui/icons-material/GridOnOutlined';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '../components/BackButton';
 import { TemplatePickerDialog } from '../components/TemplatePickerDialog';
@@ -24,11 +28,11 @@ import {
   type ClientRoutine,
   type RoutineHistoryItem,
 } from '../services/clientRoutineService';
-import type { RoutineTemplateSummary } from '../services/routineTemplateService';
+import { routineTemplateService, type RoutineTemplateSummary } from '../services/routineTemplateService';
 
 export function ClientRoutinePage() {
   const { clientId } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [client, setClient] = useState<Client | null>(null);
   const [active, setActive] = useState<ClientRoutine | null>(null);
   const [history, setHistory] = useState<RoutineHistoryItem[]>([]);
@@ -135,6 +139,25 @@ export function ClientRoutinePage() {
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
               <Typography variant="subtitle1">{active.name}</Typography>
               {active.isExpired && <Chip size="small" color="warning" label={t('clientRoutine.expired')} />}
+              <Box sx={{ flexGrow: 1 }} />
+              <Tooltip title={t('routines.actions.exportPdf')}>
+                <IconButton
+                  size="small"
+                  aria-label={t('routines.actions.exportPdf')}
+                  onClick={() => routineTemplateService.exportPdf(active.id, i18n.language)}
+                >
+                  <PictureAsPdfOutlinedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('routines.actions.exportExcel')}>
+                <IconButton
+                  size="small"
+                  aria-label={t('routines.actions.exportExcel')}
+                  onClick={() => routineTemplateService.exportExcel(active.id, i18n.language)}
+                >
+                  <GridOnOutlinedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Stack>
             {active.endDate && (
               <Typography variant="body2" color="text.secondary" gutterBottom>

@@ -183,10 +183,13 @@
       "actions": "Acciones"
     },
     "actions": {
-      "duplicate": "Duplicar"
+      "duplicate": "Duplicar",
+      "exportPdf": "Exportar PDF",
+      "exportExcel": "Exportar Excel"
     },
     "loadFailed": "No se pudo cargar las rutinas.",
     "duplicateFailed": "No se pudo duplicar la rutina.",
+    "exportFailed": "No se pudo exportar la rutina.",
     "form": {
       "newTitle": "Nueva rutina",
       "editTitle": "Editar rutina",

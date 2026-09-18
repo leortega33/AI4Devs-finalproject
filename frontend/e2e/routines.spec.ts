@@ -36,6 +36,19 @@ test.describe('routine templates', () => {
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText(ROUTINE)).toBeVisible();
 
+    // Export the routine as PDF and Excel — both trigger a download.
+    const row = page.getByRole('row', { name: new RegExp(ROUTINE) });
+    const [pdfDownload] = await Promise.all([
+      page.waitForEvent('download'),
+      row.getByRole('button', { name: 'Exportar PDF' }).click(),
+    ]);
+    expect(pdfDownload.suggestedFilename()).toMatch(/routine-\d+\.pdf/);
+    const [xlsxDownload] = await Promise.all([
+      page.waitForEvent('download'),
+      row.getByRole('button', { name: 'Exportar Excel' }).click(),
+    ]);
+    expect(xlsxDownload.suggestedFilename()).toMatch(/routine-\d+\.xlsx/);
+
     // Duplicate it and verify a copy appears.
     await page.getByRole('row', { name: new RegExp(ROUTINE) }).getByRole('button', { name: 'Duplicar' }).click();
     await expect(page.getByText(`${ROUTINE} (copia)`)).toBeVisible();

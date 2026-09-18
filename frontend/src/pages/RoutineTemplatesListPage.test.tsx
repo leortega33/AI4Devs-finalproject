@@ -6,7 +6,7 @@ import { RoutineTemplatesListPage } from './RoutineTemplatesListPage';
 import { routineTemplateService } from '../services/routineTemplateService';
 
 vi.mock('../services/routineTemplateService', () => ({
-  routineTemplateService: { list: vi.fn(), duplicate: vi.fn() },
+  routineTemplateService: { list: vi.fn(), duplicate: vi.fn(), exportPdf: vi.fn(), exportExcel: vi.fn() },
 }));
 
 const mockNavigate = vi.fn();
@@ -72,5 +72,19 @@ describe('RoutineTemplatesListPage', () => {
 
     await user.click(edit);
     expect(mockNavigate).toHaveBeenCalledWith('/routines/1/edit');
+  });
+
+  it('should export the routine as PDF and Excel from the row actions', async () => {
+    vi.mocked(routineTemplateService.exportPdf).mockResolvedValue(undefined);
+    vi.mocked(routineTemplateService.exportExcel).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByText('Hipertrofia');
+
+    await user.click(screen.getByRole('button', { name: 'Exportar PDF' }));
+    expect(routineTemplateService.exportPdf).toHaveBeenCalledWith(1, expect.any(String));
+
+    await user.click(screen.getByRole('button', { name: 'Exportar Excel' }));
+    expect(routineTemplateService.exportExcel).toHaveBeenCalledWith(1, expect.any(String));
   });
 });

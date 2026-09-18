@@ -100,4 +100,38 @@ export const routineTemplateService = {
     const response = await api.post(`/${id}/duplicate`);
     return response.data.data;
   },
+
+  exportPdf: async (id: number, lang: string): Promise<void> => {
+    await downloadRoutineExport(id, 'pdf', 'application/pdf', lang);
+  },
+
+  exportExcel: async (id: number, lang: string): Promise<void> => {
+    await downloadRoutineExport(
+      id,
+      'xlsx',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      lang,
+    );
+  },
 };
+
+async function downloadRoutineExport(
+  id: number,
+  extension: 'pdf' | 'xlsx',
+  contentType: string,
+  lang: string,
+): Promise<void> {
+  const response = await api.get(`/${id}/export.${extension}`, {
+    params: { lang },
+    responseType: 'blob',
+  });
+  const blob = new Blob([response.data], { type: contentType });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `routine-${id}.${extension}`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}

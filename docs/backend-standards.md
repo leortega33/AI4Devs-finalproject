@@ -94,6 +94,10 @@ This document outlines the best practices, conventions, and standards used in th
 - **ESLint**: Code linting
 - **TypeScript Compiler**: Type checking and compilation
 
+### Document Export
+- **pdfkit**: Server-side PDF generation (payment history — US-008; routines — US-017)
+- **exceljs**: Server-side `.xlsx` spreadsheet generation (routines — US-017)
+
 ## Architecture Overview
 
 ### Domain-Driven Design (DDD)

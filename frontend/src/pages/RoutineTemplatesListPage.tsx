@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, IconButton, Stack, Tooltip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import GridOnOutlinedIcon from '@mui/icons-material/GridOnOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,7 +15,7 @@ import { PageHeader } from '../components/PageHeader';
 
 export function RoutineTemplatesListPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [templates, setTemplates] = useState<RoutineTemplateSummary[]>([]);
   const [error, setError] = useState('');
 
@@ -39,6 +41,24 @@ export function RoutineTemplatesListPage() {
     }
   };
 
+  const exportPdf = async (id: number) => {
+    setError('');
+    try {
+      await routineTemplateService.exportPdf(id, i18n.language);
+    } catch {
+      setError(t('routines.exportFailed'));
+    }
+  };
+
+  const exportExcel = async (id: number) => {
+    setError('');
+    try {
+      await routineTemplateService.exportExcel(id, i18n.language);
+    } catch {
+      setError(t('routines.exportFailed'));
+    }
+  };
+
   const columns: GridColDef<RoutineTemplateSummary>[] = [
     { field: 'name', headerName: t('routines.columns.name'), flex: 1 },
     { field: 'objective', headerName: t('routines.columns.objective'), width: 180 },
@@ -46,7 +66,7 @@ export function RoutineTemplatesListPage() {
     {
       field: 'actions',
       headerName: t('routines.columns.actions'),
-      width: 120,
+      width: 200,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={0.5}>
@@ -58,6 +78,16 @@ export function RoutineTemplatesListPage() {
           <Tooltip title={t('routines.actions.duplicate')}>
             <IconButton size="small" aria-label={t('routines.actions.duplicate')} onClick={() => duplicate(params.row.id)}>
               <ContentCopyOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('routines.actions.exportPdf')}>
+            <IconButton size="small" aria-label={t('routines.actions.exportPdf')} onClick={() => exportPdf(params.row.id)}>
+              <PictureAsPdfOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('routines.actions.exportExcel')}>
+            <IconButton size="small" aria-label={t('routines.actions.exportExcel')} onClick={() => exportExcel(params.row.id)}>
+              <GridOnOutlinedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Stack>

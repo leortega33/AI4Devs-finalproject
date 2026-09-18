@@ -64,6 +64,7 @@ describe('routineTemplateRoutes', () => {
       create: jest.fn(),
       update: jest.fn(),
       duplicate: jest.fn(),
+      getExportData: jest.fn(),
     } as unknown as jest.Mocked<RoutineTemplateService>;
   });
 
@@ -107,6 +108,82 @@ describe('routineTemplateRoutes', () => {
       const response = await request(app).get('/api/routine-templates/999').set('Cookie', authCookie());
 
       expect(response.status).toBe(404);
+    });
+  });
+
+  describe('GET /api/routine-templates/:id/export.pdf', () => {
+    it('should return a PDF with attachment headers', async () => {
+      service.getExportData.mockResolvedValue(sampleTemplate());
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/routine-templates/1/export.pdf')
+        .set('Cookie', authCookie());
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toContain('application/pdf');
+      expect(response.headers['content-disposition']).toContain('routine-1.pdf');
+      expect(response.body.subarray(0, 5).toString('latin1')).toBe('%PDF-');
+    });
+
+    it('should return 404 when the routine does not exist', async () => {
+      service.getExportData.mockRejectedValue(new RoutineTemplateNotFoundError());
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/routine-templates/999/export.pdf')
+        .set('Cookie', authCookie());
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should reject an unauthenticated export with 401', async () => {
+      const app = buildApp(service);
+
+      const response = await request(app).get('/api/routine-templates/1/export.pdf');
+
+      expect(response.status).toBe(401);
+    });
+  });
+
+  describe('GET /api/routine-templates/:id/export.xlsx', () => {
+    it('should return an xlsx workbook with attachment headers', async () => {
+      service.getExportData.mockResolvedValue(sampleTemplate());
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/routine-templates/1/export.xlsx')
+        .set('Cookie', authCookie())
+        .buffer(true)
+        .parse((res, cb) => {
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk: Buffer) => chunks.push(chunk));
+          res.on('end', () => cb(null, Buffer.concat(chunks)));
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toContain('spreadsheetml');
+      expect(response.headers['content-disposition']).toContain('routine-1.xlsx');
+      expect((response.body as Buffer).subarray(0, 2).toString('latin1')).toBe('PK');
+    });
+
+    it('should return 404 when the routine does not exist', async () => {
+      service.getExportData.mockRejectedValue(new RoutineTemplateNotFoundError());
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .get('/api/routine-templates/999/export.xlsx')
+        .set('Cookie', authCookie());
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should reject an unauthenticated export with 401', async () => {
+      const app = buildApp(service);
+
+      const response = await request(app).get('/api/routine-templates/1/export.xlsx');
+
+      expect(response.status).toBe(401);
     });
   });
 

@@ -950,7 +950,7 @@ Proposed: the latter; "months owed" deferred.
 
 ## US-017: Export routines to PDF/Excel
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/export-routines`)
 
 **User story:** As the gym owner/trainer, I want to export a routine (a library
 template or a client's assigned routine) to PDF and Excel, so that I can print or

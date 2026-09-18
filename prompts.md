@@ -342,6 +342,21 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > vacío). Sin cambio de la regla de estado (US-007) ni del PDF. Mantener unit y
 > E2E en verde. Contenido en español.
 
+**Prompt 18:**
+
+> Exportemos rutinas a PDF y Excel (US-017): change OpenSpec `export-routines`
+> **con spec delta** (agrega endpoints de backend). Dos endpoints autenticados
+> `GET /api/routine-templates/:id/export.pdf` y `.xlsx` que sirven tanto
+> plantillas de biblioteca como rutinas de cliente. Backend: builder
+> `infrastructure/pdf/routinePdf.ts` (reusar el patrón `pdfkit` de US-008) y
+> `infrastructure/xlsx/routineXlsx.ts` con **`exceljs`** (una hoja por sesión),
+> `getExportData` + acciones de controlador + rutas, labels bilingües, smoke
+> tests. Frontend: `routineTemplateService.exportPdf/exportExcel` (descarga
+> blob), botones-icono de export en la lista de rutinas y en la rutina activa del
+> cliente, claves i18n. Prueba con curl (headers, firmas `%PDF-`/`PK`, 404, 401)
+> y E2E de descarga. Actualizar `api-spec.yml` y `backend-standards.md`. Mantener
+> todo en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

@@ -33,6 +33,11 @@ export class RoutineTemplateService {
     return template;
   }
 
+  /** Full nested routine for PDF/Excel export (US-017); throws when missing. */
+  async getExportData(id: number): Promise<RoutineTemplate> {
+    return this.findById(id);
+  }
+
   async list(): Promise<RoutineTemplateSummary[]> {
     return this.routineTemplateRepository.findAllLibrary();
   }

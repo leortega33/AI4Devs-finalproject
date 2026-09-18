@@ -183,10 +183,13 @@
       "actions": "Actions"
     },
     "actions": {
-      "duplicate": "Duplicate"
+      "duplicate": "Duplicate",
+      "exportPdf": "Export PDF",
+      "exportExcel": "Export Excel"
     },
     "loadFailed": "Could not load the routines.",
     "duplicateFailed": "Could not duplicate the routine.",
+    "exportFailed": "Could not export the routine.",
     "form": {
       "newTitle": "New routine",
       "editTitle": "Edit routine",
