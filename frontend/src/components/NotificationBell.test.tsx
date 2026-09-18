@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import i18n from '../i18n';
@@ -24,6 +24,7 @@ function renderBell() {
 describe('NotificationBell', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     i18n.changeLanguage('es');
   });
 
@@ -66,5 +67,21 @@ describe('NotificationBell', () => {
     await user.click(screen.getByRole('button', { name: /notificaciones/i }));
 
     expect(await screen.findByText('No hay alertas')).toBeInTheDocument();
+  });
+
+  it('clears the badge once the alerts have been seen', async () => {
+    vi.mocked(dashboardService.get).mockResolvedValue(
+      dashboard({ overduePayments: [{ clientId: 1, clientName: 'Ana' }] }),
+    );
+    const user = userEvent.setup();
+
+    renderBell();
+    const badge = await screen.findByText('1');
+    expect(badge).not.toHaveClass('MuiBadge-invisible');
+
+    await user.click(screen.getByRole('button', { name: /notificaciones/i }));
+
+    // After opening, the alert set is marked as seen and the badge becomes invisible.
+    await waitFor(() => expect(screen.getByText('1')).toHaveClass('MuiBadge-invisible'));
   });
 });

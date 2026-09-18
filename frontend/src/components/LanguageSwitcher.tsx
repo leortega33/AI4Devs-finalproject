@@ -13,7 +13,7 @@ export function LanguageSwitcher() {
       label={t('common.language')}
       value={current}
       onChange={(e) => i18n.changeLanguage(e.target.value)}
-      sx={{ minWidth: 120 }}
+      sx={{ minWidth: { xs: 96, sm: 120 } }}
     >
       <MenuItem value="es">{t('common.spanish')}</MenuItem>
       <MenuItem value="en">{t('common.english')}</MenuItem>

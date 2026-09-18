@@ -25,7 +25,7 @@ export function AppLayout() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="fixed" color="inherit" elevation={0} sx={{ zIndex: theme.zIndex.drawer + 1 }}>
-        <Toolbar sx={{ gap: 1 }}>
+        <Toolbar sx={{ gap: { xs: 0.5, sm: 1 } }}>
           {!isDesktop && (
             <IconButton edge="start" aria-label={t('common.menu')} onClick={() => setMobileOpen(true)}>
               <MenuIcon />
@@ -37,7 +37,7 @@ export function AppLayout() {
             aria-label={t('common.home')}
             sx={{ background: 'none', border: 0, p: 0, cursor: 'pointer', display: 'flex' }}
           >
-            <BrandLogo size={40} />
+            <BrandLogo size={40} hideNameOnMobile />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <LanguageSwitcher />
@@ -47,8 +47,11 @@ export function AppLayout() {
             startIcon={<LogoutIcon />}
             onClick={() => logout()}
             aria-label={t('common.logout')}
+            sx={{ minWidth: { xs: 'auto', sm: 64 }, px: { xs: 1, sm: 2 }, '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 } } }}
           >
-            {t('common.logout')}
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              {t('common.logout')}
+            </Box>
           </Button>
         </Toolbar>
       </AppBar>
