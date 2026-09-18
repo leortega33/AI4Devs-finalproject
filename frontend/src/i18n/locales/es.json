@@ -280,7 +280,8 @@
       "periodMonth": "Mes del período",
       "periodYear": "Año del período",
       "requiredFields": "Ingresá un monto válido, fecha, método y período.",
-      "saveFailed": "No se pudo guardar el pago."
+      "saveFailed": "No se pudo guardar el pago.",
+      "periodWarning": "El período elegido no coincide con la fecha de pago. Revisá que sea correcto."
     }
   },
   "errors": {

@@ -120,8 +120,11 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    acciones-icono es **consistente en todas las tablas del sistema** (clientes,
    ejercicios, rutinas y pagos). Desde la acción "Pagos" se abre una pantalla que
    lista los pagos y permite **registrar / editar / eliminar** pagos (monto,
-   fecha, método, período mes/año). El estado se recalcula automáticamente.
-   Además, el botón **"Exportar PDF"** descarga el
+   fecha, método, período mes/año). Al **registrar**, el período se pre-completa
+   con el **próximo mes adeudado** (último período cubierto + 1, o el mes actual)
+   y la fecha con **hoy**; el campo queda editable y aparece una **advertencia**
+   si el período elegido no coincide con la fecha de pago. El estado se recalcula
+   automáticamente. Además, el botón **"Exportar PDF"** descarga el
    historial de pagos del cliente como un documento PDF (bilingüe, según el
    idioma activo).
 9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés

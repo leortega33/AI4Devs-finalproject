@@ -873,7 +873,7 @@ filters.
 
 ## US-015: Smarter payment-period entry
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/smarter-payment-period`)
 
 **User story:** As the gym owner/trainer, when I register a payment I want the
 period pre-filled to the next month the client owes and the payment date

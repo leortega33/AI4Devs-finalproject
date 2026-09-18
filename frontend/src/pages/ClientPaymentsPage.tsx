@@ -211,6 +211,7 @@ export function ClientPaymentsPage() {
       <PaymentFormDialog
         open={dialogOpen}
         payment={editing}
+        payments={payments}
         onCancel={() => {
           setDialogOpen(false);
           setEditing(null);

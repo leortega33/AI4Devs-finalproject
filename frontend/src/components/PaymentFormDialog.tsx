@@ -12,10 +12,12 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { Payment, PaymentFormData, PaymentMethod } from '../services/paymentService';
+import { nextOwedPeriod, isIncoherentPeriod } from '../utils/paymentPeriod';
 
 interface PaymentFormDialogProps {
   open: boolean;
   payment: Payment | null;
+  payments: Payment[];
   onCancel: () => void;
   onSave: (data: PaymentFormData) => Promise<void>;
 }
@@ -32,19 +34,20 @@ interface FormState {
   periodYear: string;
 }
 
-function emptyForm(): FormState {
+function emptyForm(payments: Payment[]): FormState {
+  const owed = nextOwedPeriod(payments, now);
   return {
     amount: '',
     paymentDate: now.toISOString().slice(0, 10),
     method: 'cash',
-    periodMonth: String(now.getMonth() + 1),
-    periodYear: String(now.getFullYear()),
+    periodMonth: String(owed.month),
+    periodYear: String(owed.year),
   };
 }
 
-export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFormDialogProps) {
+export function PaymentFormDialog({ open, payment, payments, onCancel, onSave }: PaymentFormDialogProps) {
   const { t } = useTranslation();
-  const [form, setForm] = useState<FormState>(emptyForm());
+  const [form, setForm] = useState<FormState>(() => emptyForm(payments));
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,9 +63,9 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
             periodMonth: String(payment.periodMonth),
             periodYear: String(payment.periodYear),
           }
-        : emptyForm(),
+        : emptyForm(payments),
     );
-  }, [open, payment]);
+  }, [open, payment, payments]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -101,6 +104,15 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
       setSubmitting(false);
     }
   };
+
+  const periodMonthNum = Number(form.periodMonth);
+  const periodYearNum = Number(form.periodYear);
+  const showPeriodWarning =
+    Number.isInteger(periodMonthNum) &&
+    periodMonthNum >= 1 &&
+    periodMonthNum <= 12 &&
+    Number.isInteger(periodYearNum) &&
+    isIncoherentPeriod({ month: periodMonthNum, year: periodYearNum }, form.paymentDate);
 
   return (
     <Dialog open={open} onClose={onCancel} fullWidth maxWidth="sm">
@@ -171,6 +183,11 @@ export function PaymentFormDialog({ open, payment, onCancel, onSave }: PaymentFo
                 onChange={(e) => setForm((p) => ({ ...p, periodYear: e.target.value }))}
               />
             </Grid>
+            {showPeriodWarning && (
+              <Grid item xs={12}>
+                <Alert severity="warning">{t('payments.form.periodWarning')}</Alert>
+              </Grid>
+            )}
           </Grid>
         </DialogContent>
         <DialogActions>

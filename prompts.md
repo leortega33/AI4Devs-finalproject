@@ -318,6 +318,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > unitarios de las acciones-icono de ejercicios y rutinas. Mantener todo en
 > verde. Contenido en español.
 
+**Prompt 16:**
+
+> Mejoremos el ingreso de período de pago (US-015): change OpenSpec
+> `smarter-payment-period`, **frontend-only** con `skip_specs`, sin cambio de
+> backend. En "Registrar pago" pre-completar el **período** con el próximo mes
+> adeudado (último período cubierto + 1, o mes actual si no hay pagos / está al
+> día) y la **fecha** con hoy; el campo sigue editable. Agregar una **advertencia
+> no bloqueante** si el período es claramente incoherente con la fecha. Nueva
+> helper `utils/paymentPeriod.ts` (`nextOwedPeriod`, `isIncoherentPeriod`) con
+> tests; extender los tests del `PaymentFormDialog`. La lógica de estado derivado
+> (US-007) no cambia. Mantener todo en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

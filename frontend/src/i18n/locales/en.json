@@ -280,7 +280,8 @@
       "periodMonth": "Period month",
       "periodYear": "Period year",
       "requiredFields": "Enter a valid amount, date, method and period.",
-      "saveFailed": "Could not save the payment."
+      "saveFailed": "Could not save the payment.",
+      "periodWarning": "The selected period does not match the payment date. Please double-check it."
     }
   },
   "errors": {
