@@ -1337,6 +1337,39 @@ plan templates. Define before implementing.
 
 ---
 
+## US-028: Compact client action icons
+
+- **Status:** in-openspec (`openspec/changes/compact-client-action-icons`)
+
+**User story:** As the gym owner/trainer, I want the client list actions as
+compact icons with tooltips, so that I can act on a row without scrolling
+horizontally.
+
+**Functional description:** replace the five text buttons in the client list
+"Acciones" column (Editar, Ficha médica, Rutina, Pagos, Desactivar/Reactivar)
+with `IconButton`s wrapped in `Tooltip`, shrinking the column from ~560px to
+~220px. Each icon keeps the same handler/destination and the same accessible name
+(`aria-label`) so behavior, keyboard access and existing tests are unaffected.
+
+**Data model (Prisma):** none. **Endpoints:** none.
+
+**Files/modules (frontend):** `pages/ClientsListPage.tsx` (icon buttons +
+tooltips, narrower actions column). No i18n keys added (reuses existing labels).
+
+**Definition of done:** the actions column renders icon-only buttons with
+tooltips; every action works as before; all suites stay green.
+
+**Tests:** `ClientsListPage` unit (actions are icon-only buttons with accessible
+names; reactivate shows for inactive clients); clients E2E unaffected.
+
+**Non-functional requirements:** a11y (aria-label + tooltip), i18n, no regression
+to existing actions.
+
+**Open technical decisions:** none. Kebab/overflow menu deferred (revisit if the
+action set grows).
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until

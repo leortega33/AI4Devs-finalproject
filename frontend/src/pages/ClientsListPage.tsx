@@ -4,10 +4,18 @@ import {
   Box,
   Button,
   Chip,
+  IconButton,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
 } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import MedicalInformationOutlinedIcon from '@mui/icons-material/MedicalInformationOutlined';
+import FitnessCenterOutlinedIcon from '@mui/icons-material/FitnessCenterOutlined';
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import PersonOffOutlinedIcon from '@mui/icons-material/PersonOffOutlined';
+import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { clientService, type Client, type ClientStatus, type ClientPaymentStatus } from '../services/clientService';
@@ -97,30 +105,42 @@ export function ClientsListPage() {
     {
       field: 'actions',
       headerName: t('clients.columns.actions'),
-      width: 560,
+      width: 220,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
-          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/edit`)}>
-            {t('common.edit')}
-          </Button>
-          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/medical-record`)}>
-            {t('clients.actions.medicalRecord')}
-          </Button>
-          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/routine`)}>
-            {t('clients.actions.routine')}
-          </Button>
-          <Button size="small" onClick={() => navigate(`/clients/${params.row.id}/payments`)}>
-            {t('clients.actions.payments')}
-          </Button>
+        <Stack direction="row" spacing={0.5}>
+          <Tooltip title={t('common.edit')}>
+            <IconButton size="small" aria-label={t('common.edit')} onClick={() => navigate(`/clients/${params.row.id}/edit`)}>
+              <EditOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('clients.actions.medicalRecord')}>
+            <IconButton size="small" aria-label={t('clients.actions.medicalRecord')} onClick={() => navigate(`/clients/${params.row.id}/medical-record`)}>
+              <MedicalInformationOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('clients.actions.routine')}>
+            <IconButton size="small" aria-label={t('clients.actions.routine')} onClick={() => navigate(`/clients/${params.row.id}/routine`)}>
+              <FitnessCenterOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('clients.actions.payments')}>
+            <IconButton size="small" aria-label={t('clients.actions.payments')} onClick={() => navigate(`/clients/${params.row.id}/payments`)}>
+              <PaymentsOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           {params.row.status === 'active' ? (
-            <Button size="small" color="error" onClick={() => setToDeactivate(params.row)}>
-              {t('clients.actions.deactivate')}
-            </Button>
+            <Tooltip title={t('clients.actions.deactivate')}>
+              <IconButton size="small" color="error" aria-label={t('clients.actions.deactivate')} onClick={() => setToDeactivate(params.row)}>
+                <PersonOffOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           ) : (
-            <Button size="small" onClick={() => reactivate(params.row)}>
-              {t('clients.actions.reactivate')}
-            </Button>
+            <Tooltip title={t('clients.actions.reactivate')}>
+              <IconButton size="small" aria-label={t('clients.actions.reactivate')} onClick={() => reactivate(params.row)}>
+                <HowToRegOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           )}
         </Stack>
       ),

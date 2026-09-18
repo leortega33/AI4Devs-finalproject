@@ -294,6 +294,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > unitario que verifique que el filtro acota las filas sin re-consultar; extender
 > el E2E de clientes. Mantener unit y E2E en verde. Contenido en español.
 
+**Prompt 14:**
+
+> Mejoremos la columna de acciones del listado de clientes (US-028): change
+> OpenSpec `compact-client-action-icons`, **frontend-only** con `skip_specs`, sin
+> cambio de backend. Reemplazar los 5 botones de texto (Editar, Ficha médica,
+> Rutina, Pagos, Desactivar/Reactivar) por `IconButton` + `Tooltip` con iconos de
+> MUI, achicando la columna de ~560px a ~220px. Preservar el `aria-label` con los
+> mismos textos para no romper los tests unitarios ni el E2E. Test unitario que
+> verifique que las acciones son botones de solo icono con nombre accesible y que
+> Reactivar aparece para clientes inactivos. Mantener todo en verde. Contenido en
+> español.
+
 ---
 
 ### 7. Pull Requests

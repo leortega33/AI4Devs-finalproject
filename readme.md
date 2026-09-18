@@ -112,11 +112,14 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    anterior.
 8. **Pagos del cliente** — El listado de clientes muestra el estado de pago
    (al día / vencido / sin pagos) y permite **filtrar** por ese estado además de
-   por nombre y estado (activo/inactivo). Desde la acción "Pagos" se abre una
-   pantalla que lista los pagos y permite **registrar / editar / eliminar** pagos
-   (monto, fecha, método, período mes/año). El estado se recalcula
-   automáticamente. Además, el botón **"Exportar PDF"** descarga el historial de
-   pagos del cliente como un documento PDF (bilingüe, según el idioma activo).
+   por nombre y estado (activo/inactivo). Las acciones de cada fila (editar, ficha
+   médica, rutina, pagos, desactivar/reactivar) son **iconos compactos con
+   tooltip**, de modo que caben sin scroll horizontal. Desde la acción "Pagos" se
+   abre una pantalla que lista los pagos y permite **registrar / editar /
+   eliminar** pagos (monto, fecha, método, período mes/año). El estado se
+   recalcula automáticamente. Además, el botón **"Exportar PDF"** descarga el
+   historial de pagos del cliente como un documento PDF (bilingüe, según el
+   idioma activo).
 9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 

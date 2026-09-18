@@ -68,4 +68,29 @@ describe('ClientsListPage', () => {
     // The payment filter does not trigger a re-query (client-side).
     expect(clientService.list).toHaveBeenCalledTimes(1);
   });
+
+  it('should render row actions as icon-only buttons with accessible names', async () => {
+    vi.mocked(clientService.list).mockResolvedValue([sample]);
+
+    render(<MemoryRouter><ClientsListPage /></MemoryRouter>);
+    await screen.findByText('John Doe');
+
+    for (const name of ['Editar', 'Ficha médica', 'Rutina', 'Pagos', 'Desactivar']) {
+      const button = screen.getByRole('button', { name });
+      expect(button).toBeInTheDocument();
+      // Icon-only: the label lives in aria-label/tooltip, not visible text.
+      expect(button).toHaveTextContent('');
+    }
+    expect(screen.queryByRole('button', { name: 'Reactivar' })).not.toBeInTheDocument();
+  });
+
+  it('should show the reactivate action for inactive clients', async () => {
+    vi.mocked(clientService.list).mockResolvedValue([{ ...sample, status: 'inactive' }]);
+
+    render(<MemoryRouter><ClientsListPage /></MemoryRouter>);
+    await screen.findByText('John Doe');
+
+    expect(screen.getByRole('button', { name: 'Reactivar' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Desactivar' })).not.toBeInTheDocument();
+  });
 });
