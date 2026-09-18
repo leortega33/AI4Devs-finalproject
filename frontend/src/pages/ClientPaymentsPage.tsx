@@ -4,7 +4,10 @@ import {
   Alert,
   Box,
   Button,
+  Card,
+  CardContent,
   Chip,
+  Grid,
   IconButton,
   Stack,
   Tooltip,
@@ -26,6 +29,7 @@ import {
   type PaymentFormData,
   type PaymentStatus,
 } from '../services/paymentService';
+import { summarizePayments, formatPeriod } from '../utils/paymentSummary';
 
 const STATUS_LABELS: Record<PaymentStatus, { key: string; color: 'success' | 'error' | 'default' }> = {
   up_to_date: { key: 'payments.statusUpToDate', color: 'success' },
@@ -155,6 +159,7 @@ export function ClientPaymentsPage() {
 
   const clientName = client ? `${client.firstName} ${client.lastName}` : '';
   const statusMeta = STATUS_LABELS[status];
+  const summary = summarizePayments(payments);
 
   return (
     <Box>
@@ -198,6 +203,42 @@ export function ClientPaymentsPage() {
         <Alert severity="info">{t('payments.empty')}</Alert>
       ) : (
         <div style={{ width: '100%' }}>
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('payments.summary.totalPaid')}
+                  </Typography>
+                  <Typography variant="h5">{summary.totalPaid}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('payments.summary.count')}
+                  </Typography>
+                  <Typography variant="h5">{summary.count}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('payments.summary.periodRange')}
+                  </Typography>
+                  <Typography variant="h5">
+                    {summary.firstPeriod && summary.lastPeriod
+                      ? `${formatPeriod(summary.firstPeriod)} – ${formatPeriod(summary.lastPeriod)}`
+                      : '—'}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
           <DataGrid
             autoHeight
             rows={payments}

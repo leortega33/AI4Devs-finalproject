@@ -38,6 +38,25 @@ describe('ClientPaymentsPage', () => {
 
     expect(await screen.findByText(/todavía no tiene pagos registrados/i)).toBeInTheDocument();
     expect(screen.getByText('Sin pagos')).toBeInTheDocument();
+    // No summary panel in the empty state.
+    expect(screen.queryByText(/total pagado/i)).not.toBeInTheDocument();
+  });
+
+  it('should show a summary panel with total, count and period range', async () => {
+    vi.mocked(paymentService.list).mockResolvedValue({
+      payments: [
+        { id: 1, clientId: 3, amount: 15000, paymentDate: '2026-07-05', method: 'cash', periodMonth: 7, periodYear: 2026 },
+        { id: 2, clientId: 3, amount: 12000, paymentDate: '2026-08-05', method: 'cash', periodMonth: 8, periodYear: 2026 },
+      ],
+      status: 'up_to_date',
+    } as never);
+
+    renderPage();
+
+    expect(await screen.findByText(/total pagado/i)).toBeInTheDocument();
+    expect(screen.getByText('27000')).toBeInTheDocument();
+    expect(screen.getByText(/cantidad de pagos/i)).toBeInTheDocument();
+    expect(screen.getByText('07/2026 – 08/2026')).toBeInTheDocument();
   });
 
   it('should list payments with the up-to-date status', async () => {

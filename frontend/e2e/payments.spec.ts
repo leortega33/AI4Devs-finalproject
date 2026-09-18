@@ -56,7 +56,9 @@ test.describe('client payments', () => {
     await expect(dialog).toBeHidden();
 
     // The payment appears and the status chip shows "Al día".
-    await expect(page.getByText(`${String(CURRENT_MONTH).padStart(2, '0')}/${CURRENT_YEAR}`)).toBeVisible();
+    await expect(
+      page.getByRole('gridcell', { name: `${String(CURRENT_MONTH).padStart(2, '0')}/${CURRENT_YEAR}` }),
+    ).toBeVisible();
     await expect(page.getByText('Al día')).toBeVisible();
 
     // Back to the client list: the indicator now shows "Al día".

@@ -330,6 +330,18 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > tests; extender los tests del `PaymentFormDialog`. La lógica de estado derivado
 > (US-007) no cambia. Mantener todo en verde. Contenido en español.
 
+**Prompt 17:**
+
+> Agreguemos un resumen del historial de pagos (US-016): change OpenSpec
+> `payment-history-summary`, **frontend-only** con `skip_specs`, sin cambio de
+> backend. Sobre el historial del cliente mostrar un **panel resumen** (total
+> pagado, cantidad de pagos, rango de períodos cubiertos y estado derivado)
+> calculado **client-side** desde los pagos ya cargados. Nueva helper
+> `utils/paymentSummary.ts` (`summarizePayments`, `formatPeriod`) con tests;
+> extender el test de `ClientPaymentsPage` (panel visible con pagos, oculto en
+> vacío). Sin cambio de la regla de estado (US-007) ni del PDF. Mantener unit y
+> E2E en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

@@ -915,7 +915,7 @@ gap/arrears analysis using the client's join date is deferred.
 
 ## US-016: Payment history summary
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/payment-history-summary`)
 
 **User story:** As the gym owner/trainer, I want a summary of a client's payments
 (total paid, number of payments, covered-period range, current status) alongside

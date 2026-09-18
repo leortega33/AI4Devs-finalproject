@@ -271,6 +271,11 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "deleteConfirm": "¿Eliminar este pago?",
+    "summary": {
+      "totalPaid": "Total pagado",
+      "count": "Cantidad de pagos",
+      "periodRange": "Períodos cubiertos"
+    },
     "form": {
       "newTitle": "Registrar pago",
       "editTitle": "Editar pago",

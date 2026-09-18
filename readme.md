@@ -123,7 +123,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    fecha, método, período mes/año). Al **registrar**, el período se pre-completa
    con el **próximo mes adeudado** (último período cubierto + 1, o el mes actual)
    y la fecha con **hoy**; el campo queda editable y aparece una **advertencia**
-   si el período elegido no coincide con la fecha de pago. El estado se recalcula
+   si el período elegido no coincide con la fecha de pago. Arriba del historial se
+   muestra un **panel resumen** (total pagado, cantidad de pagos, rango de
+   períodos cubiertos y estado). El estado se recalcula
    automáticamente. Además, el botón **"Exportar PDF"** descarga el
    historial de pagos del cliente como un documento PDF (bilingüe, según el
    idioma activo).

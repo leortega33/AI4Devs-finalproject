@@ -271,6 +271,11 @@
     "edit": "Edit",
     "delete": "Delete",
     "deleteConfirm": "Delete this payment?",
+    "summary": {
+      "totalPaid": "Total paid",
+      "count": "Payment count",
+      "periodRange": "Covered periods"
+    },
     "form": {
       "newTitle": "Register payment",
       "editTitle": "Edit payment",
