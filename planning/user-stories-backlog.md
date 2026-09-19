@@ -1405,6 +1405,44 @@ to existing actions.
 
 ---
 
+## US-030: Polished routine export design (match trainer's plan format)
+
+- **Status:** captured (needs the reference file re-shared before enriching)
+
+**User story:** As the gym owner/trainer, I want the exported routine PDF and
+Excel to look like my usual training-plan sheet, so that I can print/share a
+clean, familiar document.
+
+**Functional description:** improve the visual design of the routine PDF/Excel
+export (US-017) so its layout matches the trainer's real plan format (the PDF the
+user shared when validating US-005). Known structure: sessions A/B/C; each
+session with a structured warm-up (mobility + activation) and main exercises
+grouped by block/superset; single KG/REPS/SERIES (and now the optional weekly
+progression, US-018); free-text general considerations per template. This is a
+**presentation-only** improvement of the existing `routinePdf.ts`/`routineXlsx.ts`
+builders — headers, columns, grouping, typography/spacing — no new endpoint.
+
+**Data model (Prisma):** none. **Endpoints:** none (same export endpoints).
+
+**Files/modules (backend):** `infrastructure/pdf/routinePdf.ts`,
+`infrastructure/xlsx/routineXlsx.ts` (layout/styling only). Possibly include the
+weekly progression (US-018) in the export as part of this pass.
+
+**Definition of done:** the PDF/Excel visually match the reference plan format
+(session grouping, warm-up/main sections, block labels, prescription columns,
+general considerations); smoke tests still pass.
+
+**Tests:** existing PDF/XLSX smoke tests (non-empty, valid signatures, sheets);
+extend if the sheet/section structure changes.
+
+**Non-functional requirements:** i18n of labels; reasonable file size.
+
+**Open technical decisions:** exact layout — **pending the reference file being
+re-shared** by the user before enriching this US. Also decide whether to add the
+per-week progression (US-018) to the export in the same pass.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
