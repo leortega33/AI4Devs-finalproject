@@ -81,4 +81,38 @@ describe('RoutineTemplateBuilderPage (create)', () => {
     );
     expect(mockNavigate).toHaveBeenCalledWith('/routines');
   });
+
+  it('should add a weekly progression row and include it in the payload', async () => {
+    vi.mocked(routineTemplateService.create).mockResolvedValue({} as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.type(screen.getByRole('textbox', { name: 'Nombre' }), 'Meso');
+    await user.type(screen.getByRole('textbox', { name: /nombre de la sesión/i }), 'Sesión A');
+    await user.click(screen.getAllByRole('button', { name: /agregar ejercicio/i })[1]);
+    await user.click(await screen.findByText('Sentadilla'));
+
+    // Add a week row and fill its kg (the second "Kg" field belongs to the week).
+    await user.click(await screen.findByRole('button', { name: /agregar semana/i }));
+    const kgFields = screen.getAllByLabelText('Kg');
+    await user.type(kgFields[1], '60');
+
+    await user.click(await screen.findByRole('button', { name: /^guardar$/i }));
+
+    await waitFor(() =>
+      expect(routineTemplateService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessions: expect.arrayContaining([
+            expect.objectContaining({
+              entries: expect.arrayContaining([
+                expect.objectContaining({
+                  weeks: expect.arrayContaining([expect.objectContaining({ week: 1, kg: 60 })]),
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ),
+    );
+  });
 });

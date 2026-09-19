@@ -48,6 +48,10 @@ const nestedRecord = {
           notes: null,
           order: 0,
           exercise: { name: 'Sentadilla' },
+          weeks: [
+            { id: 500, week: 1, kg: 60, reps: 8, series: 4 },
+            { id: 501, week: 2, kg: 62.5, reps: 8, series: 4 },
+          ],
         },
       ],
     },
@@ -61,7 +65,21 @@ const input = {
       name: 'Sesión A',
       warmupPrescription: '2 vueltas',
       order: 0,
-      entries: [{ exerciseId: 7, phase: 'main' as const, block: 'Bloque 1', kg: 60, reps: 8, series: 4, order: 0 }],
+      entries: [
+        {
+          exerciseId: 7,
+          phase: 'main' as const,
+          block: 'Bloque 1',
+          kg: 60,
+          reps: 8,
+          series: 4,
+          order: 0,
+          weeks: [
+            { week: 1, kg: 60, reps: 8, series: 4 },
+            { week: 2, kg: 62.5, reps: 8, series: 4 },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -80,6 +98,12 @@ describe('PrismaRoutineTemplateRepository', () => {
     expect(result.sessions).toHaveLength(1);
     expect(result.sessions[0].entries[0].exerciseName).toBe('Sentadilla');
     expect(result.sessions[0].entries[0].kg).toBe(60);
+    // The weekly progression round-trips (mapped to the domain, ordered by week).
+    expect(result.sessions[0].entries[0].weeks).toHaveLength(2);
+    expect(result.sessions[0].entries[0].weeks[1].kg).toBe(62.5);
+    // The nested create includes the weeks.
+    const createArg = prisma.routineTemplate.create.mock.calls[0][0];
+    expect(createArg.data.sessions.create[0].entries.create[0].weeks.create).toHaveLength(2);
   });
 
   it('should find a template by id with nested detail', async () => {

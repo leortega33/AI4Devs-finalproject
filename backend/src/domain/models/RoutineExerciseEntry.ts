@@ -1,3 +1,5 @@
+import { RoutineExerciseWeek } from './RoutineExerciseWeek';
+
 export type RoutinePhase = 'warmup' | 'main';
 
 export interface RoutineExerciseEntryProps {
@@ -11,6 +13,7 @@ export interface RoutineExerciseEntryProps {
   series?: number | null;
   notes?: string | null;
   order: number;
+  weeks?: RoutineExerciseWeek[];
 }
 
 /** A single exercise entry within a routine session (see docs/data-model.md entity #7, US-005). */
@@ -25,6 +28,7 @@ export class RoutineExerciseEntry {
   readonly series: number | null;
   readonly notes: string | null;
   readonly order: number;
+  readonly weeks: RoutineExerciseWeek[];
 
   constructor(props: RoutineExerciseEntryProps) {
     this.id = props.id;
@@ -37,5 +41,6 @@ export class RoutineExerciseEntry {
     this.series = props.series ?? null;
     this.notes = props.notes ?? null;
     this.order = props.order;
+    this.weeks = props.weeks ?? [];
   }
 }

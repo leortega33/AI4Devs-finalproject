@@ -170,12 +170,25 @@ export function ClientRoutinePage() {
                   {session.name}
                 </Divider>
                 {session.entries.map((entry) => (
-                  <Typography key={entry.id} variant="body2">
-                    • {entry.exerciseName}
-                    {entry.series != null || entry.reps != null || entry.kg != null
-                      ? ` — ${entry.series ?? '-'}x${entry.reps ?? '-'} @ ${entry.kg ?? '-'}kg`
-                      : ''}
-                  </Typography>
+                  <Box key={entry.id}>
+                    {entry.weeks && entry.weeks.length > 0 ? (
+                      <>
+                        <Typography variant="body2">• {entry.exerciseName}</Typography>
+                        {entry.weeks.map((week) => (
+                          <Typography key={week.week} variant="body2" color="text.secondary" sx={{ pl: 2 }}>
+                            {t('clientRoutine.week')} {week.week}: {week.series ?? '-'}x{week.reps ?? '-'} @ {week.kg ?? '-'}kg
+                          </Typography>
+                        ))}
+                      </>
+                    ) : (
+                      <Typography variant="body2">
+                        • {entry.exerciseName}
+                        {entry.series != null || entry.reps != null || entry.kg != null
+                          ? ` — ${entry.series ?? '-'}x${entry.reps ?? '-'} @ ${entry.kg ?? '-'}kg`
+                          : ''}
+                      </Typography>
+                    )}
+                  </Box>
                 ))}
               </Box>
             ))}

@@ -143,6 +143,19 @@ model RoutineExerciseEntry {
   series           Int?
   notes            String?
   order            Int
+  weeks            RoutineExerciseWeek[]
+}
+
+model RoutineExerciseWeek {
+  id                     Int                  @id @default(autoincrement())
+  routineExerciseEntryId Int
+  routineExerciseEntry   RoutineExerciseEntry @relation(fields: [routineExerciseEntryId], references: [id], onDelete: Cascade)
+  week                   Int
+  kg                     Float?
+  reps                   Int?
+  series                 Int?
+
+  @@unique([routineExerciseEntryId, week])
 }
 
 model Payment {

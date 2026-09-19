@@ -10,6 +10,14 @@ const api = axios.create({
 export type RoutinePhase = 'warmup' | 'main';
 export type RoutineStatus = 'draft' | 'active' | 'expired';
 
+export interface RoutineExerciseWeek {
+  id?: number;
+  week: number;
+  kg?: number | null;
+  reps?: number | null;
+  series?: number | null;
+}
+
 export interface RoutineExerciseEntry {
   id?: number;
   exerciseId: number;
@@ -21,6 +29,7 @@ export interface RoutineExerciseEntry {
   series?: number | null;
   notes?: string | null;
   order: number;
+  weeks?: RoutineExerciseWeek[];
 }
 
 export interface RoutineSession {
@@ -49,6 +58,13 @@ export interface RoutineTemplateSummary {
   sessionCount: number;
 }
 
+export interface RoutineExerciseWeekInput {
+  week: number;
+  kg?: number | null;
+  reps?: number | null;
+  series?: number | null;
+}
+
 export interface RoutineExerciseEntryInput {
   exerciseId: number;
   phase: RoutinePhase;
@@ -58,6 +74,7 @@ export interface RoutineExerciseEntryInput {
   series?: number | null;
   notes?: string | null;
   order: number;
+  weeks?: RoutineExerciseWeekInput[];
 }
 
 export interface RoutineSessionInput {

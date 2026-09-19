@@ -1,6 +1,13 @@
 import { RoutineTemplate, RoutineStatus } from '../models/RoutineTemplate';
 import { RoutinePhase } from '../models/RoutineExerciseEntry';
 
+export interface RoutineExerciseWeekInput {
+  week: number;
+  kg?: number | null;
+  reps?: number | null;
+  series?: number | null;
+}
+
 export interface RoutineExerciseEntryInput {
   exerciseId: number;
   phase: RoutinePhase;
@@ -10,6 +17,7 @@ export interface RoutineExerciseEntryInput {
   series?: number | null;
   notes?: string | null;
   order: number;
+  weeks?: RoutineExerciseWeekInput[];
 }
 
 export interface RoutineSessionInput {

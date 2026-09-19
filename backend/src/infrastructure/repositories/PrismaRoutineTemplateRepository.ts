@@ -2,6 +2,7 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import { RoutineTemplate, RoutineStatus } from '../../domain/models/RoutineTemplate';
 import { RoutineSession } from '../../domain/models/RoutineSession';
 import { RoutineExerciseEntry, RoutinePhase } from '../../domain/models/RoutineExerciseEntry';
+import { RoutineExerciseWeek } from '../../domain/models/RoutineExerciseWeek';
 import {
   RoutineTemplateRepository,
   RoutineTemplateInput,
@@ -15,7 +16,10 @@ const nestedInclude = {
     include: {
       entries: {
         orderBy: { order: 'asc' as const },
-        include: { exercise: { select: { name: true } } },
+        include: {
+          exercise: { select: { name: true } },
+          weeks: { orderBy: { week: 'asc' as const } },
+        },
       },
     },
   },
@@ -57,6 +61,16 @@ function toDomain(record: TemplateRecord): RoutineTemplate {
                 series: e.series,
                 notes: e.notes,
                 order: e.order,
+                weeks: e.weeks.map(
+                  (w) =>
+                    new RoutineExerciseWeek({
+                      id: w.id,
+                      week: w.week,
+                      kg: w.kg,
+                      reps: w.reps,
+                      series: w.series,
+                    }),
+                ),
               }),
           ),
         }),
@@ -81,10 +95,38 @@ function sessionsCreate(sessions: RoutineSessionInput[]): Prisma.RoutineSessionC
           series: e.series ?? null,
           notes: e.notes ?? null,
           order: e.order,
+          weeks: {
+            create: (e.weeks ?? []).map((w) => ({
+              week: w.week,
+              kg: w.kg ?? null,
+              reps: w.reps ?? null,
+              series: w.series ?? null,
+            })),
+          },
         })),
       },
     })),
   };
+}
+
+/** Maps a loaded template's nested sessions back to input shape (for duplicate/assign), preserving weeks. */
+function sourceSessionsToInput(sessions: TemplateRecord['sessions']): RoutineSessionInput[] {
+  return sessions.map((s) => ({
+    name: s.name,
+    warmupPrescription: s.warmupPrescription,
+    order: s.order,
+    entries: s.entries.map((e) => ({
+      exerciseId: e.exerciseId,
+      phase: e.phase as RoutinePhase,
+      block: e.block,
+      kg: e.kg,
+      reps: e.reps,
+      series: e.series,
+      notes: e.notes,
+      order: e.order,
+      weeks: e.weeks.map((w) => ({ week: w.week, kg: w.kg, reps: w.reps, series: w.series })),
+    })),
+  }));
 }
 
 export class PrismaRoutineTemplateRepository implements RoutineTemplateRepository {
@@ -166,23 +208,7 @@ export class PrismaRoutineTemplateRepository implements RoutineTemplateRepositor
         description: source.description,
         objective: source.objective,
         generalConsiderations: source.generalConsiderations,
-        sessions: sessionsCreate(
-          source.sessions.map((s) => ({
-            name: s.name,
-            warmupPrescription: s.warmupPrescription,
-            order: s.order,
-            entries: s.entries.map((e) => ({
-              exerciseId: e.exerciseId,
-              phase: e.phase as RoutinePhase,
-              block: e.block,
-              kg: e.kg,
-              reps: e.reps,
-              series: e.series,
-              notes: e.notes,
-              order: e.order,
-            })),
-          })),
-        ),
+        sessions: sessionsCreate(sourceSessionsToInput(source.sessions)),
       },
       include: nestedInclude,
     });
@@ -219,23 +245,7 @@ export class PrismaRoutineTemplateRepository implements RoutineTemplateRepositor
           startDate,
           durationWeeks,
           status: 'active',
-          sessions: sessionsCreate(
-            source.sessions.map((s) => ({
-              name: s.name,
-              warmupPrescription: s.warmupPrescription,
-              order: s.order,
-              entries: s.entries.map((e) => ({
-                exerciseId: e.exerciseId,
-                phase: e.phase as RoutinePhase,
-                block: e.block,
-                kg: e.kg,
-                reps: e.reps,
-                series: e.series,
-                notes: e.notes,
-                order: e.order,
-              })),
-            })),
-          ),
+          sessions: sessionsCreate(sourceSessionsToInput(source.sessions)),
         },
         include: nestedInclude,
       });

@@ -65,16 +65,33 @@ export const exerciseSchema = z.object({
 // A routine template with nested sessions and exercise entries (US-005).
 // A template requires a name and at least one session; each session requires a
 // name; each entry references a catalog exercise with a phase.
-const routineExerciseEntrySchema = z.object({
-  exerciseId: z.number().int().positive(),
-  phase: z.enum(['warmup', 'main']),
-  block: z.string().max(255).optional().nullable(),
+const routineExerciseWeekSchema = z.object({
+  week: z.number().int().positive('Week must be a positive number'),
   kg: z.number().nonnegative().optional().nullable(),
   reps: z.number().int().nonnegative().optional().nullable(),
   series: z.number().int().nonnegative().optional().nullable(),
-  notes: z.string().max(1000).optional().nullable(),
-  order: z.number().int().nonnegative(),
 });
+
+const routineExerciseEntrySchema = z
+  .object({
+    exerciseId: z.number().int().positive(),
+    phase: z.enum(['warmup', 'main']),
+    block: z.string().max(255).optional().nullable(),
+    kg: z.number().nonnegative().optional().nullable(),
+    reps: z.number().int().nonnegative().optional().nullable(),
+    series: z.number().int().nonnegative().optional().nullable(),
+    notes: z.string().max(1000).optional().nullable(),
+    order: z.number().int().nonnegative(),
+    weeks: z.array(routineExerciseWeekSchema).optional(),
+  })
+  .refine(
+    (entry) => {
+      if (!entry.weeks) return true;
+      const weeks = entry.weeks.map((w) => w.week);
+      return new Set(weeks).size === weeks.length;
+    },
+    { message: 'Week numbers within an entry must be unique', path: ['weeks'] },
+  );
 
 const routineSessionSchema = z.object({
   name: z.string().min(1, 'Session name is required'),

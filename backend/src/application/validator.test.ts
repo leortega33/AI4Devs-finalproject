@@ -224,6 +224,60 @@ describe('validator', () => {
         }),
       ).toThrow(ValidationError);
     });
+
+    it('should accept an entry with a weekly progression', () => {
+      const result = validateRoutineTemplate({
+        name: 'Meso',
+        sessions: [
+          {
+            name: 'A',
+            order: 0,
+            entries: [
+              {
+                exerciseId: 7,
+                phase: 'main',
+                order: 0,
+                weeks: [
+                  { week: 1, kg: 60, reps: 8, series: 4 },
+                  { week: 2, kg: 62.5, reps: 8, series: 4 },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      expect(result.sessions[0].entries[0].weeks).toHaveLength(2);
+      expect(result.sessions[0].entries[0].weeks?.[1].kg).toBe(62.5);
+    });
+
+    it('should reject an entry with duplicate week numbers', () => {
+      expect(() =>
+        validateRoutineTemplate({
+          name: 'X',
+          sessions: [
+            {
+              name: 'A',
+              order: 0,
+              entries: [
+                { exerciseId: 1, phase: 'main', order: 0, weeks: [{ week: 1, kg: 60 }, { week: 1, kg: 62 }] },
+              ],
+            },
+          ],
+        }),
+      ).toThrow(ValidationError);
+    });
+
+    it('should reject an entry with a non-positive week number', () => {
+      expect(() =>
+        validateRoutineTemplate({
+          name: 'X',
+          sessions: [
+            { name: 'A', order: 0, entries: [{ exerciseId: 1, phase: 'main', order: 0, weeks: [{ week: 0, kg: 60 }] }] },
+          ],
+        }),
+      ).toThrow(ValidationError);
+    });
   });
 
   describe('validateAssignRoutine', () => {

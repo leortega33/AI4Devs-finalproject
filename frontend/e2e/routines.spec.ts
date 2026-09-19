@@ -33,6 +33,10 @@ test.describe('routine templates', () => {
     await dialog.getByText('Sentadilla').click();
     await expect(dialog).toBeHidden();
 
+    // Add a weekly progression row and fill its kg (the second "Kg" belongs to the week).
+    await page.getByRole('button', { name: 'Agregar semana' }).click();
+    await page.getByLabel('Kg').nth(1).fill('60');
+
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText(ROUTINE)).toBeVisible();
 

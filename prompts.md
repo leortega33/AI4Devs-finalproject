@@ -357,6 +357,21 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > y E2E de descarga. Actualizar `api-spec.yml` y `backend-standards.md`. Mantener
 > todo en verde. Contenido en español.
 
+**Prompt 19:**
+
+> Agreguemos progresión semanal a las rutinas (US-018): change OpenSpec
+> `add-weekly-progression` **con spec delta** y **migración de BD**. Nueva tabla
+> `RoutineExerciseWeek` (`entryId` FK cascade, `week`, `kg`, `reps`, `series`,
+> único `(entryId, week)`); las columnas existentes no se tocan (retrocompatible).
+> Backend: modelo de dominio + mapeo del repositorio
+> (`nestedInclude`/`sessionsCreate`/`toDomain` + helper compartido para
+> duplicate/assign), validador que rechaza semanas duplicadas/`<1`. Frontend:
+> editor "Progresión semanal (opcional)" por ejercicio en el builder
+> (agregar/quitar semanas) y vista por semana en la rutina del cliente; tipos de
+> servicio + i18n. Las entradas sin semanas siguen usando el valor único. El
+> export (US-017) no cambia. Migración `prisma migrate dev`, curl del round-trip,
+> E2E. Actualizar `data-model.md`. Mantener todo en verde. Contenido en español.
+
 ---
 
 ### 7. Pull Requests

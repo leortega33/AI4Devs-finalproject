@@ -24,6 +24,13 @@ import {
   type RoutineTemplateInput,
 } from '../services/routineTemplateService';
 
+interface EditWeek {
+  week: number;
+  kg: string;
+  reps: string;
+  series: string;
+}
+
 interface EditEntry {
   exerciseId: number;
   exerciseName: string;
@@ -33,6 +40,7 @@ interface EditEntry {
   reps: string;
   series: string;
   notes: string;
+  weeks: EditWeek[];
 }
 
 interface EditSession {
@@ -84,6 +92,12 @@ export function RoutineTemplateBuilderPage() {
             reps: e.reps == null ? '' : String(e.reps),
             series: e.series == null ? '' : String(e.series),
             notes: e.notes ?? '',
+            weeks: (e.weeks ?? []).map((w) => ({
+              week: w.week,
+              kg: w.kg == null ? '' : String(w.kg),
+              reps: w.reps == null ? '' : String(w.reps),
+              series: w.series == null ? '' : String(w.series),
+            })),
           })),
         })),
       );
@@ -109,6 +123,20 @@ export function RoutineTemplateBuilderPage() {
       ),
     );
 
+  const patchEntryWeeks = (sessionIndex: number, entryIndex: number, weeks: EditWeek[]) =>
+    updateEntry(sessionIndex, entryIndex, { weeks });
+
+  const addWeek = (sessionIndex: number, entryIndex: number, entry: EditEntry) => {
+    const nextWeek = entry.weeks.length > 0 ? Math.max(...entry.weeks.map((w) => w.week)) + 1 : 1;
+    patchEntryWeeks(sessionIndex, entryIndex, [...entry.weeks, { week: nextWeek, kg: '', reps: '', series: '' }]);
+  };
+
+  const updateWeek = (sessionIndex: number, entryIndex: number, entry: EditEntry, weekIndex: number, patch: Partial<EditWeek>) =>
+    patchEntryWeeks(sessionIndex, entryIndex, entry.weeks.map((w, i) => (i === weekIndex ? { ...w, ...patch } : w)));
+
+  const removeWeek = (sessionIndex: number, entryIndex: number, entry: EditEntry, weekIndex: number) =>
+    patchEntryWeeks(sessionIndex, entryIndex, entry.weeks.filter((_, i) => i !== weekIndex));
+
   const handleChoose = (exercise: Exercise) => {
     if (!picker) return;
     const { sessionIndex, phase } = picker;
@@ -128,6 +156,7 @@ export function RoutineTemplateBuilderPage() {
                   reps: '',
                   series: '',
                   notes: '',
+                  weeks: [],
                 },
               ],
             }
@@ -155,6 +184,15 @@ export function RoutineTemplateBuilderPage() {
         series: toNullableNumber(e.series),
         notes: e.notes || null,
         order: ei,
+        // Drop fully-empty week rows; keep those with any value.
+        weeks: e.weeks
+          .filter((w) => w.kg.trim() !== '' || w.reps.trim() !== '' || w.series.trim() !== '')
+          .map((w) => ({
+            week: w.week,
+            kg: toNullableNumber(w.kg),
+            reps: toNullableNumber(w.reps),
+            series: toNullableNumber(w.series),
+          })),
       })),
     })),
   });
@@ -258,19 +296,42 @@ export function RoutineTemplateBuilderPage() {
                   </Divider>
                   {session.entries.map((entry, ei) =>
                     entry.phase !== phase ? null : (
-                      <Stack key={ei} direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }} flexWrap="wrap">
-                        <Typography sx={{ minWidth: 140 }}>{entry.exerciseName}</Typography>
-                        {phase === 'main' && (
-                          <TextField label={t('routines.form.block')} size="small" sx={{ width: 100 }} value={entry.block} onChange={(e) => updateEntry(si, ei, { block: e.target.value })} />
-                        )}
-                        <TextField label={t('routines.form.kg')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.kg} onChange={(e) => updateEntry(si, ei, { kg: e.target.value })} />
-                        <TextField label={t('routines.form.reps')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.reps} onChange={(e) => updateEntry(si, ei, { reps: e.target.value })} />
-                        <TextField label={t('routines.form.series')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.series} onChange={(e) => updateEntry(si, ei, { series: e.target.value })} />
-                        <TextField label={t('routines.form.notes')} size="small" sx={{ flexGrow: 1, minWidth: 120 }} value={entry.notes} onChange={(e) => updateEntry(si, ei, { notes: e.target.value })} />
-                        <IconButton aria-label={t('routines.form.removeExercise')} onClick={() => removeEntry(si, ei)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Stack>
+                      <Box key={ei} sx={{ mb: 1.5 }}>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }} flexWrap="wrap">
+                          <Typography sx={{ minWidth: 140 }}>{entry.exerciseName}</Typography>
+                          {phase === 'main' && (
+                            <TextField label={t('routines.form.block')} size="small" sx={{ width: 100 }} value={entry.block} onChange={(e) => updateEntry(si, ei, { block: e.target.value })} />
+                          )}
+                          <TextField label={t('routines.form.kg')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.kg} onChange={(e) => updateEntry(si, ei, { kg: e.target.value })} />
+                          <TextField label={t('routines.form.reps')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.reps} onChange={(e) => updateEntry(si, ei, { reps: e.target.value })} />
+                          <TextField label={t('routines.form.series')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={entry.series} onChange={(e) => updateEntry(si, ei, { series: e.target.value })} />
+                          <TextField label={t('routines.form.notes')} size="small" sx={{ flexGrow: 1, minWidth: 120 }} value={entry.notes} onChange={(e) => updateEntry(si, ei, { notes: e.target.value })} />
+                          <IconButton aria-label={t('routines.form.removeExercise')} onClick={() => removeEntry(si, ei)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Stack>
+                        <Box sx={{ pl: 2, borderLeft: '2px solid', borderColor: 'divider', ml: 1 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            {t('routines.form.weeklyProgression')}
+                          </Typography>
+                          {entry.weeks.map((week, wi) => (
+                            <Stack key={wi} direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }} flexWrap="wrap">
+                              <Typography variant="body2" sx={{ minWidth: 70 }}>
+                                {t('routines.form.week')} {week.week}
+                              </Typography>
+                              <TextField label={t('routines.form.kg')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={week.kg} onChange={(e) => updateWeek(si, ei, entry, wi, { kg: e.target.value })} />
+                              <TextField label={t('routines.form.reps')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={week.reps} onChange={(e) => updateWeek(si, ei, entry, wi, { reps: e.target.value })} />
+                              <TextField label={t('routines.form.series')} size="small" type="number" inputProps={{ min: 0 }} sx={{ width: 80 }} value={week.series} onChange={(e) => updateWeek(si, ei, entry, wi, { series: e.target.value })} />
+                              <IconButton size="small" aria-label={t('routines.form.removeWeek')} onClick={() => removeWeek(si, ei, entry, wi)}>
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Stack>
+                          ))}
+                          <Button size="small" onClick={() => addWeek(si, ei, entry)}>
+                            {t('routines.form.addWeek')}
+                          </Button>
+                        </Box>
+                      </Box>
                     ),
                   )}
                   <Button size="small" onClick={() => setPicker({ sessionIndex: si, phase })}>

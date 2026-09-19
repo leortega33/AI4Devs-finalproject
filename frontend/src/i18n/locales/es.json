@@ -210,6 +210,10 @@
       "reps": "Reps",
       "series": "Series",
       "notes": "Notas",
+      "weeklyProgression": "Progresión semanal (opcional)",
+      "week": "Sem.",
+      "addWeek": "Agregar semana",
+      "removeWeek": "Quitar semana",
       "requiredName": "Ingresá un nombre para la rutina.",
       "requiredSession": "Agregá al menos una sesión con nombre.",
       "saveFailed": "No se pudo guardar la rutina."
@@ -236,6 +240,7 @@
     "durationWeeks": "Duración (semanas)",
     "endDate": "Vence",
     "expired": "Vencida",
+    "week": "Sem.",
     "historyTitle": "Historial de rutinas",
     "historyEmpty": "Sin rutinas anteriores.",
     "assignFailed": "No se pudo asignar la rutina.",

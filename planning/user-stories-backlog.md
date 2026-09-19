@@ -988,7 +988,7 @@ consistency with US-008; evaluate `exceljs` for the `.xlsx`.
 
 ## US-018: Weekly progression (mesocycle)
 
-- **Status:** enriched (larger — needs a data-model change)
+- **Status:** in-openspec (`openspec/changes/add-weekly-progression`)
 
 **User story:** As the gym owner/trainer, I want each exercise's kg/reps/series to
 vary across the weeks of a routine, so that the plan reflects a real progression.

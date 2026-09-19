@@ -66,6 +66,45 @@ describe('ClientRoutinePage', () => {
     expect(screen.getByText(/Sentadilla/)).toBeInTheDocument();
   });
 
+  it('should show the weekly progression when an entry has weeks', async () => {
+    vi.mocked(clientRoutineService.getActive).mockResolvedValue({
+      id: 6,
+      name: 'Meso activa',
+      clientId: 3,
+      status: 'active',
+      isExpired: false,
+      sessions: [
+        {
+          id: 11,
+          name: 'Sesión A',
+          order: 0,
+          entries: [
+            {
+              id: 101,
+              exerciseId: 7,
+              exerciseName: 'Sentadilla',
+              phase: 'main',
+              order: 0,
+              series: 4,
+              reps: 8,
+              kg: 60,
+              weeks: [
+                { week: 1, kg: 60, reps: 8, series: 4 },
+                { week: 2, kg: 62.5, reps: 8, series: 4 },
+              ],
+            },
+          ],
+        },
+      ],
+    } as never);
+
+    renderPage();
+
+    expect(await screen.findByText('Meso activa')).toBeInTheDocument();
+    expect(screen.getByText(/Sem\. 1: 4x8 @ 60kg/)).toBeInTheDocument();
+    expect(screen.getByText(/Sem\. 2: 4x8 @ 62\.5kg/)).toBeInTheDocument();
+  });
+
   it('should assign a routine from a chosen template', async () => {
     vi.mocked(clientRoutineService.getActive).mockResolvedValue(null);
     vi.mocked(clientRoutineService.assign).mockResolvedValue({} as never);

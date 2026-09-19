@@ -120,9 +120,21 @@ A single exercise entry within a session — either part of the warm-up or the m
 - `exerciseId`: Foreign key referencing Exercise
 - `phase`: `warmup` | `main`
 - `block`: Optional free-text superset/block label (e.g. "Block 1"), main phase only
-- `kg`, `reps`, `series`: Prescription for this entry (single value, no weekly progression in the MVP)
+- `kg`, `reps`, `series`: Default prescription for this entry (single value). When a weekly progression is present (see RoutineExerciseWeek), those per-week values are shown instead.
 - `notes`: Optional observations
 - `order`: Display order within the session/phase
+- `weeks`: One-to-many relationship with RoutineExerciseWeek (optional weekly progression, US-018)
+
+### 7b. RoutineExerciseWeek
+An optional per-week override of an entry's prescription, enabling weekly
+progression across a mesocycle. See US-018. Entries without weeks keep their
+single kg/reps/series (backward compatible).
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `routineExerciseEntryId`: Foreign key referencing RoutineExerciseEntry (cascade delete)
+- `week`: 1-indexed week number (unique per entry)
+- `kg`, `reps`, `series`: Optional prescription for that week
 
 ### 8. Payment
 A payment registered for a client. See US-007 and US-008.
@@ -220,6 +232,14 @@ erDiagram
         String notes
         Int order
     }
+    RoutineExerciseWeek {
+        Int id PK
+        Int routineExerciseEntryId FK
+        Int week
+        Float kg
+        Int reps
+        Int series
+    }
     Payment {
         Int id PK
         Int clientId FK
@@ -238,6 +258,7 @@ erDiagram
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
     RoutineSession ||--o{ RoutineExerciseEntry : "has"
     Exercise ||--o{ RoutineExerciseEntry : "used in"
+    RoutineExerciseEntry ||--o{ RoutineExerciseWeek : "progresses by week"
 ```
 
 ## Key Design Principles
@@ -246,7 +267,7 @@ erDiagram
 2. **Templates and client instances share one schema**: `RoutineTemplate` doubles as both the reusable library template (`clientId IS NULL`) and a client's assigned routine (`clientId` set, cloned from a template via `sourceTemplateId`). This avoids duplicating the session/exercise schema for both cases.
 3. **Value Objects embedded, not normalized**: `EmergencyContact` fields live directly on `Client` (see `docs/backend-standards.md` Value Objects section) since they have no independent identity or lifecycle.
 4. **Soft delete over hard delete**: `Client.status` and no-delete `Exercise` rows preserve history needed for payments/medical records/routines.
-5. **No weekly progression, no medical-record-driven automation in the MVP**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value; see `planning/user-stories-backlog.md` Phase 2 backlog for deferred ideas (weekly progression, automatic exercise contraindication warnings, medical record history).
+5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle. Medical-record-driven automation (contraindication warnings, medical record history) remains in the Phase 2 backlog.
 
 ## Notes
 

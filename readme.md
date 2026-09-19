@@ -105,7 +105,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
 6. **Rutinas** — Desde el panel, "Rutinas" abre la biblioteca de plantillas. El
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
-   series/notas). Se puede **duplicar** una plantilla en una copia independiente.
+   series/notas). Cada ejercicio admite una **progresión semanal opcional** (valores
+   por semana), que se muestra por semana en la rutina del cliente. Se puede
+   **duplicar** una plantilla en una copia independiente.
    Las acciones de cada fila (editar, duplicar) son **iconos con tooltip**, e
    incluyen **exportar la rutina a PDF y a Excel** (`.xlsx`). La misma exportación
    está disponible sobre la rutina activa de un cliente.
