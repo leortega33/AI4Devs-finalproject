@@ -31,6 +31,20 @@ export interface MedicalRecordFormData {
   notes?: string;
 }
 
+export interface MedicalRecordVersion {
+  id: number;
+  clientId: number;
+  preexistingConditions?: string | null;
+  injuries?: string | null;
+  surgeriesOrProsthetics?: string | null;
+  physicalRestrictions?: string | null;
+  medication?: string | null;
+  allergies?: string | null;
+  bloodType?: string | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
 export const medicalRecordService = {
   get: async (clientId: number): Promise<MedicalRecord | null> => {
     const response = await api.get(`/${clientId}/medical-record`);
@@ -39,6 +53,11 @@ export const medicalRecordService = {
 
   save: async (clientId: number, data: MedicalRecordFormData): Promise<MedicalRecord> => {
     const response = await api.put(`/${clientId}/medical-record`, data);
+    return response.data.data;
+  },
+
+  getHistory: async (clientId: number): Promise<MedicalRecordVersion[]> => {
+    const response = await api.get(`/${clientId}/medical-record/history`);
     return response.data.data;
   },
 };

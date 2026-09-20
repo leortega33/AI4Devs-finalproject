@@ -1092,7 +1092,7 @@ revisit indexing/caching only if slow.
 
 ## US-021: Medical record change history
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-medical-record-history`)
 
 **User story:** As the gym owner/trainer, I want to see the history of changes to
 a client's medical record, so that I can track how their condition evolves over

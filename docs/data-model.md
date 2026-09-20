@@ -39,6 +39,7 @@ Represents a gym client. See US-002.
 
 **Relationships:**
 - `medicalRecord`: One-to-one (optional) relationship with MedicalRecord
+- `medicalRecordVersions`: One-to-many relationship with MedicalRecordVersion (change history, US-021)
 - `routines`: One-to-many relationship with RoutineTemplate (client-assigned instances, see below)
 - `payments`: One-to-many relationship with Payment
 
@@ -55,7 +56,22 @@ Represents a client's medical file. See US-003. One-to-one with Client, optional
 
 **Validation Rules:**
 - Optional overall — a `Client` can exist without a `MedicalRecord`
-- Only the current state is stored in the MVP (no history/versioning — Phase 2)
+- Only the current state is stored here; the change history is kept as
+  `MedicalRecordVersion` snapshots (US-021)
+
+### 3b. MedicalRecordVersion
+An immutable, timestamped full snapshot of a client's medical record, written on
+each save. See US-021. One-to-many with Client (many versions per client).
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `clientId`: Foreign key referencing Client (cascade on client delete)
+- `preexistingConditions`, `injuries`, `surgeriesOrProsthetics`, `physicalRestrictions`, `medication`, `allergies`, `bloodType`, `notes`: Snapshot of the medical fields at save time
+- `createdAt`: Timestamp of the snapshot (indexed with `clientId` for newest-first reads)
+
+**Validation Rules:**
+- Append-only (never edited or deleted individually); one row per successful save
+- Read newest first; the newest version equals the current `MedicalRecord`
 
 ### 4. Exercise
 Reusable exercise catalog entry. See US-004.
@@ -192,6 +208,19 @@ erDiagram
         String bloodType
         String notes
     }
+    MedicalRecordVersion {
+        Int id PK
+        Int clientId FK
+        String preexistingConditions
+        String injuries
+        String surgeriesOrProsthetics
+        String physicalRestrictions
+        String medication
+        String allergies
+        String bloodType
+        String notes
+        DateTime createdAt
+    }
     Exercise {
         Int id PK
         String name
@@ -252,6 +281,7 @@ erDiagram
     }
 
     Client ||--o| MedicalRecord : "has"
+    Client ||--o{ MedicalRecordVersion : "history of"
     Client ||--o{ RoutineTemplate : "is assigned (clientId set)"
     Client ||--o{ Payment : "makes"
 
@@ -268,7 +298,8 @@ erDiagram
 2. **Templates and client instances share one schema**: `RoutineTemplate` doubles as both the reusable library template (`clientId IS NULL`) and a client's assigned routine (`clientId` set, cloned from a template via `sourceTemplateId`). This avoids duplicating the session/exercise schema for both cases.
 3. **Value Objects embedded, not normalized**: `EmergencyContact` fields live directly on `Client` (see `docs/backend-standards.md` Value Objects section) since they have no independent identity or lifecycle.
 4. **Soft delete over hard delete**: `Client.status` and no-delete `Exercise` rows preserve history needed for payments/medical records/routines.
-5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle. Medical-record-driven automation (contraindication warnings, medical record history) remains in the Phase 2 backlog.
+5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle. Medical-record-driven automation (contraindication warnings) remains in the Phase 2 backlog.
+6. **Medical record history as full snapshots**: each save appends an immutable `MedicalRecordVersion` (full snapshot + timestamp, US-021) rather than field-level diffs, keeping the history simple to store and display; the newest version equals the current `MedicalRecord`.
 
 ## Notes
 

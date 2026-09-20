@@ -400,6 +400,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/medical-record/history:
+    get:
+      summary: Get a client's medical record change history
+      description: >
+        Returns the client's medical record versions (immutable full snapshots)
+        newest first. Each save appends a version; the newest matches the current
+        record. See US-021.
+      tags:
+        - Medical Records
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The version history, newest first (empty when nothing was saved)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalRecordHistoryResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/routine:
     get:
       summary: Get a client's active routine
@@ -1333,6 +1368,31 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/MedicalRecord'
+
+    MedicalRecordVersion:
+      description: An immutable, timestamped full snapshot of a medical record (US-021).
+      allOf:
+        - $ref: '#/components/schemas/MedicalRecordInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            clientId:
+              type: integer
+            createdAt:
+              type: string
+              format: date-time
+
+    MedicalRecordHistoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          description: Versions newest first.
+          items:
+            $ref: '#/components/schemas/MedicalRecordVersion'
 
     ExerciseInput:
       type: object

@@ -7,6 +7,7 @@ import { prisma } from './infrastructure/prismaClient';
 import { PrismaUserRepository } from './infrastructure/repositories/PrismaUserRepository';
 import { PrismaClientRepository } from './infrastructure/repositories/PrismaClientRepository';
 import { PrismaMedicalRecordRepository } from './infrastructure/repositories/PrismaMedicalRecordRepository';
+import { PrismaMedicalRecordVersionRepository } from './infrastructure/repositories/PrismaMedicalRecordVersionRepository';
 import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
 import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/PrismaRoutineTemplateRepository';
 import { PrismaPaymentRepository } from './infrastructure/repositories/PrismaPaymentRepository';
@@ -66,7 +67,12 @@ export function createApp() {
   const clientService = new ClientService(clientRepository);
 
   const medicalRecordRepository = new PrismaMedicalRecordRepository(prisma);
-  const medicalRecordService = new MedicalRecordService(medicalRecordRepository, clientRepository);
+  const medicalRecordVersionRepository = new PrismaMedicalRecordVersionRepository(prisma);
+  const medicalRecordService = new MedicalRecordService(
+    medicalRecordRepository,
+    clientRepository,
+    medicalRecordVersionRepository,
+  );
 
   const exerciseRepository = new PrismaExerciseRepository(prisma);
   const exerciseService = new ExerciseService(exerciseRepository);

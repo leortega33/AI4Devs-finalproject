@@ -11,7 +11,7 @@ vi.mock('../services/clientService', () => ({
 }));
 
 vi.mock('../services/medicalRecordService', () => ({
-  medicalRecordService: { get: vi.fn(), save: vi.fn() },
+  medicalRecordService: { get: vi.fn(), save: vi.fn(), getHistory: vi.fn() },
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -36,6 +36,7 @@ describe('MedicalRecordPage', () => {
       firstName: 'John',
       lastName: 'Doe',
     } as never);
+    vi.mocked(medicalRecordService.getHistory).mockResolvedValue([]);
   });
 
   it('should show the empty state when the client has no record yet', async () => {
@@ -79,5 +80,38 @@ describe('MedicalRecordPage', () => {
         expect.objectContaining({ allergies: 'Penicillin' }),
       ),
     );
+  });
+
+  it('should show the empty history state when there are no versions', async () => {
+    vi.mocked(medicalRecordService.get).mockResolvedValue(null);
+    vi.mocked(medicalRecordService.getHistory).mockResolvedValue([]);
+
+    renderPage();
+
+    expect(await screen.findByText('Historial de cambios')).toBeInTheDocument();
+    expect(screen.getByText(/todavía no hay versiones guardadas/i)).toBeInTheDocument();
+  });
+
+  it('should list the saved versions newest first with their values', async () => {
+    vi.mocked(medicalRecordService.get).mockResolvedValue(null);
+    vi.mocked(medicalRecordService.getHistory).mockResolvedValue([
+      {
+        id: 2,
+        clientId: 10,
+        injuries: 'Shoulder',
+        createdAt: '2026-02-01T10:00:00.000Z',
+      },
+      {
+        id: 1,
+        clientId: 10,
+        injuries: 'Knee',
+        createdAt: '2026-01-01T10:00:00.000Z',
+      },
+    ] as never);
+
+    renderPage();
+
+    expect(await screen.findByText(/Lesiones: Shoulder/)).toBeInTheDocument();
+    expect(screen.getByText(/Lesiones: Knee/)).toBeInTheDocument();
   });
 });

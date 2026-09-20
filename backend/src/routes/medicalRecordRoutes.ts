@@ -18,6 +18,7 @@ export function createMedicalRecordRoutes(
   router.use(authMiddleware);
   router.get('/', controller.get);
   router.put('/', controller.upsert);
+  router.get('/history', controller.history);
 
   return router;
 }

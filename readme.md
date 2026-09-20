@@ -99,7 +99,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
 4. **Ficha médica** — Desde el listado, la acción "Ficha médica" abre una
    pantalla propia por cliente con condiciones, lesiones, medicación, alergias,
    grupo sanguíneo y notas. Muestra un estado vacío cuando aún no hay ficha y
-   guarda mediante upsert.
+   guarda mediante upsert. Debajo del formulario, un **historial de cambios**
+   lista cada versión guardada (snapshot completo con fecha, más reciente
+   primero), para seguir la evolución del cliente en el tiempo.
 5. **Ejercicios** — Desde el panel, "Ejercicios" abre el catálogo (`DataGrid`
    con búsqueda por nombre y filtro por categoría). Alta/edición mediante
    formulario; sin borrado. Cada ejercicio admite una **URL de video y/o imagen**

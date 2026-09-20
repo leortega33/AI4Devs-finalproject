@@ -146,7 +146,13 @@
     },
     "saved": "Medical record saved.",
     "saveFailed": "Could not save the medical record.",
-    "loadFailed": "Could not load the medical record."
+    "loadFailed": "Could not load the medical record.",
+    "history": {
+      "title": "Change history",
+      "empty": "No versions saved yet.",
+      "savedAt": "Saved on {{date}}",
+      "loadFailed": "Could not load the history."
+    }
   },
   "exercises": {
     "title": "Exercises",

@@ -40,6 +40,10 @@ test.describe('medical record', () => {
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText('Ficha médica guardada.')).toBeVisible();
 
+    // The change history now shows a version (US-021).
+    await expect(page.getByRole('heading', { name: 'Historial de cambios' })).toBeVisible();
+    await expect(page.getByText(/Guardado el/).first()).toBeVisible();
+
     // Reopen from the list and verify persistence (no empty state).
     await page.getByRole('button', { name: /atrás/i }).click();
     await expect(page.getByRole('heading', { name: 'Clientes', exact: true })).toBeVisible();

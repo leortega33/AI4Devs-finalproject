@@ -406,6 +406,25 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 22:**
+
+> Agreguemos historial de cambios a la ficha médica (US-021): change OpenSpec
+> `add-medical-record-history` **con spec delta** y **migración**. Nueva tabla
+> `MedicalRecordVersion` (snapshot completo de los campos + `createdAt`, FK a
+> `Client` con cascade, índice `[clientId, createdAt]`). Backend: modelo/repo de
+> versión; el servicio de ficha médica graba una versión tras cada `upsert`
+> (snapshot del estado guardado) y expone `getHistory`; nueva acción de controller
+> + ruta `GET /api/clients/:clientId/medical-record/history` (protegida). El
+> upsert y la lectura del estado actual no cambian. Frontend: `getHistory` en el
+> servicio; sección de **historial** (más reciente primero, timestamps
+> localizados, estado vacío) que se refresca tras guardar; tipos + i18n (es/en).
+> TDD backend y frontend, migración `prisma migrate dev`, curl (guardar 2 veces →
+> 2 versiones newest-first, historial vacío, 404, 401), verificación visual + E2E.
+> Actualizar `api-spec.yml` y `data-model.md`. Snapshots completos (no diffs), sin
+> restore. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

@@ -28,4 +28,13 @@ export class MedicalRecordController {
       next(error);
     }
   };
+
+  history = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const versions = await this.medicalRecordService.getHistory(parseId(req.params.clientId));
+      res.status(200).json({ success: true, data: versions });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
