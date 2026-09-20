@@ -1231,34 +1231,80 @@ levels, structured (non-free-text) medical fields, warm-up suggestions (US-023).
 
 ## US-023: Medical-aware warm-up suggestions
 
-- **Status:** enriched (needs product definition; depends on US-022)
+- **Status:** enriched
 
-**User story:** As the gym owner/trainer, I want warm-up blocks to suggest/adapt
-based on the client's medical record (e.g. mobility work for a restricted area),
-so that warm-ups are relevant and safe.
+**User story:** As the gym owner/trainer, when I open a client's routine, I want
+the app to suggest warm-up/mobility exercises for the body areas the client's
+medical record flags, so that I can quickly include relevant preparation work —
+as guidance I choose to use, never forced.
 
-**Functional description:** building on US-022's medical mapping, suggest warm-up
-exercises for the areas a client's medical record flags, editable by the trainer.
-Depends on the rules/tagging defined in US-022, so it inherits the same
-**product-definition** requirement.
+**Product decision (resolves the prior open questions, builds on US-022):**
 
-**Data model (Prisma):** reuses US-022's mapping/tags; likely no new tables.
+1. Reuses US-022 end to end: the client's **flagged regions** (from
+   `medical-flags`) and each exercise's **`bodyRegions`** tags. No new dictionary,
+   no new tags, no new tables.
+2. A **warm-up suggestion** = a catalog exercise whose `category` is `mobility`
+   or `activation` and whose `bodyRegions` intersect a flagged region. (Main-lift
+   exercises are excluded — they are the load, not the preparation.)
+3. Shown as an advisory **"Suggested warm-up"** panel on the client's routine
+   page (the same client-scoped surface as the US-022 warnings), grouped by
+   flagged region. It is **guidance only**: the trainer decides whether to add the
+   work to a template; nothing is auto-added or forced.
 
-**Endpoints:** suggestions computed when building the client's routine. TBD with
-US-022.
+**Functional description:** on the client's routine page, below the active
+routine, a panel lists — per flagged region — the mobility/activation exercises
+that target it (localized region label + exercise names, each with its reference
+video/image link when present). Empty state when the client has no flagged
+regions or no matching warm-up exercises. Recomputed from the client's **current**
+medical record.
 
-**Files/modules:** the warm-up section of the client-routine builder + the shared
-medical-rules service from US-022.
+**Data model (Prisma):** none — reuses `Exercise.bodyRegions` (US-022) and the
+medical record (US-003). No migration.
 
-**Definition of done (draft):** the builder proposes relevant warm-up exercises
-for flagged areas; the trainer can accept/edit them.
+**Endpoints:** `GET /api/clients/:clientId/warmup-suggestions` →
+`{ success, data: { regions: RegionCode[], suggestions: [{ region, exercises:
+[{ id, name, category, bodyRegions, videoUrl, imageUrl }] }] } }`. Computed
+server-side (flagged regions ∩ warm-up-eligible catalog exercises). Auth-protected;
+404 for a non-existent client; empty `suggestions` when nothing applies.
 
-**Tests:** suggestion logic unit; builder UI.
+**Files/modules:**
+- Backend: a `WarmupSuggestionService` (composes the medical-flags derivation +
+  the exercise repository, filtering `category ∈ {mobility, activation}` and
+  region overlap) with unit tests; a controller action + route for
+  `GET /warmup-suggestions`; wire it in `index.ts`.
+- Frontend: a `warmupSuggestionService.get(clientId)`; a **"Calentamiento
+  sugerido"** panel on `ClientRoutinePage` grouped by region (advisory, dismissible
+  visual only); types + i18n (es/en).
 
-**Non-functional requirements:** suggestions are editable, never forced; i18n.
+**Definition of done:**
+- For a client whose medical record flags a region (e.g. `shoulder`), the panel
+  lists the mobility/activation exercises tagged with that region (e.g. "Movilidad
+  de hombro"), grouped by region.
+- Main-category exercises never appear as suggestions.
+- Empty state when there are no flagged regions or no matching warm-up exercises.
+- Suggestions are guidance only — nothing is auto-added; assigning/saving is
+  unaffected.
+- `GET /warmup-suggestions` returns the grouped suggestions; 401 without auth;
+  404 for a missing client.
 
-**Open technical decisions:** shared with US-022 (rules source/granularity).
-Sequence US-022 first.
+**Tests:**
+- Backend: `WarmupSuggestionService` (groups warm-up exercises by flagged region,
+  excludes `main`, empty when no flags/matches, not-found); route test (shape +
+  401/404).
+- Frontend: the panel renders grouped suggestions, shows the empty state, and
+  region labels are localized.
+
+**Non-functional requirements:** advisory/guidance only, never forced; clear,
+non-diagnostic wording; reuses the US-022 curated mapping; i18n (es/en);
+auth-protected.
+
+**Out of scope (future):** in-place editing of a client's routine (routines are
+clones of templates), auto-inserting suggested warm-ups, severity/priority
+ordering, and structured medical fields.
+
+**Open technical decisions:** resolved — reuse US-022 flags + tags; warm-up =
+mobility/activation exercises overlapping a flagged region; advisory panel on the
+client routine page; server-side computation.
 
 ---
 
