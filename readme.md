@@ -108,7 +108,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    de referencia, que se muestra como link en la columna "Media" del catálogo y
    como link de video junto al ejercicio en la rutina del cliente. Trae un set
    base sembrado al iniciar. La acción de editar de cada fila es un **icono con
-   tooltip**.
+   tooltip**. Cada ejercicio admite además **zonas corporales** que trabaja
+   (rodilla, hombro, lumbar, etc.), usadas para los avisos según la ficha médica
+   (US-022).
 6. **Rutinas** — Desde el panel, "Rutinas" abre la biblioteca de plantillas. El
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/
@@ -122,7 +124,11 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    asignada. Desde la acción "Rutina" se abre una pantalla que muestra la rutina
    activa (o estado vacío), permite **asignar** una plantilla (con fecha de
    inicio y duración) y ver el **historial**. Asignar una nueva cierra la
-   anterior.
+   anterior. Cada ejercicio cuya **zona corporal** coincide con una zona marcada
+   en la ficha médica del cliente muestra un **aviso advisory** (icono de
+   advertencia con tooltip que nombra la zona); es orientativo, nunca bloquea
+   asignar ni guardar (US-022). Las zonas se etiquetan por ejercicio en el
+   catálogo.
 8. **Pagos del cliente** — El listado de clientes muestra el estado de pago
    (al día / vencido / sin pagos) y permite **filtrar** por ese estado además de
    por nombre y estado (activo/inactivo). Las acciones de cada fila (editar, ficha

@@ -6,6 +6,7 @@ import { ClientRoutinePage } from './ClientRoutinePage';
 import { clientService } from '../services/clientService';
 import { clientRoutineService } from '../services/clientRoutineService';
 import { routineTemplateService } from '../services/routineTemplateService';
+import { medicalFlagsService } from '../services/medicalFlagsService';
 
 vi.mock('../services/clientService', () => ({ clientService: { get: vi.fn() } }));
 vi.mock('../services/clientRoutineService', () => ({
@@ -13,6 +14,9 @@ vi.mock('../services/clientRoutineService', () => ({
 }));
 vi.mock('../services/routineTemplateService', () => ({
   routineTemplateService: { list: vi.fn() },
+}));
+vi.mock('../services/medicalFlagsService', () => ({
+  medicalFlagsService: { get: vi.fn() },
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -37,6 +41,7 @@ describe('ClientRoutinePage', () => {
     vi.mocked(routineTemplateService.list).mockResolvedValue([
       { id: 1, name: 'Hipertrofia', objective: 'Fuerza', status: 'draft', sessionCount: 1 },
     ] as never);
+    vi.mocked(medicalFlagsService.get).mockResolvedValue({ regions: [], details: [] } as never);
   });
 
   it('should show the empty state when the client has no active routine', async () => {
@@ -66,6 +71,43 @@ describe('ClientRoutinePage', () => {
     expect(screen.getByText(/Sentadilla/)).toBeInTheDocument();
     // The exercise's video link is shown next to it (US-019).
     expect(screen.getByRole('link', { name: /ver video/i })).toHaveAttribute('href', 'https://youtu.be/squat');
+  });
+
+  it('should show an advisory medical warning when an exercise overlaps a flagged region', async () => {
+    vi.mocked(medicalFlagsService.get).mockResolvedValue({ regions: ['knee'], details: [] } as never);
+    vi.mocked(clientRoutineService.getActive).mockResolvedValue({
+      id: 5,
+      name: 'Rutina activa',
+      clientId: 3,
+      status: 'active',
+      isExpired: false,
+      sessions: [
+        { id: 10, name: 'Sesión A', order: 0, entries: [{ id: 100, exerciseId: 7, exerciseName: 'Sentadilla', exerciseBodyRegions: ['knee', 'hip'], phase: 'main', order: 0 }] },
+      ],
+    } as never);
+
+    renderPage();
+
+    expect(await screen.findByLabelText('Aviso médico')).toBeInTheDocument();
+  });
+
+  it('should not show a medical warning when there is no overlap', async () => {
+    vi.mocked(medicalFlagsService.get).mockResolvedValue({ regions: ['shoulder'], details: [] } as never);
+    vi.mocked(clientRoutineService.getActive).mockResolvedValue({
+      id: 5,
+      name: 'Rutina activa',
+      clientId: 3,
+      status: 'active',
+      isExpired: false,
+      sessions: [
+        { id: 10, name: 'Sesión A', order: 0, entries: [{ id: 100, exerciseId: 7, exerciseName: 'Sentadilla', exerciseBodyRegions: ['knee', 'hip'], phase: 'main', order: 0 }] },
+      ],
+    } as never);
+
+    renderPage();
+
+    await screen.findByText(/Sentadilla/);
+    expect(screen.queryByLabelText('Aviso médico')).not.toBeInTheDocument();
   });
 
   it('should show the weekly progression when an entry has weeks', async () => {

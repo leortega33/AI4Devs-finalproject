@@ -122,6 +122,32 @@ describe('exerciseRoutes', () => {
       expect(response.status).toBe(400);
       expect(service.create).not.toHaveBeenCalled();
     });
+
+    it('should round-trip body regions', async () => {
+      service.create.mockResolvedValue(new Exercise({ ...validBody, category: 'main', id: 1, bodyRegions: ['knee', 'hip'] }));
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .post('/api/exercises')
+        .set('Cookie', authCookie())
+        .send({ ...validBody, bodyRegions: ['knee', 'hip'] });
+
+      expect(response.status).toBe(201);
+      expect(service.create).toHaveBeenCalledWith(expect.objectContaining({ bodyRegions: ['knee', 'hip'] }));
+      expect(response.body.data.bodyRegions).toEqual(['knee', 'hip']);
+    });
+
+    it('should return 400 for an unknown body region', async () => {
+      const app = buildApp(service);
+
+      const response = await request(app)
+        .post('/api/exercises')
+        .set('Cookie', authCookie())
+        .send({ ...validBody, bodyRegions: ['spleen'] });
+
+      expect(response.status).toBe(400);
+      expect(service.create).not.toHaveBeenCalled();
+    });
   });
 
   describe('PUT /api/exercises/:id', () => {

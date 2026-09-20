@@ -1,3 +1,5 @@
+import { RegionCode } from './bodyRegions';
+
 export type ExerciseCategory = 'mobility' | 'activation' | 'main';
 
 export interface ExerciseProps {
@@ -11,6 +13,7 @@ export interface ExerciseProps {
   equipment?: string | null;
   videoUrl?: string | null;
   imageUrl?: string | null;
+  bodyRegions?: RegionCode[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +30,7 @@ export class Exercise {
   readonly equipment: string | null;
   readonly videoUrl: string | null;
   readonly imageUrl: string | null;
+  readonly bodyRegions: RegionCode[];
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 
@@ -41,6 +45,7 @@ export class Exercise {
     this.equipment = props.equipment ?? null;
     this.videoUrl = props.videoUrl ?? null;
     this.imageUrl = props.imageUrl ?? null;
+    this.bodyRegions = props.bodyRegions ?? [];
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

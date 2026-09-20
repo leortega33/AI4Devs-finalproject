@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { API_BASE_URL } from './apiBaseUrl';
+import type { RegionCode } from '../constants/bodyRegions';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/routine-templates`,
@@ -23,6 +24,7 @@ export interface RoutineExerciseEntry {
   exerciseId: number;
   exerciseName?: string;
   exerciseVideoUrl?: string | null;
+  exerciseBodyRegions?: RegionCode[];
   phase: RoutinePhase;
   block?: string | null;
   kg?: number | null;

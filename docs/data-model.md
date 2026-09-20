@@ -85,10 +85,12 @@ Reusable exercise catalog entry. See US-004.
 - `technique`: Execution technique/description
 - `equipment`: Required equipment
 - `videoUrl`, `imageUrl`: Optional reference media URLs (YouTube/image link, US-019); no file upload/storage
+- `bodyRegions`: Optional list of controlled body-region codes the exercise loads (US-022), used for advisory medical warnings (e.g. `knee`, `lower_back`)
 - `createdAt` / `updatedAt`: Timestamps
 
 **Validation Rules:**
 - No hard delete (create/edit only) to avoid breaking routines that reference an exercise
+- `bodyRegions` values must belong to the controlled vocabulary (`neck`, `shoulder`, `elbow`, `wrist`, `upper_back`, `lower_back`, `hip`, `knee`, `ankle`, `core`, `cardio_respiratory`)
 
 ### 5. RoutineTemplate
 A reusable routine template, or — when `clientId` is set — the actual routine instance assigned to a client (a clone of a template). See US-005 and US-006.
@@ -230,6 +232,7 @@ erDiagram
         Int defaultReps
         String technique
         String equipment
+        StringList bodyRegions
     }
     RoutineTemplate {
         Int id PK
@@ -298,8 +301,9 @@ erDiagram
 2. **Templates and client instances share one schema**: `RoutineTemplate` doubles as both the reusable library template (`clientId IS NULL`) and a client's assigned routine (`clientId` set, cloned from a template via `sourceTemplateId`). This avoids duplicating the session/exercise schema for both cases.
 3. **Value Objects embedded, not normalized**: `EmergencyContact` fields live directly on `Client` (see `docs/backend-standards.md` Value Objects section) since they have no independent identity or lifecycle.
 4. **Soft delete over hard delete**: `Client.status` and no-delete `Exercise` rows preserve history needed for payments/medical records/routines.
-5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle. Medical-record-driven automation (contraindication warnings) remains in the Phase 2 backlog.
+5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle.
 6. **Medical record history as full snapshots**: each save appends an immutable `MedicalRecordVersion` (full snapshot + timestamp, US-021) rather than field-level diffs, keeping the history simple to store and display; the newest version equals the current `MedicalRecord`.
+7. **Advisory medical warnings via body-region overlap (US-022)**: exercises carry `bodyRegions` tags; a curated keyword dictionary (in code) maps a client's free-text medical record to those same regions. Overlap surfaces a non-blocking, non-diagnostic warning when building a client's routine — no rules table, and the medical record stays free text.
 
 ## Notes
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { API_BASE_URL } from './apiBaseUrl';
+import type { RegionCode } from '../constants/bodyRegions';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/exercises`,
@@ -20,6 +21,7 @@ export interface Exercise {
   equipment?: string | null;
   videoUrl?: string | null;
   imageUrl?: string | null;
+  bodyRegions?: RegionCode[];
 }
 
 export interface ExerciseFormData {
@@ -32,6 +34,7 @@ export interface ExerciseFormData {
   equipment?: string | null;
   videoUrl?: string | null;
   imageUrl?: string | null;
+  bodyRegions?: RegionCode[];
 }
 
 export interface ExerciseListParams {

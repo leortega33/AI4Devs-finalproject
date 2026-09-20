@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { REGION_CODES } from '../domain/models/bodyRegions';
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -71,6 +72,11 @@ export const exerciseSchema = z.object({
   // Empty string means "no media"; a non-empty value must be a valid http(s) URL.
   videoUrl: optionalUrl('Video URL must be a valid URL'),
   imageUrl: optionalUrl('Image URL must be a valid URL'),
+  // Body regions the exercise loads, from the controlled vocabulary (US-022).
+  bodyRegions: z
+    .array(z.enum(REGION_CODES, { errorMap: () => ({ message: 'Invalid body region' }) }))
+    .optional()
+    .transform((v) => v ?? []),
 });
 
 // A routine template with nested sessions and exercise entries (US-005).

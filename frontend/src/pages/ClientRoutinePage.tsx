@@ -21,6 +21,7 @@ import {
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import GridOnOutlinedIcon from '@mui/icons-material/GridOnOutlined';
 import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '../components/BackButton';
 import { TemplatePickerDialog } from '../components/TemplatePickerDialog';
@@ -31,6 +32,8 @@ import {
   type RoutineHistoryItem,
 } from '../services/clientRoutineService';
 import { routineTemplateService, type RoutineTemplateSummary } from '../services/routineTemplateService';
+import { medicalFlagsService } from '../services/medicalFlagsService';
+import type { RegionCode } from '../constants/bodyRegions';
 
 export function ClientRoutinePage() {
   const { clientId } = useParams();
@@ -43,6 +46,7 @@ export function ClientRoutinePage() {
   const [startDate, setStartDate] = useState('');
   const [durationWeeks, setDurationWeeks] = useState('4');
   const [error, setError] = useState('');
+  const [flaggedRegions, setFlaggedRegions] = useState<RegionCode[]>([]);
 
   const load = useCallback(async () => {
     if (!clientId) return;
@@ -58,6 +62,10 @@ export function ClientRoutinePage() {
   useEffect(() => {
     if (!clientId) return;
     clientService.get(Number(clientId)).then(setClient).catch(() => undefined);
+    medicalFlagsService
+      .get(Number(clientId))
+      .then((flags) => setFlaggedRegions(flags.regions))
+      .catch(() => undefined);
     load();
   }, [clientId, load]);
 
@@ -171,7 +179,11 @@ export function ClientRoutinePage() {
                 <Divider textAlign="left" sx={{ mb: 1 }}>
                   {session.name}
                 </Divider>
-                {session.entries.map((entry) => (
+                {session.entries.map((entry) => {
+                  const warnRegions = (entry.exerciseBodyRegions ?? []).filter((r) =>
+                    flaggedRegions.includes(r),
+                  );
+                  return (
                   <Box key={entry.id}>
                     <Stack direction="row" spacing={0.5} alignItems="center" component="span">
                       <Typography variant="body2" component="span">
@@ -194,6 +206,20 @@ export function ClientRoutinePage() {
                           </Link>
                         </Tooltip>
                       )}
+                      {warnRegions.length > 0 && (
+                        <Tooltip
+                          title={t('clientRoutine.warning.tooltip', {
+                            regions: warnRegions.map((r) => t(`exercises.regions.${r}`)).join(', '),
+                          })}
+                        >
+                          <WarningAmberOutlinedIcon
+                            color="warning"
+                            fontSize="small"
+                            aria-label={t('clientRoutine.warning.label')}
+                            sx={{ display: 'inline-flex' }}
+                          />
+                        </Tooltip>
+                      )}
                     </Stack>
                     {entry.weeks && entry.weeks.length > 0 &&
                       entry.weeks.map((week) => (
@@ -202,7 +228,8 @@ export function ClientRoutinePage() {
                         </Typography>
                       ))}
                   </Box>
-                ))}
+                  );
+                })}
               </Box>
             ))}
           </CardContent>

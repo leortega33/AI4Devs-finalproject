@@ -435,6 +435,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/medical-flags:
+    get:
+      summary: Get the body regions flagged by a client's medical record
+      description: >
+        Derives, from the client's current medical record free-text fields, the
+        set of body regions flagged by a curated keyword dictionary (accent- and
+        case-insensitive). Advisory only — it makes no clinical judgement. Used to
+        show non-blocking warnings on a client's routine (US-022).
+      tags:
+        - Medical Records
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The flagged regions with source details (empty when none match)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalFlagsResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/routine:
     get:
       summary: Get a client's active routine
@@ -1394,6 +1430,32 @@ components:
           items:
             $ref: '#/components/schemas/MedicalRecordVersion'
 
+    MedicalFlagsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            regions:
+              type: array
+              description: Unique body regions flagged by the medical record.
+              items:
+                $ref: '#/components/schemas/BodyRegion'
+            details:
+              type: array
+              description: Each flag's source field and matched snippet (transparency).
+              items:
+                type: object
+                properties:
+                  region:
+                    $ref: '#/components/schemas/BodyRegion'
+                  field:
+                    type: string
+                  snippet:
+                    type: string
+
     ExerciseInput:
       type: object
       properties:
@@ -1416,10 +1478,31 @@ components:
         equipment:
           type: string
           nullable: true
+        bodyRegions:
+          type: array
+          description: Body regions the exercise loads, from the controlled vocabulary (US-022).
+          items:
+            $ref: '#/components/schemas/BodyRegion'
       required:
         - name
         - muscleGroup
         - category
+
+    BodyRegion:
+      type: string
+      description: Controlled body-region code (US-022).
+      enum:
+        - neck
+        - shoulder
+        - elbow
+        - wrist
+        - upper_back
+        - lower_back
+        - hip
+        - knee
+        - ankle
+        - core
+        - cardio_respiratory
 
     Exercise:
       allOf:

@@ -86,4 +86,23 @@ describe('ExerciseFormPage (create)', () => {
       ),
     );
   });
+
+  it('should include the selected body regions in the payload', async () => {
+    vi.mocked(exerciseService.create).mockResolvedValue({} as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.type(screen.getByLabelText(/nombre/i), 'Front squat');
+    await user.type(screen.getByLabelText(/grupo muscular/i), 'Legs');
+    await user.click(screen.getByLabelText(/zonas corporales/i));
+    await user.click(await screen.findByRole('option', { name: 'Rodilla' }));
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    await waitFor(() =>
+      expect(exerciseService.create).toHaveBeenCalledWith(
+        expect.objectContaining({ bodyRegions: ['knee'] }),
+      ),
+    );
+  });
 });

@@ -47,7 +47,7 @@ const nestedRecord = {
           series: 4,
           notes: null,
           order: 0,
-          exercise: { name: 'Sentadilla', videoUrl: 'https://youtu.be/squat' },
+          exercise: { name: 'Sentadilla', videoUrl: 'https://youtu.be/squat', bodyRegions: ['knee', 'hip'] },
           weeks: [
             { id: 500, week: 1, kg: 60, reps: 8, series: 4 },
             { id: 501, week: 2, kg: 62.5, reps: 8, series: 4 },
@@ -100,6 +100,8 @@ describe('PrismaRoutineTemplateRepository', () => {
     expect(result.sessions[0].entries[0].kg).toBe(60);
     // The exercise's video URL is carried into the routine entry (US-019).
     expect(result.sessions[0].entries[0].exerciseVideoUrl).toBe('https://youtu.be/squat');
+    // The exercise's body regions are carried into the routine entry (US-022).
+    expect(result.sessions[0].entries[0].exerciseBodyRegions).toEqual(['knee', 'hip']);
     // The weekly progression round-trips (mapped to the domain, ordered by week).
     expect(result.sessions[0].entries[0].weeks).toHaveLength(2);
     expect(result.sessions[0].entries[0].weeks[1].kg).toBe(62.5);

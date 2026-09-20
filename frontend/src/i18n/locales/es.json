@@ -184,9 +184,24 @@
       "equipment": "Equipamiento",
       "videoUrl": "URL de video",
       "imageUrl": "URL de imagen",
+      "bodyRegions": "Zonas corporales",
+      "bodyRegionsHelp": "Zonas que trabaja el ejercicio (para avisos según la ficha médica).",
       "requiredFields": "Por favor completá nombre, grupo muscular y categoría.",
       "negativeNumbers": "Las series y repeticiones no pueden ser negativas.",
       "saveFailed": "No se pudo guardar el ejercicio."
+    },
+    "regions": {
+      "neck": "Cuello",
+      "shoulder": "Hombro",
+      "elbow": "Codo",
+      "wrist": "Muñeca",
+      "upper_back": "Espalda alta",
+      "lower_back": "Zona lumbar",
+      "hip": "Cadera",
+      "knee": "Rodilla",
+      "ankle": "Tobillo",
+      "core": "Core / abdomen",
+      "cardio_respiratory": "Cardio-respiratorio"
     },
     "loadFailed": "No se pudo cargar el catálogo de ejercicios."
   },
@@ -263,6 +278,10 @@
     "assignFailed": "No se pudo asignar la rutina.",
     "loadFailed": "No se pudo cargar la rutina.",
     "sessions": "Sesiones",
+    "warning": {
+      "label": "Aviso médico",
+      "tooltip": "Involucra una zona marcada en la ficha médica: {{regions}}. Revisá."
+    },
     "picker": {
       "title": "Elegir plantilla",
       "empty": "No hay plantillas de biblioteca. Creá una en Rutinas.",

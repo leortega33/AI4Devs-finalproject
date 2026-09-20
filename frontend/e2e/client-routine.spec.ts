@@ -46,6 +46,13 @@ test.describe('assign client routine', () => {
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText('Asign Cliente')).toBeVisible();
 
+    // Give the client a knee injury so the advisory medical warning can appear (US-022).
+    await page.getByRole('row', { name: /Asign Cliente/ }).getByRole('button', { name: 'Ficha médica' }).click();
+    await expect(page.getByRole('heading', { name: 'Ficha médica' })).toBeVisible();
+    await page.getByLabel(/lesiones/i).fill('Lesión de rodilla');
+    await page.getByRole('button', { name: 'Guardar' }).click();
+    await expect(page.getByText('Ficha médica guardada.')).toBeVisible();
+
     // Build two library templates.
     await buildTemplate(page, TPL1);
     await buildTemplate(page, TPL2);
@@ -66,6 +73,9 @@ test.describe('assign client routine', () => {
     await page.getByRole('button', { name: /^asignar rutina$/i }).click();
     await expect(page.getByText('Rutina activa')).toBeVisible();
     await expect(page.getByText(/todavía no tiene una rutina asignada/i)).toHaveCount(0);
+
+    // The Sentadilla entry shows the advisory medical warning (knee overlap, US-022).
+    await expect(page.getByLabel('Aviso médico').first()).toBeVisible();
 
     // Assign the second template: the first moves to history (only one active).
     await page.getByRole('button', { name: /Elegir plantilla|Plantilla E2E/ }).first().click();

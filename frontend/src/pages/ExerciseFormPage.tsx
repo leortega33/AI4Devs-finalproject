@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Box, Button, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { exerciseService, type ExerciseFormData } from '../services/exerciseService';
+import { REGION_CODES, type RegionCode } from '../constants/bodyRegions';
 import { BackButton } from '../components/BackButton';
 
 const EMPTY_FORM: ExerciseFormData = {
@@ -15,6 +16,7 @@ const EMPTY_FORM: ExerciseFormData = {
   equipment: '',
   videoUrl: '',
   imageUrl: '',
+  bodyRegions: [],
 };
 
 export function ExerciseFormPage() {
@@ -39,6 +41,7 @@ export function ExerciseFormPage() {
         equipment: e.equipment ?? '',
         videoUrl: e.videoUrl ?? '',
         imageUrl: e.imageUrl ?? '',
+        bodyRegions: e.bodyRegions ?? [],
       });
     });
   }, [id]);
@@ -46,6 +49,11 @@ export function ExerciseFormPage() {
   const setField =
     (field: keyof ExerciseFormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const setRegions = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value as unknown as RegionCode[];
+    setForm((prev) => ({ ...prev, bodyRegions: value }));
+  };
 
   const setNumber =
     (field: 'defaultSets' | 'defaultReps') => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -117,6 +125,32 @@ export function ExerciseFormPage() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label={t('exercises.form.imageUrl')} type="url" fullWidth placeholder="https://" value={form.imageUrl ?? ''} onChange={setField('imageUrl')} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label={t('exercises.form.bodyRegions')}
+              fullWidth
+              select
+              value={form.bodyRegions ?? []}
+              onChange={setRegions}
+              SelectProps={{
+                multiple: true,
+                renderValue: (selected) => (
+                  <Stack direction="row" spacing={0.5} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+                    {(selected as RegionCode[]).map((code) => (
+                      <Chip key={code} size="small" label={t(`exercises.regions.${code}`)} />
+                    ))}
+                  </Stack>
+                ),
+              }}
+              helperText={t('exercises.form.bodyRegionsHelp')}
+            >
+              {REGION_CODES.map((code) => (
+                <MenuItem key={code} value={code}>
+                  {t(`exercises.regions.${code}`)}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12}>
             <TextField label={t('exercises.form.technique')} fullWidth multiline minRows={3} value={form.technique ?? ''} onChange={setField('technique')} />

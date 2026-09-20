@@ -1129,7 +1129,7 @@ Proposed: **full snapshots** (simpler, easy to display).
 
 ## US-022: Medical-aware exercise warnings
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-medical-aware-exercise-warnings`)
 
 **User story:** As the gym owner/trainer, when I build or assign a routine, I want
 an advisory warning when an exercise loads a body area that the client's medical

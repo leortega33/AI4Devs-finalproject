@@ -1,4 +1,5 @@
 import { Exercise, ExerciseCategory } from '../models/Exercise';
+import { RegionCode } from '../models/bodyRegions';
 
 export interface ExerciseListFilters {
   search?: string;
@@ -16,6 +17,7 @@ export interface ExerciseInput {
   equipment?: string | null;
   videoUrl?: string | null;
   imageUrl?: string | null;
+  bodyRegions?: RegionCode[];
 }
 
 /** Data access contract for the exercise catalog (no delete; see docs/backend-standards.md). */

@@ -425,6 +425,26 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 23:**
+
+> Agreguemos avisos de ejercicios según la ficha médica (US-022): change OpenSpec
+> `add-medical-aware-exercise-warnings` **con spec deltas** (exercise-catalog,
+> medical-record, client-routine) y **migración**. Diseño advisory (no juzga
+> clínicamente): etiquetar cada ejercicio con **zonas corporales**
+> (`Exercise.bodyRegions String[]`, vocabulario controlado) y derivar las zonas
+> marcadas de la ficha médica con un **diccionario curado** (es/en, insensible a
+> mayúsculas/acentos, match por palabra). Backend: constante `REGION_CODES`,
+> validador con `z.enum`, `MedicalFlagsService` + endpoint
+> `GET /api/clients/:clientId/medical-flags`, y denormalizar `exerciseBodyRegions`
+> en las entries de la rutina. Frontend: multi-select de zonas en el form de
+> ejercicio; en la rutina del cliente, un **aviso advisory** (icono + tooltip) en
+> los ejercicios cuya zona coincide con una marcada; nunca bloquea. Seed etiqueta
+> los 11 ejercicios base. TDD backend y frontend, migración, curl (round-trip,
+> flags con snippets, 400/401/404), verificación visual + E2E. Actualizar
+> `api-spec.yml` y `data-model.md`. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

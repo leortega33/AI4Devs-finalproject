@@ -20,6 +20,7 @@ const baseRecord = {
   defaultReps: 8,
   technique: null,
   equipment: 'Barbell',
+  bodyRegions: ['knee', 'hip'],
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),
 };
@@ -28,6 +29,7 @@ const input = {
   name: 'Back squat',
   muscleGroup: 'Legs',
   category: 'main' as const,
+  bodyRegions: ['knee', 'hip'] as ('knee' | 'hip')[],
 };
 
 describe('PrismaExerciseRepository', () => {
@@ -42,6 +44,7 @@ describe('PrismaExerciseRepository', () => {
 
     expect(result.name).toBe('Back squat');
     expect(result.category).toBe('main');
+    expect(result.bodyRegions).toEqual(['knee', 'hip']);
     expect(prisma.exercise.create).toHaveBeenCalledWith({ data: input });
   });
 

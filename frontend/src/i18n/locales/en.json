@@ -184,9 +184,24 @@
       "equipment": "Equipment",
       "videoUrl": "Video URL",
       "imageUrl": "Image URL",
+      "bodyRegions": "Body regions",
+      "bodyRegionsHelp": "Areas the exercise loads (for medical-record advisory warnings).",
       "requiredFields": "Please fill in name, muscle group and category.",
       "negativeNumbers": "Default sets and reps cannot be negative.",
       "saveFailed": "Could not save the exercise."
+    },
+    "regions": {
+      "neck": "Neck",
+      "shoulder": "Shoulder",
+      "elbow": "Elbow",
+      "wrist": "Wrist",
+      "upper_back": "Upper back",
+      "lower_back": "Lower back",
+      "hip": "Hip",
+      "knee": "Knee",
+      "ankle": "Ankle",
+      "core": "Core",
+      "cardio_respiratory": "Cardio-respiratory"
     },
     "loadFailed": "Could not load the exercise catalog."
   },
@@ -263,6 +278,10 @@
     "assignFailed": "Could not assign the routine.",
     "loadFailed": "Could not load the routine.",
     "sessions": "Sessions",
+    "warning": {
+      "label": "Medical warning",
+      "tooltip": "Involves an area flagged in the medical record: {{regions}}. Review."
+    },
     "picker": {
       "title": "Choose template",
       "empty": "No library templates. Create one under Routines.",

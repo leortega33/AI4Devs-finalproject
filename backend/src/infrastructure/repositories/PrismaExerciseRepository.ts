@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { Exercise, ExerciseCategory } from '../../domain/models/Exercise';
+import { RegionCode } from '../../domain/models/bodyRegions';
 import {
   ExerciseRepository,
   ExerciseInput,
@@ -12,6 +13,7 @@ function toDomain(record: ExerciseRecord): Exercise {
   return new Exercise({
     ...record,
     category: record.category as ExerciseCategory,
+    bodyRegions: record.bodyRegions as RegionCode[],
   });
 }
 

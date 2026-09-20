@@ -115,6 +115,7 @@ model Exercise {
   equipment   String?
   videoUrl    String?
   imageUrl    String?
+  bodyRegions String[]         @default([])
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 

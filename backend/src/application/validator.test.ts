@@ -184,6 +184,20 @@ describe('validator', () => {
     it('should reject a malformed video URL', () => {
       expect(() => validateExercise({ ...validExercise, videoUrl: 'not-a-url' })).toThrow(ValidationError);
     });
+
+    it('should default bodyRegions to an empty array when omitted', () => {
+      const result = validateExercise(validExercise);
+      expect(result.bodyRegions).toEqual([]);
+    });
+
+    it('should accept valid body regions from the controlled vocabulary', () => {
+      const result = validateExercise({ ...validExercise, bodyRegions: ['knee', 'hip'] });
+      expect(result.bodyRegions).toEqual(['knee', 'hip']);
+    });
+
+    it('should reject an unknown body region', () => {
+      expect(() => validateExercise({ ...validExercise, bodyRegions: ['spleen'] })).toThrow(ValidationError);
+    });
   });
 
   describe('validateRoutineTemplate', () => {
