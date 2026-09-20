@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Chip, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import { Box, Button, Chip, IconButton, Link, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { exerciseService, type Exercise, type ExerciseCategory } from '../services/exerciseService';
@@ -42,6 +44,30 @@ export function ExerciseCatalogPage() {
       width: 150,
       renderCell: (params) => (
         <Chip label={t(CATEGORY_LABELS[params.value as ExerciseCategory])} size="small" />
+      ),
+    },
+    {
+      field: 'media',
+      headerName: t('exercises.columns.media'),
+      width: 90,
+      sortable: false,
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.5}>
+          {params.row.videoUrl && (
+            <Tooltip title={t('exercises.watchVideo')}>
+              <Link href={params.row.videoUrl} target="_blank" rel="noopener" aria-label={t('exercises.watchVideo')} sx={{ display: 'inline-flex' }}>
+                <OndemandVideoOutlinedIcon fontSize="small" />
+              </Link>
+            </Tooltip>
+          )}
+          {params.row.imageUrl && (
+            <Tooltip title={t('exercises.viewImage')}>
+              <Link href={params.row.imageUrl} target="_blank" rel="noopener" aria-label={t('exercises.viewImage')} sx={{ display: 'inline-flex' }}>
+                <ImageOutlinedIcon fontSize="small" />
+              </Link>
+            </Tooltip>
+          )}
+        </Stack>
       ),
     },
     {

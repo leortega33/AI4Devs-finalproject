@@ -52,6 +52,14 @@ export const medicalRecordSchema = z.object({
 
 // A catalog exercise (US-004). Required: name, muscleGroup, category. Optional:
 // default sets/reps (non-negative integers), technique, equipment.
+// An optional media URL: empty/missing → null; a non-empty value must be a valid URL.
+function optionalUrl(message: string) {
+  return z
+    .union([z.literal(''), z.null(), z.string().url(message).max(2048)])
+    .optional()
+    .transform((v) => (v ? v : null));
+}
+
 export const exerciseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   muscleGroup: z.string().min(1, 'Muscle group is required'),
@@ -60,6 +68,9 @@ export const exerciseSchema = z.object({
   defaultReps: z.number().int().nonnegative().optional().nullable(),
   technique: z.string().max(1000, 'Technique must be 1000 characters or fewer').optional().nullable(),
   equipment: z.string().max(255, 'Equipment must be 255 characters or fewer').optional().nullable(),
+  // Empty string means "no media"; a non-empty value must be a valid http(s) URL.
+  videoUrl: optionalUrl('Video URL must be a valid URL'),
+  imageUrl: optionalUrl('Image URL must be a valid URL'),
 });
 
 // A routine template with nested sessions and exercise entries (US-005).
@@ -145,7 +156,7 @@ export class ValidationError extends Error {
   }
 }
 
-function parseOrThrow<T>(schema: z.ZodSchema<T>, data: unknown): T {
+function parseOrThrow<S extends z.ZodTypeAny>(schema: S, data: unknown): z.infer<S> {
   const result = schema.safeParse(data);
   if (!result.success) {
     throw new ValidationError(result.error.issues.map((i) => i.message).join(', '));

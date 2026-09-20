@@ -372,6 +372,20 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 > export (US-017) no cambia. Migración `prisma migrate dev`, curl del round-trip,
 > E2E. Actualizar `data-model.md`. Mantener todo en verde. Contenido en español.
 
+**Prompt 20:**
+
+> Agreguemos media de referencia a los ejercicios (US-019): change OpenSpec
+> `add-exercise-media` **con spec delta** y **migración**. Añadir `videoUrl` e
+> `imageUrl` opcionales a `Exercise` (columnas nullable; existentes intactos).
+> Backend: modelo + input, validador de URL (vacío → null, no-vacío malformado
+> → 400; helper `optionalUrl`; hacer `parseOrThrow` transform-safe). La lectura
+> anidada de rutinas lleva el `videoUrl` del ejercicio a la entry
+> (`exerciseVideoUrl`). Frontend: campos de video/imagen en el form, columna
+> "Media" con icon-links en el catálogo, link ▶ video en la rutina del cliente,
+> tipos + i18n. URL-only (sin upload). Migración `prisma migrate dev`, curl del
+> round-trip/validación, E2E. Actualizar `data-model.md`. Mantener todo en verde.
+> Contenido en español.
+
 ---
 
 ### 7. Pull Requests

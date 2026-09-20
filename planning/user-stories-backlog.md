@@ -1026,7 +1026,7 @@ separate table; a compact per-week table in the view.
 
 ## US-019: Exercise media reference (video/image)
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-exercise-media`)
 
 **User story:** As the gym owner/trainer, I want to attach a reference video or
 image to each exercise, so that the correct technique is easy to review.

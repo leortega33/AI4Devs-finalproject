@@ -9,6 +9,8 @@ export interface ExerciseProps {
   defaultReps?: number | null;
   technique?: string | null;
   equipment?: string | null;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,6 +25,8 @@ export class Exercise {
   readonly defaultReps: number | null;
   readonly technique: string | null;
   readonly equipment: string | null;
+  readonly videoUrl: string | null;
+  readonly imageUrl: string | null;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 
@@ -35,6 +39,8 @@ export class Exercise {
     this.defaultReps = props.defaultReps ?? null;
     this.technique = props.technique ?? null;
     this.equipment = props.equipment ?? null;
+    this.videoUrl = props.videoUrl ?? null;
+    this.imageUrl = props.imageUrl ?? null;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

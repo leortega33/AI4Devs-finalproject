@@ -155,8 +155,11 @@
       "name": "Name",
       "muscleGroup": "Muscle group",
       "category": "Category",
+      "media": "Media",
       "actions": "Actions"
     },
+    "watchVideo": "Watch video",
+    "viewImage": "View image",
     "form": {
       "newTitle": "New exercise",
       "editTitle": "Edit exercise",
@@ -167,6 +170,8 @@
       "defaultReps": "Default reps",
       "technique": "Technique",
       "equipment": "Equipment",
+      "videoUrl": "Video URL",
+      "imageUrl": "Image URL",
       "requiredFields": "Please fill in name, muscle group and category.",
       "negativeNumbers": "Default sets and reps cannot be negative.",
       "saveFailed": "Could not save the exercise."

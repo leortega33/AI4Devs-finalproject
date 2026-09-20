@@ -27,8 +27,14 @@ test.describe('exercise catalog', () => {
     await expect(page.getByRole('heading', { name: 'Nuevo ejercicio' })).toBeVisible();
     await page.getByLabel(/nombre/i).fill(EX_NAME);
     await page.getByLabel(/grupo muscular/i).fill('Legs');
+    await page.getByLabel(/url de video/i).fill('https://youtu.be/e2e');
     await page.getByRole('button', { name: 'Guardar' }).click();
     await expect(page.getByText(EX_NAME)).toBeVisible();
+
+    // The catalog shows a video link for the exercise with media.
+    await expect(
+      page.getByRole('row', { name: new RegExp(EX_NAME) }).getByRole('link', { name: /ver video/i }),
+    ).toBeVisible();
 
     // Filter by category (main) keeps it visible.
     await page.getByRole('combobox', { name: /categoría/i }).click();

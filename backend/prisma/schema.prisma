@@ -95,6 +95,8 @@ model Exercise {
   defaultReps Int?
   technique   String?
   equipment   String?
+  videoUrl    String?
+  imageUrl    String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 

@@ -22,6 +22,7 @@ export interface RoutineExerciseEntry {
   id?: number;
   exerciseId: number;
   exerciseName?: string;
+  exerciseVideoUrl?: string | null;
   phase: RoutinePhase;
   block?: string | null;
   kg?: number | null;

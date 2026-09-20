@@ -38,6 +38,16 @@ describe('ExerciseCatalogPage', () => {
     expect(await screen.findByText('Back squat')).toBeInTheDocument();
   });
 
+  it('should render a video link for an exercise with media', async () => {
+    vi.mocked(exerciseService.list).mockResolvedValue([
+      { id: 1, name: 'Back squat', muscleGroup: 'Legs', category: 'main', videoUrl: 'https://youtu.be/x' },
+    ] as never);
+    renderPage();
+
+    const link = await screen.findByRole('link', { name: /ver video/i });
+    expect(link).toHaveAttribute('href', 'https://youtu.be/x');
+  });
+
   it('should filter by category', async () => {
     const user = userEvent.setup();
     renderPage();

@@ -13,6 +13,8 @@ const EMPTY_FORM: ExerciseFormData = {
   defaultReps: null,
   technique: '',
   equipment: '',
+  videoUrl: '',
+  imageUrl: '',
 };
 
 export function ExerciseFormPage() {
@@ -35,6 +37,8 @@ export function ExerciseFormPage() {
         defaultReps: e.defaultReps ?? null,
         technique: e.technique ?? '',
         equipment: e.equipment ?? '',
+        videoUrl: e.videoUrl ?? '',
+        imageUrl: e.imageUrl ?? '',
       });
     });
   }, [id]);
@@ -107,6 +111,12 @@ export function ExerciseFormPage() {
           </Grid>
           <Grid item xs={12}>
             <TextField label={t('exercises.form.equipment')} fullWidth value={form.equipment ?? ''} onChange={setField('equipment')} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField label={t('exercises.form.videoUrl')} type="url" fullWidth placeholder="https://" value={form.videoUrl ?? ''} onChange={setField('videoUrl')} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField label={t('exercises.form.imageUrl')} type="url" fullWidth placeholder="https://" value={form.imageUrl ?? ''} onChange={setField('imageUrl')} />
           </Grid>
           <Grid item xs={12}>
             <TextField label={t('exercises.form.technique')} fullWidth multiline minRows={3} value={form.technique ?? ''} onChange={setField('technique')} />

@@ -162,6 +162,28 @@ describe('validator', () => {
     it('should reject a negative default sets value', () => {
       expect(() => validateExercise({ ...validExercise, defaultSets: -1 })).toThrow(ValidationError);
     });
+
+    it('should accept valid media URLs', () => {
+      const result = validateExercise({
+        ...validExercise,
+        videoUrl: 'https://youtu.be/abc123',
+        imageUrl: 'https://example.com/squat.png',
+      });
+
+      expect(result.videoUrl).toBe('https://youtu.be/abc123');
+      expect(result.imageUrl).toBe('https://example.com/squat.png');
+    });
+
+    it('should treat empty media URLs as null', () => {
+      const result = validateExercise({ ...validExercise, videoUrl: '', imageUrl: '' });
+
+      expect(result.videoUrl).toBeNull();
+      expect(result.imageUrl).toBeNull();
+    });
+
+    it('should reject a malformed video URL', () => {
+      expect(() => validateExercise({ ...validExercise, videoUrl: 'not-a-url' })).toThrow(ValidationError);
+    });
   });
 
   describe('validateRoutineTemplate', () => {

@@ -100,8 +100,11 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    guarda mediante upsert.
 5. **Ejercicios** — Desde el panel, "Ejercicios" abre el catálogo (`DataGrid`
    con búsqueda por nombre y filtro por categoría). Alta/edición mediante
-   formulario; sin borrado. Trae un set base sembrado al iniciar. La acción de
-   editar de cada fila es un **icono con tooltip**.
+   formulario; sin borrado. Cada ejercicio admite una **URL de video y/o imagen**
+   de referencia, que se muestra como link en la columna "Media" del catálogo y
+   como link de video junto al ejercicio en la rutina del cliente. Trae un set
+   base sembrado al iniciar. La acción de editar de cada fila es un **icono con
+   tooltip**.
 6. **Rutinas** — Desde el panel, "Rutinas" abre la biblioteca de plantillas. El
    builder permite armar una rutina con varias sesiones, cada una con entrada en
    calor y bloque principal, eligiendo ejercicios del catálogo (con kg/reps/

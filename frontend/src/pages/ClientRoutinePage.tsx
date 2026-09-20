@@ -9,6 +9,7 @@ import {
   Chip,
   Divider,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemText,
@@ -19,6 +20,7 @@ import {
 } from '@mui/material';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import GridOnOutlinedIcon from '@mui/icons-material/GridOnOutlined';
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '../components/BackButton';
 import { TemplatePickerDialog } from '../components/TemplatePickerDialog';
@@ -171,23 +173,34 @@ export function ClientRoutinePage() {
                 </Divider>
                 {session.entries.map((entry) => (
                   <Box key={entry.id}>
-                    {entry.weeks && entry.weeks.length > 0 ? (
-                      <>
-                        <Typography variant="body2">• {entry.exerciseName}</Typography>
-                        {entry.weeks.map((week) => (
-                          <Typography key={week.week} variant="body2" color="text.secondary" sx={{ pl: 2 }}>
-                            {t('clientRoutine.week')} {week.week}: {week.series ?? '-'}x{week.reps ?? '-'} @ {week.kg ?? '-'}kg
-                          </Typography>
-                        ))}
-                      </>
-                    ) : (
-                      <Typography variant="body2">
+                    <Stack direction="row" spacing={0.5} alignItems="center" component="span">
+                      <Typography variant="body2" component="span">
                         • {entry.exerciseName}
-                        {entry.series != null || entry.reps != null || entry.kg != null
+                        {(!entry.weeks || entry.weeks.length === 0) &&
+                        (entry.series != null || entry.reps != null || entry.kg != null)
                           ? ` — ${entry.series ?? '-'}x${entry.reps ?? '-'} @ ${entry.kg ?? '-'}kg`
                           : ''}
                       </Typography>
-                    )}
+                      {entry.exerciseVideoUrl && (
+                        <Tooltip title={t('exercises.watchVideo')}>
+                          <Link
+                            href={entry.exerciseVideoUrl}
+                            target="_blank"
+                            rel="noopener"
+                            aria-label={t('exercises.watchVideo')}
+                            sx={{ display: 'inline-flex' }}
+                          >
+                            <OndemandVideoOutlinedIcon fontSize="small" />
+                          </Link>
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    {entry.weeks && entry.weeks.length > 0 &&
+                      entry.weeks.map((week) => (
+                        <Typography key={week.week} variant="body2" color="text.secondary" sx={{ pl: 2 }}>
+                          {t('clientRoutine.week')} {week.week}: {week.series ?? '-'}x{week.reps ?? '-'} @ {week.kg ?? '-'}kg
+                        </Typography>
+                      ))}
                   </Box>
                 ))}
               </Box>

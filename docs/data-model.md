@@ -68,6 +68,7 @@ Reusable exercise catalog entry. See US-004.
 - `defaultSets`, `defaultReps`: Default prescription
 - `technique`: Execution technique/description
 - `equipment`: Required equipment
+- `videoUrl`, `imageUrl`: Optional reference media URLs (YouTube/image link, US-019); no file upload/storage
 - `createdAt` / `updatedAt`: Timestamps
 
 **Validation Rules:**

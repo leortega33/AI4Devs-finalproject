@@ -18,6 +18,8 @@ export interface Exercise {
   defaultReps?: number | null;
   technique?: string | null;
   equipment?: string | null;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface ExerciseFormData {
@@ -28,6 +30,8 @@ export interface ExerciseFormData {
   defaultReps?: number | null;
   technique?: string | null;
   equipment?: string | null;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface ExerciseListParams {

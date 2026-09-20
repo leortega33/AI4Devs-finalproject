@@ -68,4 +68,22 @@ describe('ExerciseFormPage (create)', () => {
     expect(await screen.findByText(/no pueden ser negativas/i)).toBeInTheDocument();
     expect(exerciseService.create).not.toHaveBeenCalled();
   });
+
+  it('should include the media URLs in the payload', async () => {
+    vi.mocked(exerciseService.create).mockResolvedValue({} as never);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.type(screen.getByLabelText(/nombre/i), 'Front squat');
+    await user.type(screen.getByLabelText(/grupo muscular/i), 'Legs');
+    await user.type(screen.getByLabelText(/url de video/i), 'https://youtu.be/x');
+    await user.type(screen.getByLabelText(/url de imagen/i), 'https://example.com/x.png');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    await waitFor(() =>
+      expect(exerciseService.create).toHaveBeenCalledWith(
+        expect.objectContaining({ videoUrl: 'https://youtu.be/x', imageUrl: 'https://example.com/x.png' }),
+      ),
+    );
+  });
 });

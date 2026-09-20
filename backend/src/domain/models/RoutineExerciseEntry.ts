@@ -6,6 +6,7 @@ export interface RoutineExerciseEntryProps {
   id?: number;
   exerciseId: number;
   exerciseName?: string;
+  exerciseVideoUrl?: string | null;
   phase: RoutinePhase;
   block?: string | null;
   kg?: number | null;
@@ -21,6 +22,7 @@ export class RoutineExerciseEntry {
   readonly id?: number;
   readonly exerciseId: number;
   readonly exerciseName?: string;
+  readonly exerciseVideoUrl: string | null;
   readonly phase: RoutinePhase;
   readonly block: string | null;
   readonly kg: number | null;
@@ -34,6 +36,7 @@ export class RoutineExerciseEntry {
     this.id = props.id;
     this.exerciseId = props.exerciseId;
     this.exerciseName = props.exerciseName;
+    this.exerciseVideoUrl = props.exerciseVideoUrl ?? null;
     this.phase = props.phase;
     this.block = props.block ?? null;
     this.kg = props.kg ?? null;

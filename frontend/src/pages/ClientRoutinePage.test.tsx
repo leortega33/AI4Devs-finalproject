@@ -56,7 +56,7 @@ describe('ClientRoutinePage', () => {
       endDate: '2026-03-01',
       isExpired: false,
       sessions: [
-        { id: 10, name: 'Sesión A', order: 0, entries: [{ id: 100, exerciseId: 7, exerciseName: 'Sentadilla', phase: 'main', order: 0, series: 4, reps: 8, kg: 60 }] },
+        { id: 10, name: 'Sesión A', order: 0, entries: [{ id: 100, exerciseId: 7, exerciseName: 'Sentadilla', exerciseVideoUrl: 'https://youtu.be/squat', phase: 'main', order: 0, series: 4, reps: 8, kg: 60 }] },
       ],
     } as never);
 
@@ -64,6 +64,8 @@ describe('ClientRoutinePage', () => {
 
     expect(await screen.findByText('Rutina activa')).toBeInTheDocument();
     expect(screen.getByText(/Sentadilla/)).toBeInTheDocument();
+    // The exercise's video link is shown next to it (US-019).
+    expect(screen.getByRole('link', { name: /ver video/i })).toHaveAttribute('href', 'https://youtu.be/squat');
   });
 
   it('should show the weekly progression when an entry has weeks', async () => {

@@ -17,7 +17,7 @@ const nestedInclude = {
       entries: {
         orderBy: { order: 'asc' as const },
         include: {
-          exercise: { select: { name: true } },
+          exercise: { select: { name: true, videoUrl: true } },
           weeks: { orderBy: { week: 'asc' as const } },
         },
       },
@@ -54,6 +54,7 @@ function toDomain(record: TemplateRecord): RoutineTemplate {
                 id: e.id,
                 exerciseId: e.exerciseId,
                 exerciseName: e.exercise.name,
+                exerciseVideoUrl: e.exercise.videoUrl,
                 phase: e.phase as RoutinePhase,
                 block: e.block,
                 kg: e.kg,
