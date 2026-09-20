@@ -1129,39 +1129,103 @@ Proposed: **full snapshots** (simpler, easy to display).
 
 ## US-022: Medical-aware exercise warnings
 
-- **Status:** enriched (needs product definition before implementation)
+- **Status:** enriched
 
 **User story:** As the gym owner/trainer, when I build or assign a routine, I want
-a warning if an exercise may be contraindicated by the client's medical record,
-so that I avoid unsafe prescriptions.
+an advisory warning when an exercise loads a body area that the client's medical
+record flags (injury, condition, surgery, or restriction), so that I review the
+prescription before saving — without the tool blocking me or making clinical
+judgements.
 
-**Functional description:** map medical conditions/injuries/restrictions to
-potentially risky exercises (by muscle group / category / tags) and show
-**advisory, non-blocking** warnings while building a client's routine. Requires a
-rules source and some exercise tagging. **This needs a product-definition pass**
-(which conditions, which exercises, how strict) before implementation — the entry
-here captures intent and shape, not final rules.
+**Product decision (resolves the prior open questions):** the system does **not**
+try to decide whether an exercise is medically unsafe. Instead:
 
-**Data model (Prisma):** likely exercise tags/contraindication flags + a rules
-table or config. Migration TBD during definition.
+1. Each exercise is tagged with the **body regions** it primarily loads/stresses
+   (curated, controlled vocabulary — no free text).
+2. A **curated keyword dictionary** (in config, es/en synonyms) maps the client's
+   free-text medical fields to those same regions (this is the "rules source" —
+   curated in code, not user-editable in this iteration).
+3. When building/assigning a client's routine, if an exercise's regions intersect
+   the regions flagged by the client's medical record, an **advisory,
+   non-blocking** warning is shown ("involves an area flagged in the medical
+   record: knee — review"). Saving is never prevented.
 
-**Endpoints:** computed server-side when building/assigning, or a validation
-endpoint. TBD.
+This keeps the feature conservative (it surfaces overlap, it does not diagnose),
+sidesteps medical-liability wording, and needs no new rules table.
 
-**Files/modules:** a rules/domain service, exercise tagging, warning UI in the
-client-routine builder.
+**Controlled region vocabulary (curated, extensible):** `neck`, `shoulder`,
+`elbow`, `wrist`, `upper_back`, `lower_back`, `hip`, `knee`, `ankle`, `core`,
+`cardio_respiratory`. Region codes are stable; labels are localized (es/en).
 
-**Definition of done (draft):** relevant warnings appear for a client whose
-medical record flags risk for an exercise; warnings are advisory only.
+**Region keyword dictionary (curated config, examples):**
+- `knee` → rodilla, menisco, ligamento cruzado, rótula / knee, meniscus, ACL, patella
+- `shoulder` → hombro, manguito rotador / shoulder, rotator cuff
+- `lower_back` → lumbar, espalda baja, hernia, ciática, lumbago / lower back, sciatica, herniated disc
+- `wrist` → muñeca, túnel carpiano / wrist, carpal tunnel
+- `hip` → cadera / hip
+- `ankle` → tobillo, esguince / ankle, sprain
+- `cardio_respiratory` → asma, hipertensión, cardíaco / asthma, hypertension, cardiac
+- (full map maintained in config; matching is accent-insensitive, case-insensitive, whole-word where practical)
 
-**Tests:** rules-engine unit tests; UI warning render.
+**Functional description:** matching is computed **server-side** so the dictionary
+lives in one place. The trainer edits an exercise's `bodyRegions` in the exercise
+form. The client-routine builder fetches the client's flagged regions and shows an
+advisory marker on any exercise whose `bodyRegions` intersect them; the marker
+lists the overlapping region(s). Warnings recompute as exercises are added/removed
+and reflect the client's **current** medical record.
+
+**Data model (Prisma):**
+- `Exercise.bodyRegions String[]` (scalar list of region codes from the controlled
+  vocabulary; default empty). Additive migration required.
+- No change to `MedicalRecord` (stays free text); the mapping is config-only.
+
+**Endpoints:**
+- Extend the exercise create/update input and responses with `bodyRegions`
+  (existing `POST/PUT /api/exercises`, `GET /api/exercises`).
+- `GET /api/clients/:clientId/medical-flags` → `{ success, data: { regions: string[],
+  details: [{ region, field, snippet }] } }` — the regions flagged by the client's
+  current medical record, with the source field and matched snippet for
+  transparency. Auth-protected; 404 for a non-existent client; empty `regions`
+  when there is no medical record or no matches.
+
+**Files/modules:**
+- Backend: `schema.prisma` + migration; a `MedicalFlagsService` (+ curated
+  `medicalRegionDictionary` config and a normalize/scan helper) with unit tests;
+  a controller action + route for `GET /medical-flags`; extend the exercise
+  validator/model/repository mapping for `bodyRegions`.
+- Frontend: exercise form gains a **region multi-select**; the exercise service
+  and types gain `bodyRegions`; the client-routine builder fetches medical flags
+  and renders an advisory warning (icon + tooltip/chip listing the overlapping
+  regions) on affected exercises; i18n (es/en) for region labels and the warning
+  text.
+
+**Definition of done:**
+- An exercise can be tagged with body regions and they persist/round-trip.
+- For a client whose medical record mentions a mapped keyword (e.g. "lesión de
+  rodilla"), building a routine that includes a `knee`-tagged exercise shows an
+  advisory warning naming the region; removing the exercise or clearing the
+  medical entry removes the warning.
+- Warnings are advisory only — saving/assigning is never blocked.
+- `GET /medical-flags` returns the flagged regions with source snippets; 401
+  without auth; 404 for a missing client.
+
+**Tests:**
+- Backend: dictionary/scan unit tests (accent/case-insensitive matching, multiple
+  regions, no match, empty record); `MedicalFlagsService` (regions + details,
+  not-found); exercise validator accepts/normalizes `bodyRegions`; route test
+  (shape + 401/404).
+- Frontend: exercise-form region select; builder shows/hides the advisory marker
+  based on the intersection; region label i18n.
 
 **Non-functional requirements:** advisory (never blocks saving); clear,
-non-alarming wording; i18n.
+non-alarming, non-diagnostic wording; accent/case-insensitive matching; i18n
+(es/en); the dictionary is curated in code and easy to extend; auth-protected.
 
-**Open technical decisions:** rules source (curated config vs editable), tagging
-granularity, medical-liability wording. Proposed: a **curated config + exercise
-tags**, advisory only — finalize during the definition pass.
+**Out of scope (future):** user-editable rules/dictionary, per-condition severity
+levels, structured (non-free-text) medical fields, warm-up suggestions (US-023).
+
+**Open technical decisions:** resolved — curated config dictionary + exercise
+`bodyRegions` tags, region-overlap matching, advisory only.
 
 ---
 
