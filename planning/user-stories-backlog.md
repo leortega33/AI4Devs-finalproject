@@ -1443,6 +1443,55 @@ per-week progression (US-018) to the export in the same pass.
 
 ---
 
+## US-031: Native exercise video upload (managed video hosting)
+
+- **Status:** captured (future — larger, needs infra + a hosting decision)
+
+**User story:** As the gym owner/trainer, I want to upload an exercise's
+reference video into the system and play it from there, so that I don't depend on
+an external YouTube/image link.
+
+**Functional description:** replace/augment the URL-only media (US-019) with a
+native **video upload** stored by the system and played back in-app. Videos are
+large files, so this needs object storage or a managed video provider, not the
+database.
+
+**Why it's larger than US-019 (cost/effort):**
+- **Storage**: object storage (Cloudflare R2 preferred — no egress fees — or
+  S3/Supabase Storage). New external dependency + recurring storage/bandwidth
+  cost. Local disk is not viable (lost on redeploy, no scale).
+- **Backend**: multipart/streaming upload endpoint with size/type limits, store
+  the object key on `Exercise`, serve via **signed URLs**; file-upload security
+  hardening (OWASP: validate type/size, no same-origin executable serving).
+- **Transcoding/playback**: a raw phone `.mp4` may not play across browsers →
+  transcoding (ffmpeg) + thumbnails, i.e. a worker/service — the biggest scope
+  driver.
+- **Frontend**: file input with progress, size/type validation, retries, an
+  embedded player.
+
+**Proposed approach:** use a **managed video provider (e.g. Cloudflare Stream)**
+that handles upload, transcoding, thumbnails and playback, reducing the backend
+to "request an upload URL + store the video id". Avoid rolling S3 + ffmpeg by
+hand.
+
+**Data model (Prisma):** add a video reference (provider video id or object key)
+to `Exercise` alongside/replacing `videoUrl`. Migration required.
+
+**Endpoints:** an upload-initiation endpoint (signed URL / provider token) + store
+the resulting reference; playback via signed/provider URL.
+
+**Definition of done (draft):** the trainer can upload a video for an exercise
+and play it in-app (catalog and routine); URL-only media (US-019) keeps working.
+
+**Non-functional requirements:** upload security, reasonable cost, i18n; access
+control on playback.
+
+**Open technical decisions:** provider (Cloudflare Stream vs raw R2/S3 + ffmpeg);
+cost model; whether to keep URL-only as a fallback. Needs a product/cost decision
+before enriching.
+
+---
+
 ## Backlog (Phase 2 — post-MVP, not yet scoped as US)
 
 Captured for visibility only. Do not start any OpenSpec work on these until
