@@ -20,6 +20,10 @@ test.describe('dashboard alerts', () => {
     await expect(page.getByText('Pagos vencidos')).toBeVisible();
     await expect(page.getByText('Rutinas por vencer')).toBeVisible();
 
+    // Dashboard shows the KPI cards (US-020).
+    await expect(page.getByRole('heading', { name: 'Clientes activos' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ingreso del mes' })).toBeVisible();
+
     // Create a client.
     await page.goto('/clients');
     await page.getByRole('button', { name: 'Nuevo cliente' }).click();

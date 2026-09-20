@@ -1654,7 +1654,7 @@ components:
 
     Dashboard:
       type: object
-      description: The four dashboard alert groups (US-009).
+      description: The four dashboard alert groups (US-009) plus aggregate KPIs (US-020).
       properties:
         overduePayments:
           type: array
@@ -1672,11 +1672,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RoutineAlert'
+        kpis:
+          $ref: '#/components/schemas/DashboardKpis'
       required:
         - overduePayments
         - paymentsDueSoon
         - noPayments
         - expiringRoutines
+        - kpis
+
+    DashboardKpis:
+      type: object
+      description: Aggregate figures shown as KPI cards on the dashboard (US-020).
+      properties:
+        activeClients:
+          type: integer
+          description: Number of active clients.
+        upToDate:
+          type: integer
+          description: Active clients whose payment status is up to date.
+        overdue:
+          type: integer
+          description: Active clients with an overdue payment period.
+        noPayments:
+          type: integer
+          description: Active clients without any registered payment.
+        monthlyIncome:
+          type: number
+          description: Sum of payment amounts registered in the current month.
+      required:
+        - activeClients
+        - upToDate
+        - overdue
+        - noPayments
+        - monthlyIncome
 
     ErrorResponse:
       type: object

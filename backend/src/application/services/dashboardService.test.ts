@@ -1,8 +1,11 @@
 import { DashboardService } from './dashboardService';
 import { DashboardRepository, DashboardClientRow } from '../../domain/repositories/DashboardRepository';
 
-function buildRepoMock(rows: DashboardClientRow[]): jest.Mocked<DashboardRepository> {
-  return { getActiveClientsOverview: jest.fn().mockResolvedValue(rows) };
+function buildRepoMock(rows: DashboardClientRow[], monthlyIncome = 0): jest.Mocked<DashboardRepository> {
+  return {
+    getActiveClientsOverview: jest.fn().mockResolvedValue(rows),
+    getMonthlyIncome: jest.fn().mockResolvedValue(monthlyIncome),
+  };
 }
 
 function row(overrides: Partial<DashboardClientRow>): DashboardClientRow {
@@ -141,6 +144,7 @@ describe('DashboardService', () => {
       paymentsDueSoon: [],
       noPayments: [],
       expiringRoutines: [],
+      kpis: { activeClients: 1, upToDate: 1, overdue: 0, noPayments: 0, monthlyIncome: 0 },
     });
   });
 
@@ -156,6 +160,33 @@ describe('DashboardService', () => {
       paymentsDueSoon: [],
       noPayments: [],
       expiringRoutines: [],
+      kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
+    });
+  });
+
+  describe('kpis', () => {
+    it('should count active clients by derived payment status and report monthly income', async () => {
+      const now = new Date('2026-09-15T12:00:00');
+      const repo = buildRepoMock(
+        [
+          row({ id: 1, payments: [{ periodMonth: 9, periodYear: 2026 }] }), // up to date
+          row({ id: 2, payments: [{ periodMonth: 7, periodYear: 2026 }] }), // overdue
+          row({ id: 3, payments: [] }), // no payments
+        ],
+        27000,
+      );
+      const service = new DashboardService(repo);
+
+      const result = await service.getDashboard(now, 5);
+
+      expect(result.kpis).toEqual({
+        activeClients: 3,
+        upToDate: 1,
+        overdue: 1,
+        noPayments: 1,
+        monthlyIncome: 27000,
+      });
+      expect(repo.getMonthlyIncome).toHaveBeenCalledWith(now);
     });
   });
 });

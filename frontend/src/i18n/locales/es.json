@@ -67,6 +67,12 @@
     "period": "Período {{month}}/{{year}}",
     "routineExpired": "Rutina vencida",
     "routineExpiresOn": "Vence el {{date}}",
+    "kpi": {
+      "activeClients": "Clientes activos",
+      "upToDate": "Al día",
+      "overdue": "Vencidos",
+      "monthlyIncome": "Ingreso del mes"
+    },
     "loadFailed": "No se pudo cargar el panel."
   },
   "clients": {

@@ -39,4 +39,14 @@ export class PrismaDashboardRepository implements DashboardRepository {
       };
     });
   }
+
+  async getMonthlyIncome(now: Date): Promise<number> {
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const result = await this.prisma.payment.aggregate({
+      _sum: { amount: true },
+      where: { paymentDate: { gte: monthStart, lt: nextMonthStart } },
+    });
+    return Number(result._sum.amount ?? 0);
+  }
 }

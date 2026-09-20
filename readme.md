@@ -87,10 +87,12 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    contraseña desde el enlace correspondiente.
 2. **Panel** — Tras autenticarse llega al panel, dentro del shell con la barra
    superior de marca y la **barra lateral de navegación** (Panel / Clientes /
-   Ejercicios / Rutinas). El panel muestra cuatro grupos de alertas como
-   **tarjetas** (con icono, conteo y color: pagos vencidos, pagos por vencer,
-   clientes sin pagos y rutinas por vencer), cada cliente enlazando directamente
-   a su pantalla de pagos o rutina.
+   Ejercicios / Rutinas). En la parte superior muestra una fila de **tarjetas
+   KPI** con las cifras clave del negocio (clientes activos, al día, vencidos e
+   ingreso del mes) y, debajo, cuatro grupos de alertas como **tarjetas** (con
+   icono, conteo y color: pagos vencidos, pagos por vencer, clientes sin pagos y
+   rutinas por vencer), cada cliente enlazando directamente a su pantalla de
+   pagos o rutina.
 3. **Clientes** — Lista con búsqueda por nombre y filtro por estado (`DataGrid`),
    alta/edición mediante formularios, y baja lógica con diálogo de confirmación.
    Cada pantalla interna ofrece un botón "Atrás" consistente para volver.

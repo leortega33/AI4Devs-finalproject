@@ -11,7 +11,14 @@ vi.mock('../services/dashboardService', () => ({
 const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
 
 function dashboard(overrides: Partial<Dashboard> = {}): Dashboard {
-  return { overduePayments: [], paymentsDueSoon: [], noPayments: [], expiringRoutines: [], ...overrides };
+  return {
+    overduePayments: [],
+    paymentsDueSoon: [],
+    noPayments: [],
+    expiringRoutines: [],
+    kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
+    ...overrides,
+  };
 }
 
 describe('useDashboardAlerts', () => {

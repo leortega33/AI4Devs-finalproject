@@ -7,6 +7,7 @@ const EMPTY: Dashboard = {
   paymentsDueSoon: [],
   noPayments: [],
   expiringRoutines: [],
+  kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
 };
 
 function totalAlerts(d: Dashboard): number {

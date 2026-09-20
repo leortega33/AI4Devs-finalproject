@@ -1059,7 +1059,7 @@ Proposed: **URL-only** for the MVP (paste a YouTube/image link).
 
 ## US-020: Dashboard KPIs
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-dashboard-kpis`)
 - **Dependency:** presented within the US-012 dashboard cards.
 
 **User story:** As the gym owner/trainer, I want key numbers on the dashboard

@@ -388,6 +388,24 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 21:**
+
+> Agreguemos KPIs al panel (US-020): change OpenSpec `add-dashboard-kpis` **con
+> spec delta**, sin migración (todo derivado en consulta). Backend: añadir
+> `getMonthlyIncome(now)` al `DashboardRepository` (suma de `Payment.amount` del
+> mes en curso) y extender el `Dashboard` con un objeto `kpis`
+> (`activeClients`, `upToDate`, `overdue`, `noPayments`, `monthlyIncome`)
+> calculado en `DashboardService` (conteos por estado de pago derivado + ingreso
+> del mes). El mismo `GET /api/dashboard` devuelve `kpis`. Frontend: fila de
+> **tarjetas KPI** sobre las alertas (clientes activos, al día, vencidos, ingreso
+> del mes con `toLocaleString`), tipos + i18n (es/en). TDD backend y frontend,
+> curl del endpoint (401 sin auth), verificación visual + E2E (hacer exactas las
+> aserciones `heading "Clientes"` para evitar colisión con la KPI "Clientes
+> activos"). Actualizar `api-spec.yml` y `readme.md`. Mantener todo en verde.
+> Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

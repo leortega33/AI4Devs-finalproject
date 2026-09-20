@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Box } from '@mui/material';
+import { Alert, Box, Card, CardContent, Typography } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
@@ -20,7 +20,21 @@ const EMPTY_DASHBOARD: Dashboard = {
   paymentsDueSoon: [],
   noPayments: [],
   expiringRoutines: [],
+  kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
 };
+
+function KpiCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Typography variant="subtitle2" color="text.secondary">
+          {label}
+        </Typography>
+        <Typography variant="h5">{value}</Typography>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -72,38 +86,56 @@ export function DashboardPage() {
       {loading ? (
         <LoadingSkeleton variant="cards" count={4} />
       ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 2,
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          }}
-        >
-          <AlertList
-            title={t('dashboard.overdueTitle')}
-            items={paymentItems(dashboard.overduePayments)}
-            color="error"
-            icon={<ErrorOutlineIcon />}
-          />
-          <AlertList
-            title={t('dashboard.dueSoonTitle')}
-            items={paymentItems(dashboard.paymentsDueSoon)}
-            color="warning"
-            icon={<WarningAmberIcon />}
-          />
-          <AlertList
-            title={t('dashboard.noPaymentsTitle')}
-            items={paymentItems(dashboard.noPayments)}
-            color="info"
-            icon={<MoneyOffIcon />}
-          />
-          <AlertList
-            title={t('dashboard.expiringRoutinesTitle')}
-            items={routineItems(dashboard.expiringRoutines)}
-            color="warning"
-            icon={<EventBusyIcon />}
-          />
-        </Box>
+        <>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              mb: 2,
+              gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
+            }}
+          >
+            <KpiCard label={t('dashboard.kpi.activeClients')} value={dashboard.kpis.activeClients} />
+            <KpiCard label={t('dashboard.kpi.upToDate')} value={dashboard.kpis.upToDate} />
+            <KpiCard label={t('dashboard.kpi.overdue')} value={dashboard.kpis.overdue} />
+            <KpiCard
+              label={t('dashboard.kpi.monthlyIncome')}
+              value={dashboard.kpis.monthlyIncome.toLocaleString(i18n.language)}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            }}
+          >
+            <AlertList
+              title={t('dashboard.overdueTitle')}
+              items={paymentItems(dashboard.overduePayments)}
+              color="error"
+              icon={<ErrorOutlineIcon />}
+            />
+            <AlertList
+              title={t('dashboard.dueSoonTitle')}
+              items={paymentItems(dashboard.paymentsDueSoon)}
+              color="warning"
+              icon={<WarningAmberIcon />}
+            />
+            <AlertList
+              title={t('dashboard.noPaymentsTitle')}
+              items={paymentItems(dashboard.noPayments)}
+              color="info"
+              icon={<MoneyOffIcon />}
+            />
+            <AlertList
+              title={t('dashboard.expiringRoutinesTitle')}
+              items={routineItems(dashboard.expiringRoutines)}
+              color="warning"
+              icon={<EventBusyIcon />}
+            />
+          </Box>
+        </>
       )}
     </Box>
   );

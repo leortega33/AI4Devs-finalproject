@@ -67,6 +67,12 @@
     "period": "Period {{month}}/{{year}}",
     "routineExpired": "Routine expired",
     "routineExpiresOn": "Expires on {{date}}",
+    "kpi": {
+      "activeClients": "Active clients",
+      "upToDate": "Up to date",
+      "overdue": "Overdue",
+      "monthlyIncome": "Monthly income"
+    },
     "loadFailed": "Could not load the dashboard."
   },
   "clients": {

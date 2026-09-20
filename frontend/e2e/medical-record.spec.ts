@@ -42,7 +42,7 @@ test.describe('medical record', () => {
 
     // Reopen from the list and verify persistence (no empty state).
     await page.getByRole('button', { name: /atrás/i }).click();
-    await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Clientes', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Ficha médica' }).first().click();
     await expect(page.getByLabel(/grupo sanguíneo/i)).toHaveValue('O+');
     await expect(page.getByText(/todavía no tiene ficha médica/i)).toHaveCount(0);

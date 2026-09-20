@@ -54,7 +54,7 @@ test.describe('admin authentication', () => {
 
     // Navigate into clients, then use the back button to return home.
     await page.getByRole('link', { name: 'Clientes' }).click();
-    await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Clientes', exact: true })).toBeVisible();
     await page.getByRole('button', { name: /atrás/i }).click();
     await expect(page.getByRole('heading', { name: 'Panel' })).toBeVisible();
   });

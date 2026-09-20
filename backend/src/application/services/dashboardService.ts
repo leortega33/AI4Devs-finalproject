@@ -24,11 +24,20 @@ export interface RoutineAlert {
   expired: boolean;
 }
 
+export interface DashboardKpis {
+  activeClients: number;
+  upToDate: number;
+  overdue: number;
+  noPayments: number;
+  monthlyIncome: number;
+}
+
 export interface Dashboard {
   overduePayments: PaymentAlert[];
   paymentsDueSoon: PaymentAlert[];
   noPayments: PaymentAlert[];
   expiringRoutines: RoutineAlert[];
+  kpis: DashboardKpis;
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -46,12 +55,23 @@ export class DashboardService {
       paymentsDueSoon: [],
       noPayments: [],
       expiringRoutines: [],
+      kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
     };
 
     for (const row of rows) {
       this.classifyPayments(row, now, dueSoonThreshold, dashboard);
       this.classifyRoutine(row, now, dueSoonThreshold, dashboard);
     }
+
+    // Every active client is exactly one of overdue / no-payments / up-to-date.
+    const monthlyIncome = await this.dashboardRepository.getMonthlyIncome(now);
+    dashboard.kpis = {
+      activeClients: rows.length,
+      overdue: dashboard.overduePayments.length,
+      noPayments: dashboard.noPayments.length,
+      upToDate: rows.length - dashboard.overduePayments.length - dashboard.noPayments.length,
+      monthlyIncome,
+    };
 
     return dashboard;
   }

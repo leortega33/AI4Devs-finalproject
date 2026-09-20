@@ -21,11 +21,20 @@ export interface RoutineAlert {
   expired: boolean;
 }
 
+export interface DashboardKpis {
+  activeClients: number;
+  upToDate: number;
+  overdue: number;
+  noPayments: number;
+  monthlyIncome: number;
+}
+
 export interface Dashboard {
   overduePayments: PaymentAlert[];
   paymentsDueSoon: PaymentAlert[];
   noPayments: PaymentAlert[];
   expiringRoutines: RoutineAlert[];
+  kpis: DashboardKpis;
 }
 
 export const dashboardService = {

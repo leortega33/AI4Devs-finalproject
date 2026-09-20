@@ -26,6 +26,7 @@ const emptyDashboard: Dashboard = {
   paymentsDueSoon: [],
   noPayments: [],
   expiringRoutines: [],
+  kpis: { activeClients: 0, upToDate: 0, overdue: 0, noPayments: 0, monthlyIncome: 0 },
 };
 
 describe('dashboardRoutes', () => {
@@ -50,6 +51,25 @@ describe('dashboardRoutes', () => {
     expect(response.body.data).toHaveProperty('noPayments');
     expect(response.body.data).toHaveProperty('expiringRoutines');
     expect(response.body.data.overduePayments).toHaveLength(1);
+  });
+
+  it('should include the kpis object', async () => {
+    service.getDashboard.mockResolvedValue({
+      ...emptyDashboard,
+      kpis: { activeClients: 3, upToDate: 1, overdue: 1, noPayments: 1, monthlyIncome: 27000 },
+    });
+    const app = buildApp(service);
+
+    const response = await request(app).get('/api/dashboard').set('Cookie', authCookie());
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.kpis).toEqual({
+      activeClients: 3,
+      upToDate: 1,
+      overdue: 1,
+      noPayments: 1,
+      monthlyIncome: 27000,
+    });
   });
 
   it('should return 401 without a session cookie', async () => {
