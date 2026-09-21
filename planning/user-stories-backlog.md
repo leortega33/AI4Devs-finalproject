@@ -1422,36 +1422,128 @@ integration this iteration.
 
 ---
 
-## US-026: Physical progress tracking
+## US-026: Physical progress tracking (measurements)
 
-- **Status:** enriched (greenfield module — needs product definition)
+- **Status:** enriched
 
-**User story:** As the gym owner/trainer, I want to record a client's measurements
-(and optionally photos) over time, so that I can track physical progress.
+**User story:** As the gym owner/trainer, I want to record a client's body
+measurements over time, so that I can track their physical progress at a glance.
 
-**Functional description:** record measurements (e.g. weight, body measurements)
-and optionally photos at dated entries; view the evolution (table and, later,
-charts). A **new module**; the **photo storage** approach (URL vs upload/object
-storage) is a key decision requiring a product/infra pass.
+**Product decision (resolves the prior open questions):**
 
-**Data model (Prisma):** new `ProgressEntry` table (`clientId` FK, `date`,
-metrics…) and, if photos, a storage reference. Migration required.
+1. **Scope this iteration = measurements only.** Progress **photos** are split out
+   to a follow-up (**US-026b**) so this change ships value with **zero storage
+   infrastructure**. (Rationale: photos are sensitive personal data and need a
+   storage abstraction + authenticated serving; measurements need neither.)
+2. **A fixed set of structured, optional numeric metrics** per dated entry — the
+   trainer records whatever they measured that day:
+   `weightKg`, `bodyFatPercent`, `chestCm`, `waistCm`, `hipsCm`, `armCm`,
+   `thighCm`, plus an optional `note`. All optional; at least one value required.
+3. **Evolution shown as a table** (newest first) with a small **summary** (latest
+   weight and its change since the first recorded entry). **Charts are deferred.**
 
-**Endpoints (draft):** `POST/GET /api/clients/:clientId/progress`.
+**Functional description:** a per-client **Progreso** page lists the client's
+measurement entries (newest first) with a summary (latest weight + delta vs the
+first entry), lets the trainer **record** an entry (a dialog with a date —
+defaulting to today — the optional metrics, and a note) and **delete** an entry.
+All content bilingual (es/en). Reached from a client-list action icon.
 
-**Files/modules:** the progress model/repository/service/controller/route and a
-client progress view (table/chart).
+**Data model (Prisma):** new `ProgressEntry` table (`id`, `clientId` FK → `Client`
+`onDelete: Cascade`, `date DateTime`, `weightKg Float?`, `bodyFatPercent Float?`,
+`chestCm Float?`, `waistCm Float?`, `hipsCm Float?`, `armCm Float?`,
+`thighCm Float?`, `note String?`, `createdAt`), indexed on `[clientId, date]`.
+Migration required. **No photo columns in this change.**
 
-**Definition of done (draft):** dated measurement entries can be recorded and
-listed per client; evolution is visible.
+**Endpoints:**
+- `POST /api/clients/:clientId/progress` — body: `date` (optional, defaults to
+  now), the optional metrics, optional `note`; at least one metric required
+  (validation) → creates and returns the entry.
+- `GET /api/clients/:clientId/progress` → `{ success, data: { entries: [...newest
+  first], summary: { latestWeightKg, weightChangeKg, entryCount } } }`.
+- `DELETE /api/clients/:clientId/progress/:id` → removes an entry.
+- All auth-protected; 404 for a non-existent client (and for delete of a missing
+  entry).
 
-**Tests:** model/service/route + a frontend view test.
+**Files/modules:**
+- Backend: `ProgressEntry` domain model, `ProgressEntryRepository` (interface +
+  Prisma), a `ProgressService` (ensures the client exists; computes the summary;
+  requires at least one metric), a validator, a controller + nested route, wired
+  in `index.ts`.
+- Frontend: a `progressService`; a `ClientProgressPage` (summary panel + table +
+  record dialog + delete action); a client-list action icon; routing; types +
+  i18n (es/en).
 
-**Non-functional requirements:** protected; photo storage/privacy considered if
-included; i18n.
+**Definition of done:**
+- The trainer can record a measurement entry (date defaults to today; any subset
+  of metrics; empty submission rejected) and it appears at the top of the list;
+  the summary updates.
+- The trainer can delete an entry.
+- The summary reports the latest weight and the change since the first entry.
+- Endpoints are auth-protected; 404 for a non-existent client.
 
-**Open technical decisions:** which metrics; photos URL-only vs upload (needs
-object storage); charting. Define before implementing.
+**Tests:**
+- Backend: `ProgressService` (record, list newest first, summary/weight-delta
+  math, at-least-one-metric rule, not-found, delete); repository test; route test
+  (shape + 400/401/404); validator test (optional metrics, empty rejected,
+  negative metric rejected).
+- Frontend: the page records an entry, shows the summary, and deletes an entry;
+  the record dialog defaults to today.
+
+**Non-functional requirements:** protected by auth; consistent action-icon
+pattern; i18n (es/en); metrics are non-negative numbers; dates stored in UTC and
+shown localized.
+
+**Out of scope (this change):** progress **photos** (see US-026b), charts, custom
+metric definitions, and CSV/PDF export.
+
+**Open technical decisions:** resolved — measurements-only this iteration; fixed
+optional metric set; table + latest-weight summary; charts and photos deferred.
+
+---
+
+## US-026b: Physical progress photos (deferred follow-up)
+
+- **Status:** enriched (needs a storage decision before implementing)
+
+**User story:** As the gym owner/trainer, I want to attach dated progress photos
+to a client, so that I can visually compare their evolution.
+
+**Functional description:** upload one or more photos per progress entry (or per
+date) and view them alongside the measurements. Photos are **sensitive personal
+data**, so they require an **authenticated** serving path (never a public static
+URL) and real deletion.
+
+**Product/infra decision (proposed, to confirm at implementation):** a pluggable
+`PhotoStorage` abstraction (mirroring the existing `EmailService` pattern):
+- `LocalDiskPhotoStorage` (default): stores files under a configured directory
+  mounted as a **Docker volume** (persistent on the self-hosted deploy); the DB
+  stores only the storage **key**, not the bytes.
+- Optional `S3PhotoStorage` (Cloudflare R2 / Supabase Storage, both free-tier)
+  selected via env for production robustness.
+- Constraints: allowed types (`jpeg/png/webp`), max size (~5 MB), generated file
+  names (uuid), server-side validation, **auth on both upload and serve**, and
+  real file deletion when an entry/photo is removed.
+
+**Data model (Prisma):** new `ProgressPhoto` table (`id`, FK to `ProgressEntry`
+or `Client`, `storageKey`, `contentType`, `createdAt`). Migration required.
+
+**Endpoints (draft):** `POST /api/clients/:clientId/progress/:entryId/photos`
+(multipart), `GET .../photos/:photoId` (auth-protected stream),
+`DELETE .../photos/:photoId`.
+
+**Files/modules:** the `PhotoStorage` interface + `LocalDiskPhotoStorage` (and
+optional `S3PhotoStorage`), the photo model/repository, upload/serve controller,
+and photo UI on the progress page.
+
+**Definition of done (draft):** photos can be uploaded, viewed (authenticated),
+and deleted; storage is pluggable; files persist across redeploys via the volume.
+
+**Non-functional requirements:** privacy (sensitive PII), auth on serve, size/type
+validation, no path traversal, real deletion; i18n.
+
+**Open technical decisions:** local disk vs object storage for production; EXIF
+stripping; whether photos attach to an entry or to a date. Confirm before
+implementing.
 
 ---
 
