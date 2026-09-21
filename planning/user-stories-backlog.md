@@ -1231,7 +1231,7 @@ levels, structured (non-free-text) medical fields, warm-up suggestions (US-023).
 
 ## US-023: Medical-aware warm-up suggestions
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-warmup-suggestions`)
 
 **User story:** As the gym owner/trainer, when I open a client's routine, I want
 the app to suggest warm-up/mobility exercises for the body areas the client's

@@ -17,6 +17,7 @@ import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
 import { MedicalRecordService } from './application/services/medicalRecordService';
 import { MedicalFlagsService } from './application/services/medicalFlagsService';
+import { WarmupSuggestionService } from './application/services/warmupSuggestionService';
 import { ExerciseService } from './application/services/exerciseService';
 import { RoutineTemplateService } from './application/services/routineTemplateService';
 import { ClientRoutineService } from './application/services/clientRoutineService';
@@ -26,6 +27,7 @@ import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { createMedicalFlagsRoutes } from './routes/medicalFlagsRoutes';
+import { createWarmupSuggestionRoutes } from './routes/warmupSuggestionRoutes';
 import { createExerciseRoutes } from './routes/exerciseRoutes';
 import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
 import { createClientRoutineRoutes } from './routes/clientRoutineRoutes';
@@ -79,6 +81,7 @@ export function createApp() {
 
   const exerciseRepository = new PrismaExerciseRepository(prisma);
   const exerciseService = new ExerciseService(exerciseRepository);
+  const warmupSuggestionService = new WarmupSuggestionService(medicalFlagsService, exerciseRepository);
 
   const routineTemplateRepository = new PrismaRoutineTemplateRepository(prisma);
   const routineTemplateService = new RoutineTemplateService(routineTemplateRepository, exerciseRepository);
@@ -103,6 +106,10 @@ export function createApp() {
   app.use(
     '/api/clients/:clientId/medical-flags',
     createMedicalFlagsRoutes(medicalFlagsService, JWT_SECRET),
+  );
+  app.use(
+    '/api/clients/:clientId/warmup-suggestions',
+    createWarmupSuggestionRoutes(warmupSuggestionService, JWT_SECRET),
   );
   app.use('/api/clients/:clientId', createClientRoutineRoutes(clientRoutineService, JWT_SECRET));
   app.use('/api/clients/:clientId/payments', createClientPaymentRoutes(paymentService, JWT_SECRET));

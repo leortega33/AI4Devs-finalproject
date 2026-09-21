@@ -471,6 +471,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/warmup-suggestions:
+    get:
+      summary: Get medical-aware warm-up suggestions for a client
+      description: >
+        For the body regions flagged by the client's current medical record
+        (US-022), returns the catalog exercises whose category is `mobility` or
+        `activation` and whose body regions intersect a flagged region, grouped by
+        region. Main-category exercises are never suggested. Advisory guidance
+        only — nothing is auto-added to the routine (US-023).
+      tags:
+        - Client Routines
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The grouped warm-up suggestions (empty when none apply)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarmupSuggestionsResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/routine:
     get:
       summary: Get a client's active routine
@@ -1455,6 +1492,32 @@ components:
                     type: string
                   snippet:
                     type: string
+
+    WarmupSuggestionsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            regions:
+              type: array
+              description: The flagged regions the suggestions are grouped under.
+              items:
+                $ref: '#/components/schemas/BodyRegion'
+            suggestions:
+              type: array
+              description: Warm-up exercises grouped by flagged region.
+              items:
+                type: object
+                properties:
+                  region:
+                    $ref: '#/components/schemas/BodyRegion'
+                  exercises:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exercise'
 
     ExerciseInput:
       type: object

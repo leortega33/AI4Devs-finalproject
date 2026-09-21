@@ -33,6 +33,7 @@ import {
 } from '../services/clientRoutineService';
 import { routineTemplateService, type RoutineTemplateSummary } from '../services/routineTemplateService';
 import { medicalFlagsService } from '../services/medicalFlagsService';
+import { warmupSuggestionService, type WarmupSuggestionGroup } from '../services/warmupSuggestionService';
 import type { RegionCode } from '../constants/bodyRegions';
 
 export function ClientRoutinePage() {
@@ -47,6 +48,7 @@ export function ClientRoutinePage() {
   const [durationWeeks, setDurationWeeks] = useState('4');
   const [error, setError] = useState('');
   const [flaggedRegions, setFlaggedRegions] = useState<RegionCode[]>([]);
+  const [warmupSuggestions, setWarmupSuggestions] = useState<WarmupSuggestionGroup[]>([]);
 
   const load = useCallback(async () => {
     if (!clientId) return;
@@ -65,6 +67,10 @@ export function ClientRoutinePage() {
     medicalFlagsService
       .get(Number(clientId))
       .then((flags) => setFlaggedRegions(flags.regions))
+      .catch(() => undefined);
+    warmupSuggestionService
+      .get(Number(clientId))
+      .then((data) => setWarmupSuggestions(data.suggestions))
       .catch(() => undefined);
     load();
   }, [clientId, load]);
@@ -238,6 +244,46 @@ export function ClientRoutinePage() {
         <Alert severity="info" sx={{ mb: 3 }}>
           {t('clientRoutine.empty')}
         </Alert>
+      )}
+
+      {/* Medical-aware warm-up suggestions (US-023) */}
+      {warmupSuggestions.length > 0 && (
+        <Card variant="outlined" sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              {t('clientRoutine.warmup.title')}
+            </Typography>
+            {warmupSuggestions.map((group) => (
+              <Box key={group.region} sx={{ mt: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t(`exercises.regions.${group.region}`)}
+                </Typography>
+                <List dense disablePadding>
+                  {group.exercises.map((exercise) => (
+                    <ListItem key={exercise.id} disableGutters>
+                      <Stack direction="row" spacing={0.5} alignItems="center">
+                        <Typography variant="body2">{exercise.name}</Typography>
+                        {exercise.videoUrl && (
+                          <Tooltip title={t('exercises.watchVideo')}>
+                            <Link
+                              href={exercise.videoUrl}
+                              target="_blank"
+                              rel="noopener"
+                              aria-label={t('exercises.watchVideo')}
+                              sx={{ display: 'inline-flex' }}
+                            >
+                              <OndemandVideoOutlinedIcon fontSize="small" />
+                            </Link>
+                          </Tooltip>
+                        )}
+                      </Stack>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            ))}
+          </CardContent>
+        </Card>
       )}
 
       {/* History */}

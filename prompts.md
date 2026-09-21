@@ -445,6 +445,23 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 24:**
+
+> Agreguemos sugerencias de calentamiento según la ficha médica (US-023): change
+> OpenSpec `add-warmup-suggestions` **con spec delta** (client-routine), **sin
+> migración** (reutiliza US-022: medical-flags + `Exercise.bodyRegions`). Backend:
+> `WarmupSuggestionService` (compone `MedicalFlagsService` + `ExerciseRepository`)
+> que devuelve, por cada zona marcada, los ejercicios de categoría
+> `mobility`/`activation` cuya zona coincide (excluye `main`), agrupados por zona;
+> endpoint `GET /api/clients/:clientId/warmup-suggestions` (protegido). Frontend:
+> `warmupSuggestionService` + panel **"Calentamiento sugerido"** en la rutina del
+> cliente, agrupado por zona (reutiliza labels `exercises.regions.*`), estado
+> vacío; guidance-only, nunca fuerza nada. TDD backend y frontend, curl
+> (agrupación, exclusión de `main`, vacío, 401/404), verificación visual + E2E.
+> Actualizar `api-spec.yml`. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

@@ -77,6 +77,10 @@ test.describe('assign client routine', () => {
     // The Sentadilla entry shows the advisory medical warning (knee overlap, US-022).
     await expect(page.getByLabel('Aviso médico').first()).toBeVisible();
 
+    // The suggested warm-up panel lists mobility/activation work for the flagged knee (US-023).
+    await expect(page.getByRole('heading', { name: 'Calentamiento sugerido' })).toBeVisible();
+    await expect(page.getByText('Caminata lateral con banda')).toBeVisible();
+
     // Assign the second template: the first moves to history (only one active).
     await page.getByRole('button', { name: /Elegir plantilla|Plantilla E2E/ }).first().click();
     await page.getByRole('dialog').getByText(TPL2).click();

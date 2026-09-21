@@ -282,6 +282,9 @@
       "label": "Medical warning",
       "tooltip": "Involves an area flagged in the medical record: {{regions}}. Review."
     },
+    "warmup": {
+      "title": "Suggested warm-up"
+    },
     "picker": {
       "title": "Choose template",
       "empty": "No library templates. Create one under Routines.",

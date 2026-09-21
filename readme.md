@@ -128,7 +128,9 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    en la ficha médica del cliente muestra un **aviso advisory** (icono de
    advertencia con tooltip que nombra la zona); es orientativo, nunca bloquea
    asignar ni guardar (US-022). Las zonas se etiquetan por ejercicio en el
-   catálogo.
+   catálogo. Debajo, un panel **"Calentamiento sugerido"** propone ejercicios de
+   movilidad/activación para esas zonas marcadas, agrupados por zona; es
+   orientativo (no agrega nada automáticamente, US-023).
 8. **Pagos del cliente** — El listado de clientes muestra el estado de pago
    (al día / vencido / sin pagos) y permite **filtrar** por ese estado además de
    por nombre y estado (activo/inactivo). Las acciones de cada fila (editar, ficha

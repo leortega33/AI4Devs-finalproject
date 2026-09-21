@@ -7,6 +7,7 @@ import { clientService } from '../services/clientService';
 import { clientRoutineService } from '../services/clientRoutineService';
 import { routineTemplateService } from '../services/routineTemplateService';
 import { medicalFlagsService } from '../services/medicalFlagsService';
+import { warmupSuggestionService } from '../services/warmupSuggestionService';
 
 vi.mock('../services/clientService', () => ({ clientService: { get: vi.fn() } }));
 vi.mock('../services/clientRoutineService', () => ({
@@ -17,6 +18,9 @@ vi.mock('../services/routineTemplateService', () => ({
 }));
 vi.mock('../services/medicalFlagsService', () => ({
   medicalFlagsService: { get: vi.fn() },
+}));
+vi.mock('../services/warmupSuggestionService', () => ({
+  warmupSuggestionService: { get: vi.fn() },
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -42,6 +46,7 @@ describe('ClientRoutinePage', () => {
       { id: 1, name: 'Hipertrofia', objective: 'Fuerza', status: 'draft', sessionCount: 1 },
     ] as never);
     vi.mocked(medicalFlagsService.get).mockResolvedValue({ regions: [], details: [] } as never);
+    vi.mocked(warmupSuggestionService.get).mockResolvedValue({ regions: [], suggestions: [] } as never);
   });
 
   it('should show the empty state when the client has no active routine', async () => {
@@ -108,6 +113,24 @@ describe('ClientRoutinePage', () => {
 
     await screen.findByText(/Sentadilla/);
     expect(screen.queryByLabelText('Aviso médico')).not.toBeInTheDocument();
+  });
+
+  it('should show a suggested warm-up panel grouped by flagged region', async () => {
+    vi.mocked(clientRoutineService.getActive).mockResolvedValue(null);
+    vi.mocked(warmupSuggestionService.get).mockResolvedValue({
+      regions: ['shoulder'],
+      suggestions: [
+        {
+          region: 'shoulder',
+          exercises: [{ id: 2, name: 'Movilidad de hombro', muscleGroup: 'Hombros', category: 'mobility', bodyRegions: ['shoulder'] }],
+        },
+      ],
+    } as never);
+
+    renderPage();
+
+    expect(await screen.findByText('Calentamiento sugerido')).toBeInTheDocument();
+    expect(screen.getByText('Movilidad de hombro')).toBeInTheDocument();
   });
 
   it('should show the weekly progression when an entry has weeks', async () => {

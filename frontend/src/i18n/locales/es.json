@@ -282,6 +282,9 @@
       "label": "Aviso médico",
       "tooltip": "Involucra una zona marcada en la ficha médica: {{regions}}. Revisá."
     },
+    "warmup": {
+      "title": "Calentamiento sugerido"
+    },
     "picker": {
       "title": "Elegir plantilla",
       "empty": "No hay plantillas de biblioteca. Creá una en Rutinas.",
