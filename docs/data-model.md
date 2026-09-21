@@ -171,6 +171,20 @@ A payment registered for a client. See US-007 and US-008.
 - Editable/deletable (not an immutable ledger), to allow correcting data-entry mistakes
 - A client's payment status (up to date / overdue) is derived at query time from the most recent payment's covered period vs. the current date — not stored as a separate flag
 
+### 9. NotificationLog
+Records reminder emails sent to a client, to deduplicate them. See US-024.
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `clientId`: Foreign key referencing Client (cascade on client delete)
+- `type`: `payment_overdue` | `payment_due_soon` | `routine_expiring`
+- `referenceKey`: Identifies the specific alert (payment period `YYYY-MM` or the routine's end date), so a new period/routine is a new reminder
+- `sentAt`: Timestamp of the send
+
+**Validation Rules:**
+- Unique on `[clientId, type, referenceKey]` — each specific alert is emailed at most once
+- Written only when a reminder is actually sent (append-only)
+
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -282,11 +296,19 @@ erDiagram
         Int periodMonth
         Int periodYear
     }
+    NotificationLog {
+        Int id PK
+        Int clientId FK
+        String type
+        String referenceKey
+        DateTime sentAt
+    }
 
     Client ||--o| MedicalRecord : "has"
     Client ||--o{ MedicalRecordVersion : "history of"
     Client ||--o{ RoutineTemplate : "is assigned (clientId set)"
     Client ||--o{ Payment : "makes"
+    Client ||--o{ NotificationLog : "reminded via"
 
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"

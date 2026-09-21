@@ -882,6 +882,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/reminders/run:
+    post:
+      summary: Run the automated reminder job on demand
+      description: >
+        Runs the reminder job immediately (the same job the scheduler runs): emails
+        clients who have an overdue/due-soon payment or an expiring routine, reusing
+        the dashboard aggregation, skipping clients without an email and alerts
+        already sent. Returns a summary. Without `RESEND_API_KEY` configured no real
+        email is sent (the dev provider logs instead). See US-024.
+      tags:
+        - Reminders
+      responses:
+        '200':
+          description: Summary of the reminder run
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ReminderSummary'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/exercises:
     get:
       summary: List exercises
@@ -1913,6 +1943,24 @@ components:
         - noPayments
         - monthlyIncome
 
+    ReminderSummary:
+      type: object
+      description: Outcome of a reminder run (US-024).
+      properties:
+        sent:
+          type: integer
+          description: Reminders emailed in this run.
+        skippedNoEmail:
+          type: integer
+          description: Alerts skipped because the client has no email.
+        skippedDuplicate:
+          type: integer
+          description: Alerts skipped because they were already sent.
+      required:
+        - sent
+        - skippedNoEmail
+        - skippedDuplicate
+
     ErrorResponse:
       type: object
       properties:
@@ -1949,6 +1997,8 @@ tags:
     description: Client payments with a derived up-to-date/overdue status (US-007)
   - name: Dashboard
     description: Read-only alert aggregation over clients, payments, and routines (US-009)
+  - name: Reminders
+    description: Automated email reminders for client alerts, with a manual trigger (US-024)
 
 # All Phase 1 (MVP) resources are documented above. Phase 2 additions
 # (see planning/user-stories-backlog.md) will be documented here as they are

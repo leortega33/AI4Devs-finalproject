@@ -1310,7 +1310,7 @@ client routine page; server-side computation.
 
 ## US-024: Automated reminders (email)
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-automated-reminders`)
 
 **User story:** As the gym owner/trainer, I want automatic email reminders for
 clients with overdue/due-soon payments and expiring routines, so that I don't

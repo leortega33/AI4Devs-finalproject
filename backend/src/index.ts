@@ -13,6 +13,9 @@ import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/P
 import { PrismaPaymentRepository } from './infrastructure/repositories/PrismaPaymentRepository';
 import { PrismaDashboardRepository } from './infrastructure/repositories/PrismaDashboardRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
+import { ResendEmailService } from './infrastructure/email/resendEmailService';
+import { PrismaNotificationLogRepository } from './infrastructure/repositories/PrismaNotificationLogRepository';
+import { startReminderScheduler } from './infrastructure/reminderScheduler';
 import { AuthService } from './application/services/authService';
 import { ClientService } from './application/services/clientService';
 import { MedicalRecordService } from './application/services/medicalRecordService';
@@ -23,6 +26,7 @@ import { RoutineTemplateService } from './application/services/routineTemplateSe
 import { ClientRoutineService } from './application/services/clientRoutineService';
 import { PaymentService } from './application/services/paymentService';
 import { DashboardService } from './application/services/dashboardService';
+import { ReminderService } from './application/services/reminderService';
 import { createAuthRoutes } from './routes/authRoutes';
 import { createClientRoutes } from './routes/clientRoutes';
 import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
@@ -33,6 +37,7 @@ import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
 import { createClientRoutineRoutes } from './routes/clientRoutineRoutes';
 import { createClientPaymentRoutes, createPaymentRoutes } from './routes/paymentRoutes';
 import { createDashboardRoutes } from './routes/dashboardRoutes';
+import { createReminderRoutes } from './routes/reminderRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './infrastructure/logger';
 
@@ -48,6 +53,10 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 const RESET_URL_BASE = `${FRONTEND_URL}/reset-password`;
 const DASHBOARD_DUE_SOON_DAYS = Number(process.env.DASHBOARD_DUE_SOON_DAYS) || 5;
+const REMINDERS_ENABLED = process.env.REMINDERS_ENABLED === 'true';
+const REMINDER_CRON = process.env.REMINDER_CRON || '0 9 * * *';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const REMINDER_FROM_EMAIL = process.env.REMINDER_FROM_EMAIL || 'no-reply@example.com';
 
 export function createApp() {
   const app = express();
@@ -64,7 +73,10 @@ export function createApp() {
   });
 
   const userRepository = new PrismaUserRepository(prisma);
-  const emailService = new ConsoleEmailService();
+  // Use Resend when an API key is configured; otherwise log emails (dev/no-op).
+  const emailService = RESEND_API_KEY
+    ? new ResendEmailService({ apiKey: RESEND_API_KEY, fromEmail: REMINDER_FROM_EMAIL })
+    : new ConsoleEmailService();
   const authService = new AuthService(userRepository, emailService, JWT_SECRET, RESET_URL_BASE);
 
   const clientRepository = new PrismaClientRepository(prisma);
@@ -97,6 +109,14 @@ export function createApp() {
   const dashboardRepository = new PrismaDashboardRepository(prisma);
   const dashboardService = new DashboardService(dashboardRepository);
 
+  const notificationLogRepository = new PrismaNotificationLogRepository(prisma);
+  const reminderService = new ReminderService(
+    dashboardService,
+    clientRepository,
+    notificationLogRepository,
+    emailService,
+  );
+
   app.use('/api/auth', createAuthRoutes(authService, JWT_SECRET));
   app.use('/api/clients', createClientRoutes(clientService, JWT_SECRET));
   app.use(
@@ -117,6 +137,12 @@ export function createApp() {
   app.use('/api/exercises', createExerciseRoutes(exerciseService, JWT_SECRET));
   app.use('/api/routine-templates', createRoutineTemplateRoutes(routineTemplateService, JWT_SECRET));
   app.use('/api/dashboard', createDashboardRoutes(dashboardService, JWT_SECRET, DASHBOARD_DUE_SOON_DAYS));
+  app.use('/api/reminders', createReminderRoutes(reminderService, JWT_SECRET));
+
+  // Opt-in scheduled reminders (disabled by default).
+  if (REMINDERS_ENABLED) {
+    startReminderScheduler(reminderService, REMINDER_CRON);
+  }
 
   // Any unmatched API route returns a JSON 404 (never the SPA fallback below).
   app.use('/api', (_req, res) => {

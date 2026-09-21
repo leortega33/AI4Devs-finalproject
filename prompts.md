@@ -462,6 +462,25 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 25:**
+
+> Agreguemos recordatorios automáticos por email (US-024): change OpenSpec
+> `add-automated-reminders` **con spec delta** (notifications) y **migración**.
+> Nueva tabla `NotificationLog` (`clientId`, `type`, `referenceKey`, `sentAt`,
+> único por `[clientId,type,referenceKey]`) + enum `NotificationType`. Backend:
+> extender `EmailService` con `sendEmail`; `ResendEmailService` (fetch a Resend);
+> `ReminderService` que reutiliza `DashboardService`, resuelve el email del
+> cliente, deduplica vía el log, compone mensajes en español y devuelve
+> `{ sent, skippedNoEmail, skippedDuplicate }`; scheduler node-cron opt-in
+> (`REMINDERS_ENABLED`, `REMINDER_CRON`); trigger manual `POST /api/reminders/run`
+> (auth). Selección de provider por `RESEND_API_KEY` (sin clave → Console/no-op).
+> Clientes sin email se saltan. TDD backend, migración, curl (enviado, dedupe,
+> skip sin email, 401). Actualizar `.env.example`, `api-spec.yml`, `data-model.md`.
+> `RESEND_API_KEY` solo por env (nunca commiteado). Mantener todo en verde.
+> Contenido de emails en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

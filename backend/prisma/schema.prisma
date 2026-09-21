@@ -47,6 +47,12 @@ enum PaymentMethod {
   card
 }
 
+enum NotificationType {
+  payment_overdue
+  payment_due_soon
+  routine_expiring
+}
+
 model Client {
   id                           Int          @id @default(autoincrement())
   firstName                    String
@@ -69,6 +75,7 @@ model Client {
   medicalRecordVersions MedicalRecordVersion[]
   routines              RoutineTemplate[]
   payments              Payment[]
+  notificationLogs      NotificationLog[]
 }
 
 model MedicalRecord {
@@ -190,4 +197,15 @@ model Payment {
   periodYear  Int
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+}
+
+model NotificationLog {
+  id           Int              @id @default(autoincrement())
+  clientId     Int
+  client       Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  type         NotificationType
+  referenceKey String
+  sentAt       DateTime         @default(now())
+
+  @@unique([clientId, type, referenceKey])
 }

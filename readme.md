@@ -53,6 +53,10 @@ cliente.
 - Asignación de rutina a cliente con vigencia
 - Registro de pagos por cliente e historial completo de pagos
 - Dashboard con alertas de pagos vencidos/por vencer y rutinas por vencer
+- Recordatorios por email automáticos (job programado) para clientes con alertas,
+  con dedupe y disparo manual (`POST /api/reminders/run`); opt-in vía
+  `REMINDERS_ENABLED`, provider Resend vía `RESEND_API_KEY` (sin clave: solo se
+  loguea, no se envía)
 - Interfaz bilingüe (español por defecto / inglés) con selector de idioma
 
 **Backlog futuro (Fase 2, fuera del MVP):** recordatorios automáticos

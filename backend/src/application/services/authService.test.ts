@@ -17,7 +17,7 @@ function buildUserRepositoryMock(): jest.Mocked<UserRepository> {
 }
 
 function buildEmailServiceMock(): jest.Mocked<EmailService> {
-  return { sendPasswordResetEmail: jest.fn() };
+  return { sendPasswordResetEmail: jest.fn(), sendEmail: jest.fn() };
 }
 
 const JWT_SECRET = 'test-secret';
