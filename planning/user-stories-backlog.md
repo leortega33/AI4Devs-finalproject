@@ -1352,34 +1352,73 @@ required. WhatsApp via Meta Cloud API deferred.
 
 ## US-025: Attendance / check-in tracking
 
-- **Status:** enriched (greenfield module — needs product definition)
+- **Status:** enriched
 
-**User story:** As the gym owner/trainer, I want to record client check-ins, so
-that I can track attendance and frequency.
+**User story:** As the gym owner/trainer, I want to record a client's check-ins
+and see their attendance frequency, so that I can track how regularly they train.
 
-**Functional description:** record a check-in (date/time) per client and view
-attendance history/frequency. A **new module** whose details (manual check-in vs
-QR/self-service, which metrics) need a product-definition pass before
-implementation.
+**Product decision (resolves the prior open questions):**
 
-**Data model (Prisma):** new `Attendance` table (`clientId` FK, `checkInAt`).
-Migration required.
+1. **Manual check-in by the trainer** — there is no client-facing app, so
+   QR/self-service is out of scope. The trainer records a check-in for a client
+   (timestamp defaults to now, editable; an optional short note).
+2. **Simple frequency metrics**, computed server-side and shown as a summary:
+   total check-ins, check-ins this month, check-ins in the last 30 days, and the
+   last check-in date. Charts are deferred.
+3. **Per-client view** (like payments / medical record), reached from a client
+   list action icon. No dashboard integration in this iteration.
 
-**Endpoints (draft):** `POST /api/clients/:clientId/attendance`,
-`GET /api/clients/:clientId/attendance`.
+**Functional description:** a per-client **Asistencia** page lists the client's
+check-ins (newest first) with a summary panel, lets the trainer **register** a
+check-in (a dialog with an optional date — defaulting to today — and an optional
+note) and **delete** a check-in to fix mistakes. Multiple check-ins per day are
+allowed. All content bilingual (es/en).
 
-**Files/modules:** the attendance model/repository/service/controller/route and a
-client attendance view.
+**Data model (Prisma):** new `Attendance` table (`id`, `clientId` FK → `Client`
+`onDelete: Cascade`, `checkInAt DateTime`, `note String?`, `createdAt`), indexed
+on `[clientId, checkInAt]`. Migration required.
 
-**Definition of done (draft):** check-ins can be recorded and listed per client;
-basic frequency shown.
+**Endpoints:**
+- `POST /api/clients/:clientId/attendance` — body: optional `checkInAt` (defaults
+  to now), optional `note` (length-limited) → creates and returns the check-in.
+- `GET /api/clients/:clientId/attendance` → `{ success, data: { attendances:
+  [...newest first], summary: { total, thisMonth, last30Days, lastCheckInAt } } }`.
+- `DELETE /api/clients/:clientId/attendance/:id` → removes a check-in.
+- All auth-protected; 404 for a non-existent client (and for delete of a missing
+  check-in).
 
-**Tests:** model/service/route + a frontend view test.
+**Files/modules:**
+- Backend: `Attendance` domain model, `AttendanceRepository` interface + Prisma
+  implementation, an `AttendanceService` (ensures the client exists; computes the
+  summary), a controller + nested route, wired in `index.ts`; validator for the
+  input.
+- Frontend: an `attendanceService`; a `ClientAttendancePage` (summary panel +
+  list + register dialog + delete action icon); a client-list action icon; types
+  + i18n (es/en); routing.
 
-**Non-functional requirements:** protected by auth; i18n.
+**Definition of done:**
+- The trainer can register a check-in (default today, optional note) and it
+  appears at the top of the list; the summary updates.
+- The trainer can delete a check-in.
+- The summary reports total / this month / last 30 days / last check-in correctly.
+- Endpoints are auth-protected; 404 for a non-existent client.
 
-**Open technical decisions:** manual vs QR/self-service; metrics to surface;
-whether to integrate with the dashboard. Define before implementing.
+**Tests:**
+- Backend: `AttendanceService` (create, list newest first, summary math across
+  month/30-day boundaries, not-found, delete); repository test; route test
+  (shape + 401/404); validator test (optional date/note, oversized note rejected).
+- Frontend: the page registers a check-in, shows the summary, and deletes an
+  entry; the register dialog defaults to today.
+
+**Non-functional requirements:** protected by auth; consistent action-icon
+pattern; i18n (es/en); check-in timestamps stored in UTC and shown localized.
+
+**Out of scope (future):** QR/self-service check-in, attendance charts, dashboard
+integration (e.g. inactivity alerts), and per-day de-duplication.
+
+**Open technical decisions:** resolved — manual trainer check-in; summary metrics
+(total / this month / last 30 days / last check-in); per-client page; no dashboard
+integration this iteration.
 
 ---
 
