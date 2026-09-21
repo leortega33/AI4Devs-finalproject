@@ -662,6 +662,126 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/attendance:
+    get:
+      summary: List a client's check-ins with a frequency summary
+      description: >
+        Returns the client's check-ins newest first plus a frequency summary
+        (total, this month, last 30 days, last check-in date). See US-025.
+      tags:
+        - Attendance
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The check-ins and the frequency summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/AttendanceList'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Record a check-in for a client
+      description: >
+        Records a check-in. `checkInAt` defaults to now when omitted; `note` is
+        optional. See US-025.
+      tags:
+        - Attendance
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceInput'
+      responses:
+        '201':
+          description: Check-in recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Attendance'
+        '400':
+          description: Validation error (e.g. an oversized note)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/attendance/{id}:
+    delete:
+      summary: Delete a client's check-in
+      tags:
+        - Attendance
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Check-in deleted
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Check-in not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/payments:
     get:
       summary: List a client's payments with the derived status
@@ -1798,6 +1918,54 @@ components:
           allOf:
             - $ref: '#/components/schemas/ClientRoutine'
 
+    AttendanceInput:
+      type: object
+      description: Input for recording a check-in (US-025).
+      properties:
+        checkInAt:
+          type: string
+          format: date-time
+          description: Defaults to the current time when omitted.
+        note:
+          type: string
+          nullable: true
+          description: Optional note (max 500 chars).
+
+    Attendance:
+      allOf:
+        - $ref: '#/components/schemas/AttendanceInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            clientId:
+              type: integer
+
+    AttendanceSummary:
+      type: object
+      description: Frequency summary for a client's attendance (US-025).
+      properties:
+        total:
+          type: integer
+        thisMonth:
+          type: integer
+        last30Days:
+          type: integer
+        lastCheckInAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AttendanceList:
+      type: object
+      properties:
+        attendances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendance'
+        summary:
+          $ref: '#/components/schemas/AttendanceSummary'
+
     PaymentInput:
       type: object
       properties:
@@ -1995,6 +2163,8 @@ tags:
     description: Routines assigned to a client (clone of a template with a lifecycle) (US-006)
   - name: Payments
     description: Client payments with a derived up-to-date/overdue status (US-007)
+  - name: Attendance
+    description: Client check-ins with a frequency summary (US-025)
   - name: Dashboard
     description: Read-only alert aggregation over clients, payments, and routines (US-009)
   - name: Reminders

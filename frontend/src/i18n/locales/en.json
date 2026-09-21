@@ -20,6 +20,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
+    "delete": "Delete",
     "logout": "Log out",
     "language": "Language",
     "spanish": "Spanish",
@@ -97,7 +98,8 @@
       "reactivate": "Reactivate",
       "medicalRecord": "Medical record",
       "routine": "Routine",
-      "payments": "Payments"
+      "payments": "Payments",
+      "attendance": "Attendance"
     },
     "routineAssigned": "Assigned",
     "routineNone": "No routine",
@@ -128,6 +130,33 @@
       "title": "Deactivate client",
       "message": "Deactivate {{name}}? Their history is preserved and they can be reactivated later.",
       "confirm": "Deactivate"
+    }
+  },
+  "attendance": {
+    "title": "Attendance",
+    "subtitle": "{{name}}'s attendance",
+    "register": "Register check-in",
+    "empty": "This client has no check-ins recorded yet.",
+    "registered": "Check-in recorded.",
+    "deleted": "Check-in deleted.",
+    "deleteConfirm": "Delete this check-in?",
+    "loadFailed": "Could not load attendance.",
+    "saveFailed": "Could not record the check-in.",
+    "deleteFailed": "Could not delete the check-in.",
+    "summary": {
+      "total": "Total",
+      "thisMonth": "This month",
+      "last30Days": "Last 30 days",
+      "lastCheckIn": "Last check-in"
+    },
+    "columns": {
+      "checkInAt": "Date and time",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "dialog": {
+      "checkInAt": "Date and time",
+      "note": "Note (optional)"
     }
   },
   "medicalRecord": {

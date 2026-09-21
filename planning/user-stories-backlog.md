@@ -1352,7 +1352,7 @@ required. WhatsApp via Meta Cloud API deferred.
 
 ## US-025: Attendance / check-in tracking
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-attendance-tracking`)
 
 **User story:** As the gym owner/trainer, I want to record a client's check-ins
 and see their attendance frequency, so that I can track how regularly they train.

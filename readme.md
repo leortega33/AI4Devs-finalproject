@@ -152,7 +152,12 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    automáticamente. Además, el botón **"Exportar PDF"** descarga el
    historial de pagos del cliente como un documento PDF (bilingüe, según el
    idioma activo).
-9. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+9. **Asistencia del cliente** — Desde la acción "Asistencia" del listado se abre
+   una pantalla que muestra un **panel resumen** (total, este mes, últimos 30
+   días y última asistencia) y la lista de check-ins. Permite **registrar** una
+   asistencia (fecha/hora que por defecto es hoy, más una nota opcional) y
+   **eliminar** un check-in con confirmación (US-025).
+10. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._

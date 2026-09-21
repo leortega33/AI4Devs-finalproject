@@ -481,6 +481,26 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 26:**
+
+> Agreguemos registro de asistencia/check-in (US-025): change OpenSpec
+> `add-attendance-tracking` **con spec delta** (nueva capability attendance) y
+> **migración**. Nueva tabla `Attendance` (`clientId` FK cascade, `checkInAt`,
+> `note?`, `createdAt`, índice `[clientId, checkInAt]`). Backend: modelo/repo,
+> `attendanceSchema` (checkInAt opcional coerce, note max 500), `AttendanceService`
+> (record con default now, list newest-first + resumen total/mes/30d/última,
+> remove con 404), controller + ruta anidada
+> `/api/clients/:clientId/attendance` (`POST`/`GET`/`DELETE /:id`). Frontend:
+> `attendanceService` + `ClientAttendancePage` (panel resumen + tabla + diálogo de
+> registro con fecha por defecto hoy + nota + borrado con confirmación) + acción-
+> icono en el listado + ruta + i18n (es/en). Check-in manual (sin QR); múltiples
+> por día permitidos; sin integración con dashboard. TDD backend y frontend,
+> migración, curl (registrar default/elegida, 400 nota larga, 404, list+resumen,
+> delete 204/404, 401), verificación visual + E2E. Actualizar `api-spec.yml` y
+> `data-model.md`. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

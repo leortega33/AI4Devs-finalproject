@@ -20,6 +20,7 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Editar",
+    "delete": "Eliminar",
     "logout": "Cerrar sesión",
     "language": "Idioma",
     "spanish": "Español",
@@ -97,7 +98,8 @@
       "reactivate": "Reactivar",
       "medicalRecord": "Ficha médica",
       "routine": "Rutina",
-      "payments": "Pagos"
+      "payments": "Pagos",
+      "attendance": "Asistencia"
     },
     "routineAssigned": "Asignada",
     "routineNone": "Sin rutina",
@@ -128,6 +130,33 @@
       "title": "Desactivar cliente",
       "message": "¿Desactivar a {{name}}? Su historial se conserva y puede reactivarse más adelante.",
       "confirm": "Desactivar"
+    }
+  },
+  "attendance": {
+    "title": "Asistencia",
+    "subtitle": "Asistencia de {{name}}",
+    "register": "Registrar asistencia",
+    "empty": "Este cliente todavía no tiene asistencias registradas.",
+    "registered": "Asistencia registrada.",
+    "deleted": "Asistencia eliminada.",
+    "deleteConfirm": "¿Eliminar esta asistencia?",
+    "loadFailed": "No se pudo cargar la asistencia.",
+    "saveFailed": "No se pudo registrar la asistencia.",
+    "deleteFailed": "No se pudo eliminar la asistencia.",
+    "summary": {
+      "total": "Total",
+      "thisMonth": "Este mes",
+      "last30Days": "Últimos 30 días",
+      "lastCheckIn": "Última asistencia"
+    },
+    "columns": {
+      "checkInAt": "Fecha y hora",
+      "note": "Nota",
+      "actions": "Acciones"
+    },
+    "dialog": {
+      "checkInAt": "Fecha y hora",
+      "note": "Nota (opcional)"
     }
   },
   "medicalRecord": {

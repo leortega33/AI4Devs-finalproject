@@ -9,6 +9,7 @@ import {
   validateRoutineTemplate,
   validateAssignRoutine,
   validatePayment,
+  validateAttendance,
   ValidationError,
 } from './validator';
 
@@ -373,6 +374,23 @@ describe('validator', () => {
 
     it('should reject an implausible year', () => {
       expect(() => validatePayment({ ...validPayment, periodYear: 1999 })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateAttendance', () => {
+    it('should accept an empty payload (checkInAt defaults later)', () => {
+      const result = validateAttendance({});
+      expect(result.checkInAt).toBeUndefined();
+    });
+
+    it('should coerce a provided checkInAt and keep the note', () => {
+      const result = validateAttendance({ checkInAt: '2026-09-20T10:00:00.000Z', note: 'Buena sesión' });
+      expect(result.checkInAt).toBeInstanceOf(Date);
+      expect(result.note).toBe('Buena sesión');
+    });
+
+    it('should reject an oversized note', () => {
+      expect(() => validateAttendance({ note: 'x'.repeat(501) })).toThrow(ValidationError);
     });
   });
 });

@@ -143,6 +143,13 @@ export const paymentSchema = z.object({
   periodYear: z.number().int().min(2000).max(2100),
 });
 
+// A client check-in (US-025). `checkInAt` is optional (defaults to now in the
+// service); `note` is optional free text with a length limit.
+export const attendanceSchema = z.object({
+  checkInAt: z.coerce.date().optional(),
+  note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -153,6 +160,7 @@ export type ExerciseInputData = z.infer<typeof exerciseSchema>;
 export type RoutineTemplateInputData = z.infer<typeof routineTemplateSchema>;
 export type AssignRoutineInputData = z.infer<typeof assignRoutineSchema>;
 export type PaymentInputData = z.infer<typeof paymentSchema>;
+export type AttendanceInputData = z.infer<typeof attendanceSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -208,4 +216,8 @@ export function validateAssignRoutine(data: unknown): AssignRoutineInputData {
 
 export function validatePayment(data: unknown): PaymentInputData {
   return parseOrThrow(paymentSchema, data);
+}
+
+export function validateAttendance(data: unknown): AttendanceInputData {
+  return parseOrThrow(attendanceSchema, data);
 }

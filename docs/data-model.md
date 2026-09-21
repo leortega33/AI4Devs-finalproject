@@ -185,6 +185,21 @@ Records reminder emails sent to a client, to deduplicate them. See US-024.
 - Unique on `[clientId, type, referenceKey]` — each specific alert is emailed at most once
 - Written only when a reminder is actually sent (append-only)
 
+### 10. Attendance
+A single client check-in recorded by the trainer. See US-025.
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `clientId`: Foreign key referencing Client (cascade on client delete)
+- `checkInAt`: Timestamp of the check-in (defaults to now when not provided)
+- `note`: Optional short note (max 500 chars)
+- `createdAt`: Timestamp
+
+**Validation Rules:**
+- Manual check-in by the trainer; multiple per day allowed (no per-day dedupe)
+- Indexed on `[clientId, checkInAt]` for newest-first reads; frequency metrics
+  (total / this month / last 30 days / last check-in) are derived at query time
+
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -303,12 +318,20 @@ erDiagram
         String referenceKey
         DateTime sentAt
     }
+    Attendance {
+        Int id PK
+        Int clientId FK
+        DateTime checkInAt
+        String note
+        DateTime createdAt
+    }
 
     Client ||--o| MedicalRecord : "has"
     Client ||--o{ MedicalRecordVersion : "history of"
     Client ||--o{ RoutineTemplate : "is assigned (clientId set)"
     Client ||--o{ Payment : "makes"
     Client ||--o{ NotificationLog : "reminded via"
+    Client ||--o{ Attendance : "checks in"
 
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
