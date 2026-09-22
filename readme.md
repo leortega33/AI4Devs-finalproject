@@ -14,6 +14,7 @@
 ## 0. Ficha del proyecto
 
 ### **0.1. Tu nombre completo:**
+Leonel Nicolas Ortega
 
 ### **0.2. Nombre del proyecto:**
 
