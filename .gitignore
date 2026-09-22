@@ -18,6 +18,9 @@ coverage/
 # Prisma
 backend/prisma/migrations/dev.db
 
+# Progress photo uploads (local storage backend; US-026b)
+backend/uploads/
+
 # Playwright
 test-results/
 playwright-report/

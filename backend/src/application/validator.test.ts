@@ -403,8 +403,15 @@ describe('validator', () => {
       expect(result.waistCm).toBe(85);
     });
 
-    it('should reject an entry with no metric', () => {
-      expect(() => validateProgress({ note: 'solo nota' })).toThrow(ValidationError);
+    it('should coerce string metrics and treat empty strings as absent (multipart)', () => {
+      const result = validateProgress({ weightKg: '80', waistCm: '', note: 'x' });
+      expect(result.weightKg).toBe(80);
+      expect(result.waistCm).toBeUndefined();
+    });
+
+    it('should accept a metric-less entry (the metric-or-photo rule is enforced by the service)', () => {
+      const result = validateProgress({ note: 'solo nota' });
+      expect(result.weightKg).toBeUndefined();
     });
 
     it('should reject a negative metric', () => {

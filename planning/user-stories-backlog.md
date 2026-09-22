@@ -1503,7 +1503,7 @@ optional metric set; table + latest-weight summary; charts and photos deferred.
 
 ## US-026b: Physical progress photos (deferred follow-up)
 
-- **Status:** ready (storage/infra decisions resolved; ready to propose)
+- **Status:** in-openspec (`openspec/changes/add-progress-photos`)
 
 **User story:** As the gym owner/trainer, I want to attach dated progress photos
 to a client, so that I can visually compare their evolution.

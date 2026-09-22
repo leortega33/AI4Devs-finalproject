@@ -33,6 +33,8 @@ flowchart LR
 | `PORT` | App port (default 3000) |
 | `SERVE_FRONTEND` | `true` to serve the built SPA (set by the image) |
 | `DASHBOARD_DUE_SOON_DAYS` | Dashboard "due soon" threshold (default 5) |
+| `PHOTO_STORAGE` | Progress-photo backend: `local` (default) or `s3` (reserved, not implemented) |
+| `PHOTO_STORAGE_DIR` | Directory for progress photos when `PHOTO_STORAGE=local` (the image mounts a volume at `/data/photos`) |
 | `RATE_LIMIT_DISABLED` | Optional; only honored outside production |
 
 For the compose stack, `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` are
@@ -85,6 +87,35 @@ also required. Never commit real values — see "Secrets management" below.
    docker compose -f docker-compose.prod.yml --env-file .env.prod down       # keep data
    docker compose -f docker-compose.prod.yml --env-file .env.prod down -v     # wipe data
    ```
+
+## Persistent volumes and backups
+
+The compose stack keeps two named volumes that together hold all durable state:
+
+- `gym_prod_db_data` → PostgreSQL data (rows, including the `ProgressPhoto`
+  metadata that references each stored file by key).
+- `gym_prod_uploads` → progress-photo files, mounted at `PHOTO_STORAGE_DIR`
+  (`/data/photos` in the image). The `app` container runs as its Node user, which
+  must be able to write to this path; the local storage backend creates the
+  directory on startup.
+
+**Back them up together.** The database stores only the photo storage *key*, not
+the bytes, so backing up one volume without the other leaves orphaned metadata
+(rows pointing at missing files) or unreferenced files. Snapshot both in the same
+backup window, e.g.:
+
+```bash
+docker run --rm -v gym_prod_db_data:/data -v "$PWD":/backup alpine \
+  tar czf /backup/db-$(date +%F).tgz -C /data .
+docker run --rm -v gym_prod_uploads:/data -v "$PWD":/backup alpine \
+  tar czf /backup/uploads-$(date +%F).tgz -C /data .
+```
+
+> **Render note:** the free tier's filesystem is ephemeral (persistent disks are
+> paid), so local-disk photos would not survive a redeploy/sleep there. Use the
+> local Docker + Cloudflare Tunnel path for durable photos, or wire an
+> object-storage backend (`PHOTO_STORAGE=s3`, e.g. Cloudflare R2) before hosting
+> photos on Render.
 
 ## Option B — Render (free tier, optional)
 

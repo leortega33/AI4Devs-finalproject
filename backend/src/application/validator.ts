@@ -151,28 +151,25 @@ export const attendanceSchema = z.object({
 });
 
 // A client progress measurement entry (US-026). `date` is optional (defaults to
-// now in the service); each metric is a non-negative number; at least one metric
-// is required.
-const progressMetric = z.number().nonnegative('Metrics must be non-negative').optional().nullable();
-export const progressSchema = z
-  .object({
-    date: z.coerce.date().optional(),
-    weightKg: progressMetric,
-    bodyFatPercent: progressMetric,
-    chestCm: progressMetric,
-    waistCm: progressMetric,
-    hipsCm: progressMetric,
-    armCm: progressMetric,
-    thighCm: progressMetric,
-    note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
-  })
-  .refine(
-    (data) =>
-      [data.weightKg, data.bodyFatPercent, data.chestCm, data.waistCm, data.hipsCm, data.armCm, data.thighCm].some(
-        (v) => v != null,
-      ),
-    { message: 'At least one measurement is required' },
-  );
+// now in the service); each metric is a non-negative number. Metrics may arrive
+// as strings via multipart uploads, so empty strings are treated as absent and
+// values are coerced. The "at least one metric OR at least one photo" rule is
+// enforced by the service (US-026b), since it also depends on uploaded files.
+const progressMetric = z.preprocess(
+  (value) => (value === '' || value === undefined || value === null ? undefined : value),
+  z.coerce.number().nonnegative('Metrics must be non-negative').optional(),
+);
+export const progressSchema = z.object({
+  date: z.coerce.date().optional(),
+  weightKg: progressMetric,
+  bodyFatPercent: progressMetric,
+  chestCm: progressMetric,
+  waistCm: progressMetric,
+  hipsCm: progressMetric,
+  armCm: progressMetric,
+  thighCm: progressMetric,
+  note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
+});
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

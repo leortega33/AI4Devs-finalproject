@@ -524,6 +524,32 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 28:**
+
+> Agreguemos fotos de progreso físico (US-026b): change OpenSpec
+> `add-progress-photos` **con spec delta** (nueva capability progress-photos +
+> modificar progress) y **migración**. Nueva tabla `ProgressPhoto`
+> (`progressEntryId` FK cascade, `storageKey`, `contentType`, `createdAt`, índice
+> `[progressEntryId]`). Abstracción **`PhotoStorage` pluggable** con
+> `LocalDiskPhotoStorage` (volumen Docker nombrado, keys uuid, sin path
+> traversal) por defecto; S3 diferido. `sharp` para strip EXIF + re-encode a
+> `webp`; `multer` (memoria, 5 MB, allow-list `jpeg/png/webp`). Backend: modelo/
+> repo de foto, helper de imagen, `ProgressService` extendido (create multipart
+> atómico con rollback, ≥1 métrica **o** ≥1 foto, addPhotos, getPhoto, removePhoto,
+> delete de entrada limpia archivos), controller + rutas anidadas (`POST /` multipart,
+> `POST /:entryId/photos`, `GET /:entryId/photos/:photoId` stream autenticado,
+> `DELETE /:entryId/photos/:photoId`). Frontend: `progressService` con FormData +
+> addPhotos/deletePhoto/photoUrl; `ClientProgressPage` con input de fotos en el
+> diálogo (guardar habilitado con métrica o foto), thumbnails autenticados por
+> entrada, agregar y eliminar con confirmación; i18n (es/en). Infra: volumen
+> `gym_prod_uploads` + `PHOTO_STORAGE_DIR` en compose, `.env.example`, `.gitignore`,
+> `deployment.md` (backup junto al volumen de DB). TDD backend y frontend, migración,
+> curl (create solo-foto, add, stream 200/401, delete 204/404, 400 tipo/tamaño, 404),
+> verificación visual + E2E con fixture. Actualizar `api-spec.yml` y `data-model.md`.
+> Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

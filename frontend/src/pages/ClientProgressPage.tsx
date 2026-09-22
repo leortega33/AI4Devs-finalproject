@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardContent,
@@ -24,6 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { useTranslation } from 'react-i18next';
 import { BackButton } from '../components/BackButton';
 import { clientService, type Client } from '../services/clientService';
@@ -88,8 +90,10 @@ export function ClientProgressPage() {
     thighCm: '',
   });
   const [note, setNote] = useState('');
+  const [photos, setPhotos] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [toDelete, setToDelete] = useState<ProgressEntry | null>(null);
+  const [photoToDelete, setPhotoToDelete] = useState<{ entryId: number; photoId: number } | null>(null);
 
   const load = useCallback(async () => {
     if (!clientId) return;
@@ -112,14 +116,16 @@ export function ClientProgressPage() {
     setDate(todayInput());
     setMetrics({ weightKg: '', bodyFatPercent: '', chestCm: '', waistCm: '', hipsCm: '', armCm: '', thighCm: '' });
     setNote('');
+    setPhotos([]);
     setError('');
     setDialogOpen(true);
   };
 
   const hasMetric = METRICS.some((m) => metrics[m.key].trim() !== '');
+  const canSave = hasMetric || photos.length > 0;
 
   const handleRegister = async () => {
-    if (!clientId || !hasMetric) return;
+    if (!clientId || !canSave) return;
     setSubmitting(true);
     setError('');
     try {
@@ -128,7 +134,7 @@ export function ClientProgressPage() {
         const raw = metrics[m.key].trim();
         if (raw !== '') payload[m.key] = Number(raw);
       }
-      await progressService.create(Number(clientId), payload);
+      await progressService.create(Number(clientId), payload, photos);
       setDialogOpen(false);
       setSaved(t('progress.registered'));
       load();
@@ -136,6 +142,29 @@ export function ClientProgressPage() {
       setError(t('progress.saveFailed'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleAddPhotos = async (entryId: number, files: FileList | null) => {
+    if (!clientId || !files || files.length === 0) return;
+    try {
+      await progressService.addPhotos(Number(clientId), entryId, Array.from(files));
+      setSaved(t('progress.photos.added'));
+      load();
+    } catch {
+      setError(t('progress.photos.saveFailed'));
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!clientId || !photoToDelete) return;
+    try {
+      await progressService.deletePhoto(Number(clientId), photoToDelete.entryId, photoToDelete.photoId);
+      setPhotoToDelete(null);
+      setSaved(t('progress.photos.deleted'));
+      load();
+    } catch {
+      setError(t('progress.photos.deleteFailed'));
     }
   };
 
@@ -199,6 +228,7 @@ export function ClientProgressPage() {
                   </TableCell>
                 ))}
                 <TableCell>{t('progress.columns.note')}</TableCell>
+                <TableCell>{t('progress.columns.photos')}</TableCell>
                 <TableCell align="right">{t('progress.columns.actions')}</TableCell>
               </TableRow>
             </TableHead>
@@ -212,6 +242,46 @@ export function ClientProgressPage() {
                     </TableCell>
                   ))}
                   <TableCell>{e.note}</TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
+                      {e.photos.map((p) => (
+                        <Box key={p.id} sx={{ position: 'relative' }}>
+                          <Box
+                            component="img"
+                            src={progressService.photoUrl(Number(clientId), e.id, p.id)}
+                            alt={t('progress.photos.alt')}
+                            sx={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 1, display: 'block' }}
+                          />
+                          <Tooltip title={t('common.delete')}>
+                            <IconButton
+                              size="small"
+                              color="error"
+                              aria-label={t('progress.photos.deleteLabel')}
+                              onClick={() => setPhotoToDelete({ entryId: e.id, photoId: p.id })}
+                              sx={{ position: 'absolute', top: -8, right: -8, bgcolor: 'background.paper' }}
+                            >
+                              <DeleteIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      ))}
+                      <Tooltip title={t('progress.photos.add')}>
+                        <IconButton size="small" component="label" aria-label={t('progress.photos.add')}>
+                          <AddPhotoAlternateIcon fontSize="small" />
+                          <input
+                            hidden
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            multiple
+                            onChange={(ev) => {
+                              handleAddPhotos(e.id, ev.target.files);
+                              ev.target.value = '';
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </TableCell>
                   <TableCell align="right">
                     <Tooltip title={t('common.delete')}>
                       <IconButton size="small" color="error" aria-label={t('common.delete')} onClick={() => setToDelete(e)}>
@@ -267,8 +337,25 @@ export function ClientProgressPage() {
                 fullWidth
               />
             </Grid>
+            <Grid item xs={12}>
+              <Button variant="outlined" component="label" startIcon={<AddPhotoAlternateIcon />}>
+                {t('progress.photos.select')}
+                <input
+                  hidden
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={(e) => setPhotos(e.target.files ? Array.from(e.target.files) : [])}
+                />
+              </Button>
+              {photos.length > 0 && (
+                <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                  {t('progress.photos.selectedCount', { count: photos.length })}
+                </Typography>
+              )}
+            </Grid>
           </Grid>
-          {!hasMetric && (
+          {!canSave && (
             <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
               {t('progress.dialog.atLeastOne')}
             </Typography>
@@ -276,7 +363,7 @@ export function ClientProgressPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>{t('common.cancel')}</Button>
-          <Button variant="contained" onClick={handleRegister} disabled={submitting || !hasMetric}>
+          <Button variant="contained" onClick={handleRegister} disabled={submitting || !canSave}>
             {t('common.save')}
           </Button>
         </DialogActions>
@@ -287,6 +374,16 @@ export function ClientProgressPage() {
         <DialogActions>
           <Button onClick={() => setToDelete(null)}>{t('common.cancel')}</Button>
           <Button color="error" variant="contained" onClick={handleDelete}>
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(photoToDelete)} onClose={() => setPhotoToDelete(null)}>
+        <DialogTitle>{t('progress.photos.deleteConfirm')}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setPhotoToDelete(null)}>{t('common.cancel')}</Button>
+          <Button color="error" variant="contained" onClick={handleDeletePhoto}>
             {t('common.delete')}
           </Button>
         </DialogActions>

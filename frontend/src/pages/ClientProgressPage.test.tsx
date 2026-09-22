@@ -8,7 +8,14 @@ import { progressService } from '../services/progressService';
 
 vi.mock('../services/clientService', () => ({ clientService: { get: vi.fn() } }));
 vi.mock('../services/progressService', () => ({
-  progressService: { list: vi.fn(), create: vi.fn(), remove: vi.fn() },
+  progressService: {
+    list: vi.fn(),
+    create: vi.fn(),
+    remove: vi.fn(),
+    addPhotos: vi.fn(),
+    deletePhoto: vi.fn(),
+    photoUrl: vi.fn(() => 'http://localhost/photo'),
+  },
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -44,7 +51,7 @@ describe('ClientProgressPage', () => {
 
   it('lists entries with the weight summary', async () => {
     vi.mocked(progressService.list).mockResolvedValue({
-      entries: [{ id: 1, clientId: 10, date: '2026-09-21T10:00:00.000Z', weightKg: 78, waistCm: 85, note: 'Buen progreso' }],
+      entries: [{ id: 1, clientId: 10, date: '2026-09-21T10:00:00.000Z', weightKg: 78, waistCm: 85, note: 'Buen progreso', photos: [] }],
       summary: { latestWeightKg: 78, weightChangeKg: -4, entryCount: 3 },
     } as never);
 
@@ -69,13 +76,61 @@ describe('ClientProgressPage', () => {
     await user.click(within(dialog).getByRole('button', { name: /guardar/i }));
 
     await waitFor(() =>
-      expect(progressService.create).toHaveBeenCalledWith(10, expect.objectContaining({ weightKg: 80 })),
+      expect(progressService.create).toHaveBeenCalledWith(10, expect.objectContaining({ weightKg: 80 }), []),
     );
+  });
+
+  it('records a photo-only entry', async () => {
+    vi.mocked(progressService.create).mockResolvedValue({} as never);
+    const user = userEvent.setup();
+
+    renderPage();
+
+    await user.click(await screen.findByRole('button', { name: /registrar medición/i }));
+    const dialog = await screen.findByRole('dialog');
+    const fileInput = dialog.querySelector('input[type="file"]') as HTMLInputElement;
+    await user.upload(fileInput, new File(['img'], 'p.png', { type: 'image/png' }));
+    await user.click(within(dialog).getByRole('button', { name: /guardar/i }));
+
+    await waitFor(() =>
+      expect(progressService.create).toHaveBeenCalledWith(
+        10,
+        expect.any(Object),
+        expect.arrayContaining([expect.any(File)]),
+      ),
+    );
+  });
+
+  it('renders a photo thumbnail and deletes a photo', async () => {
+    vi.mocked(progressService.list).mockResolvedValue({
+      entries: [
+        {
+          id: 7,
+          clientId: 10,
+          date: '2026-09-21T10:00:00.000Z',
+          weightKg: 80,
+          note: 'X',
+          photos: [{ id: 5, contentType: 'image/webp' }],
+        },
+      ],
+      summary: { latestWeightKg: 80, weightChangeKg: null, entryCount: 1 },
+    } as never);
+    vi.mocked(progressService.deletePhoto).mockResolvedValue(undefined as never);
+    const user = userEvent.setup();
+
+    renderPage();
+
+    expect(await screen.findByRole('img', { name: 'Foto de progreso' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Eliminar foto' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: 'Eliminar' }));
+
+    await waitFor(() => expect(progressService.deletePhoto).toHaveBeenCalledWith(10, 7, 5));
   });
 
   it('deletes a measurement', async () => {
     vi.mocked(progressService.list).mockResolvedValue({
-      entries: [{ id: 7, clientId: 10, date: '2026-09-21T10:00:00.000Z', weightKg: 80, note: 'X' }],
+      entries: [{ id: 7, clientId: 10, date: '2026-09-21T10:00:00.000Z', weightKg: 80, note: 'X', photos: [] }],
       summary: { latestWeightKg: 80, weightChangeKg: null, entryCount: 1 },
     } as never);
     vi.mocked(progressService.remove).mockResolvedValue(undefined as never);

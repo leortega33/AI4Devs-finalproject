@@ -237,6 +237,18 @@ model ProgressEntry {
   thighCm        Float?
   note           String?
   createdAt      DateTime @default(now())
+  photos         ProgressPhoto[]
 
   @@index([clientId, date])
+}
+
+model ProgressPhoto {
+  id              Int           @id @default(autoincrement())
+  progressEntryId Int
+  progressEntry   ProgressEntry @relation(fields: [progressEntryId], references: [id], onDelete: Cascade)
+  storageKey      String
+  contentType     String
+  createdAt       DateTime      @default(now())
+
+  @@index([progressEntryId])
 }

@@ -40,8 +40,12 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       DASHBOARD_DUE_SOON_DAYS: ${DASHBOARD_DUE_SOON_DAYS:-5}
+      PHOTO_STORAGE_DIR: /data/photos
+    volumes:
+      - gym_prod_uploads:/data/photos
     ports:
       - "${PORT:-3000}:3000"
 
 volumes:
   gym_prod_db_data:
+  gym_prod_uploads:

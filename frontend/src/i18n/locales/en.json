@@ -161,12 +161,25 @@
     "columns": {
       "date": "Date",
       "note": "Note",
+      "photos": "Photos",
       "actions": "Actions"
     },
     "dialog": {
       "date": "Date",
       "note": "Note (optional)",
-      "atLeastOne": "Enter at least one measurement."
+      "atLeastOne": "Enter at least one measurement or photo."
+    },
+    "photos": {
+      "select": "Add photos",
+      "selectedCount": "{{count}} photo(s) selected",
+      "add": "Add photo",
+      "alt": "Progress photo",
+      "deleteLabel": "Delete photo",
+      "deleteConfirm": "Delete this photo?",
+      "added": "Photo added.",
+      "deleted": "Photo deleted.",
+      "saveFailed": "Could not add the photo.",
+      "deleteFailed": "Could not delete the photo."
     }
   },
   "attendance": {

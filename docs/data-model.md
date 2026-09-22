@@ -217,6 +217,23 @@ A single physical measurement snapshot for a client. See US-026.
   (latest weight, weight change vs. the first weighed entry, entry count) is
   derived at query time
 
+### 12. ProgressPhoto
+A single photo attached to a progress entry. See US-026b.
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `progressEntryId`: Foreign key referencing ProgressEntry (cascade on entry delete)
+- `storageKey`: Opaque generated key for the stored file (never a client-supplied path)
+- `contentType`: Stored image content type (always `image/webp`)
+- `createdAt`: Timestamp
+
+**Validation Rules:**
+- Uploads must be `jpeg`/`png`/`webp` ≤ 5 MB; the server strips metadata
+  (EXIF/GPS) and re-encodes to webp before storing
+- The DB holds only the storage key; the bytes live in a pluggable `PhotoStorage`
+  backend (local disk on a named volume by default), served only over an
+  authenticated stream
+
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -356,6 +373,13 @@ erDiagram
         String note
         DateTime createdAt
     }
+    ProgressPhoto {
+        Int id PK
+        Int progressEntryId FK
+        String storageKey
+        String contentType
+        DateTime createdAt
+    }
 
     Client ||--o| MedicalRecord : "has"
     Client ||--o{ MedicalRecordVersion : "history of"
@@ -364,6 +388,7 @@ erDiagram
     Client ||--o{ NotificationLog : "reminded via"
     Client ||--o{ Attendance : "checks in"
     Client ||--o{ ProgressEntry : "measured by"
+    ProgressEntry ||--o{ ProgressPhoto : "illustrated by"
 
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
@@ -382,6 +407,7 @@ erDiagram
 6. **Medical record history as full snapshots**: each save appends an immutable `MedicalRecordVersion` (full snapshot + timestamp, US-021) rather than field-level diffs, keeping the history simple to store and display; the newest version equals the current `MedicalRecord`.
 7. **Advisory medical warnings via body-region overlap (US-022)**: exercises carry `bodyRegions` tags; a curated keyword dictionary (in code) maps a client's free-text medical record to those same regions. Overlap surfaces a non-blocking, non-diagnostic warning when building a client's routine — no rules table, and the medical record stays free text.
 8. **Progress metrics stored, evolution derived (US-026)**: each `ProgressEntry` is an immutable measurement snapshot with all metrics optional (at least one required); the evolution summary (latest weight, weight change, entry count) is computed at read time rather than stored, and progress photos/videos are intentionally deferred (see US-026b) to keep this story infrastructure-free.
+9. **Progress photos stored by reference, served privately (US-026b)**: `ProgressPhoto` rows hold only an opaque `storageKey`; bytes live in a pluggable `PhotoStorage` backend (local disk on a named volume by default), are EXIF-stripped and re-encoded to webp on upload, and are served exclusively over an authenticated stream (never a public static URL). A `ProgressEntry` is valid with at least one metric **or** at least one photo (photo-only entries allowed), and deleting an entry cascades its photo rows while the service removes the underlying files.
 
 ## Notes
 

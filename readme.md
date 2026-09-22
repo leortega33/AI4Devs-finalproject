@@ -163,6 +163,10 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    (fecha que por defecto es hoy, más un conjunto de métricas numéricas opcionales
    —peso, grasa corporal, pecho, cintura, cadera, brazo, muslo— y una nota; se
    exige al menos una métrica) y **eliminar** una medición con confirmación (US-026).
+   Además permite adjuntar **fotos de progreso** a cada medición (se aceptan
+   entradas solo-foto): las imágenes se recortan de metadatos y se sirven de forma
+   **autenticada** (nunca por URL pública); se pueden **agregar** y **eliminar**
+   fotos con confirmación (US-026b).
 11. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 

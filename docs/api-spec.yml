@@ -824,8 +824,11 @@ paths:
     post:
       summary: Record a measurement for a client
       description: >
-        Records a measurement. `date` defaults to now when omitted; at least one
-        metric must be provided. See US-026.
+        Records a dated entry as `multipart/form-data`: optional metric fields
+        plus optional `photos` image files. `date` defaults to now when omitted;
+        at least one metric OR one photo must be provided (a photo-only entry is
+        valid). Photos are re-encoded to webp and stripped of metadata. See
+        US-026 and US-026b.
       tags:
         - Progress
       parameters:
@@ -837,9 +840,18 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ProgressInput'
+              allOf:
+                - $ref: '#/components/schemas/ProgressInput'
+                - type: object
+                  properties:
+                    photos:
+                      type: array
+                      items:
+                        type: string
+                        format: binary
+                      description: Optional image files (jpeg/png/webp, max 5 MB each).
       responses:
         '201':
           description: Measurement recorded
@@ -853,7 +865,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/ProgressEntry'
         '400':
-          description: Validation error (no metric provided, a negative metric, or an oversized note)
+          description: Validation error (no metric and no photo, a negative metric, an oversized note, or an unsupported/oversized image)
           content:
             application/json:
               schema:
@@ -889,7 +901,7 @@ paths:
             type: integer
       responses:
         '204':
-          description: Measurement deleted
+          description: Measurement deleted (its photos and stored files are removed too)
         '401':
           description: Not authenticated
           content:
@@ -898,6 +910,151 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Measurement not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/progress/{entryId}/photos:
+    post:
+      summary: Add photos to an existing progress entry
+      description: >
+        Uploads one or more `photos` image files (`multipart/form-data`) to an
+        existing entry. Images are re-encoded to webp and stripped of metadata.
+        See US-026b.
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: entryId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Photos added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProgressPhoto'
+        '400':
+          description: No photo provided, or an unsupported/oversized image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client or entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/progress/{entryId}/photos/{photoId}:
+    get:
+      summary: Stream a progress photo's bytes (authenticated)
+      description: >
+        Returns the image bytes for an authenticated session. Photos are never
+        served from a public static URL. See US-026b.
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: entryId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: photoId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The image bytes
+          content:
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Photo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a progress photo
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: entryId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: photoId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Photo deleted (its stored file is removed too)
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Photo not found
           content:
             application/json:
               schema:
@@ -2089,7 +2246,9 @@ components:
 
     ProgressInput:
       type: object
-      description: Input for recording a measurement; at least one metric is required (US-026).
+      description: >
+        Input for recording a measurement (US-026). At least one metric OR one
+        uploaded photo is required (US-026b); metric-only entries stay valid.
       properties:
         date:
           type: string
@@ -2130,6 +2289,20 @@ components:
               type: integer
             clientId:
               type: integer
+            photos:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProgressPhoto'
+
+    ProgressPhoto:
+      type: object
+      description: A photo reference attached to a progress entry (US-026b).
+      properties:
+        id:
+          type: integer
+        contentType:
+          type: string
+          example: image/webp
 
     ProgressSummary:
       type: object

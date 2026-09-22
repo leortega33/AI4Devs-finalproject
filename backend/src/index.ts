@@ -10,12 +10,14 @@ import { PrismaMedicalRecordRepository } from './infrastructure/repositories/Pri
 import { PrismaMedicalRecordVersionRepository } from './infrastructure/repositories/PrismaMedicalRecordVersionRepository';
 import { PrismaAttendanceRepository } from './infrastructure/repositories/PrismaAttendanceRepository';
 import { PrismaProgressEntryRepository } from './infrastructure/repositories/PrismaProgressEntryRepository';
+import { PrismaProgressPhotoRepository } from './infrastructure/repositories/PrismaProgressPhotoRepository';
 import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
 import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/PrismaRoutineTemplateRepository';
 import { PrismaPaymentRepository } from './infrastructure/repositories/PrismaPaymentRepository';
 import { PrismaDashboardRepository } from './infrastructure/repositories/PrismaDashboardRepository';
 import { ConsoleEmailService } from './infrastructure/email/emailService';
 import { ResendEmailService } from './infrastructure/email/resendEmailService';
+import { LocalDiskPhotoStorage } from './infrastructure/storage/photoStorage';
 import { PrismaNotificationLogRepository } from './infrastructure/repositories/PrismaNotificationLogRepository';
 import { startReminderScheduler } from './infrastructure/reminderScheduler';
 import { AuthService } from './application/services/authService';
@@ -63,6 +65,7 @@ const REMINDERS_ENABLED = process.env.REMINDERS_ENABLED === 'true';
 const REMINDER_CRON = process.env.REMINDER_CRON || '0 9 * * *';
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const REMINDER_FROM_EMAIL = process.env.REMINDER_FROM_EMAIL || 'no-reply@example.com';
+const PHOTO_STORAGE_DIR = process.env.PHOTO_STORAGE_DIR || './uploads';
 
 export function createApp() {
   const app = express();
@@ -92,7 +95,14 @@ export function createApp() {
   const attendanceService = new AttendanceService(attendanceRepository, clientRepository);
 
   const progressEntryRepository = new PrismaProgressEntryRepository(prisma);
-  const progressService = new ProgressService(progressEntryRepository, clientRepository);
+  const progressPhotoRepository = new PrismaProgressPhotoRepository(prisma);
+  const photoStorage = new LocalDiskPhotoStorage(PHOTO_STORAGE_DIR);
+  const progressService = new ProgressService(
+    progressEntryRepository,
+    clientRepository,
+    progressPhotoRepository,
+    photoStorage,
+  );
 
   const medicalRecordRepository = new PrismaMedicalRecordRepository(prisma);
   const medicalRecordVersionRepository = new PrismaMedicalRecordVersionRepository(prisma);
