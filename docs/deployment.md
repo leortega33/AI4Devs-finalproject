@@ -42,6 +42,11 @@ also required. Never commit real values — see "Secrets management" below.
 
 ## Option A — Local Docker + Cloudflare Tunnel (free, recommended)
 
+> **Shortcut:** `./scripts/prod-start.sh` brings up the stack, waits for health,
+> opens the tunnel and prints the public URL; `./scripts/prod-stop.sh` tears it
+> down (add `--wipe` to also delete the data volumes). The manual steps below are
+> what those scripts run.
+
 1. Create an untracked `.env.prod` (gitignored) with the variables above, e.g.:
 
    ```env
