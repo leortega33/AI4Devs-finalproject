@@ -10,6 +10,7 @@ import {
   validateAssignRoutine,
   validatePayment,
   validateAttendance,
+  validateProgress,
   ValidationError,
 } from './validator';
 
@@ -391,6 +392,23 @@ describe('validator', () => {
 
     it('should reject an oversized note', () => {
       expect(() => validateAttendance({ note: 'x'.repeat(501) })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateProgress', () => {
+    it('should accept a subset of metrics and coerce the date', () => {
+      const result = validateProgress({ date: '2026-09-21', weightKg: 80, waistCm: 85 });
+      expect(result.date).toBeInstanceOf(Date);
+      expect(result.weightKg).toBe(80);
+      expect(result.waistCm).toBe(85);
+    });
+
+    it('should reject an entry with no metric', () => {
+      expect(() => validateProgress({ note: 'solo nota' })).toThrow(ValidationError);
+    });
+
+    it('should reject a negative metric', () => {
+      expect(() => validateProgress({ weightKg: -1 })).toThrow(ValidationError);
     });
   });
 });

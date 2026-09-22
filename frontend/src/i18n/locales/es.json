@@ -99,7 +99,8 @@
       "medicalRecord": "Ficha médica",
       "routine": "Rutina",
       "payments": "Pagos",
-      "attendance": "Asistencia"
+      "attendance": "Asistencia",
+      "progress": "Progreso"
     },
     "routineAssigned": "Asignada",
     "routineNone": "Sin rutina",
@@ -130,6 +131,42 @@
       "title": "Desactivar cliente",
       "message": "¿Desactivar a {{name}}? Su historial se conserva y puede reactivarse más adelante.",
       "confirm": "Desactivar"
+    }
+  },
+  "progress": {
+    "title": "Progreso",
+    "subtitle": "Progreso de {{name}}",
+    "register": "Registrar medición",
+    "empty": "Este cliente todavía no tiene mediciones registradas.",
+    "registered": "Medición registrada.",
+    "deleted": "Medición eliminada.",
+    "deleteConfirm": "¿Eliminar esta medición?",
+    "loadFailed": "No se pudo cargar el progreso.",
+    "saveFailed": "No se pudo registrar la medición.",
+    "deleteFailed": "No se pudo eliminar la medición.",
+    "summary": {
+      "latestWeight": "Peso actual",
+      "weightChange": "Cambio de peso",
+      "entryCount": "Mediciones"
+    },
+    "metrics": {
+      "weightKg": "Peso",
+      "bodyFatPercent": "Grasa corporal",
+      "chestCm": "Pecho",
+      "waistCm": "Cintura",
+      "hipsCm": "Cadera",
+      "armCm": "Brazo",
+      "thighCm": "Muslo"
+    },
+    "columns": {
+      "date": "Fecha",
+      "note": "Nota",
+      "actions": "Acciones"
+    },
+    "dialog": {
+      "date": "Fecha",
+      "note": "Nota (opcional)",
+      "atLeastOne": "Ingresá al menos una medición."
     }
   },
   "attendance": {

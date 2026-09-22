@@ -157,7 +157,13 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    días y última asistencia) y la lista de check-ins. Permite **registrar** una
    asistencia (fecha/hora que por defecto es hoy, más una nota opcional) y
    **eliminar** un check-in con confirmación (US-025).
-10. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+10. **Progreso del cliente** — Desde la acción "Progreso" del listado se abre una
+   pantalla que muestra un **panel resumen** (peso actual, cambio de peso y número
+   de mediciones) y la lista de mediciones. Permite **registrar** una medición
+   (fecha que por defecto es hoy, más un conjunto de métricas numéricas opcionales
+   —peso, grasa corporal, pecho, cintura, cadera, brazo, muslo— y una nota; se
+   exige al menos una métrica) y **eliminar** una medición con confirmación (US-026).
+11. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._

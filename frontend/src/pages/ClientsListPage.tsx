@@ -15,6 +15,7 @@ import MedicalInformationOutlinedIcon from '@mui/icons-material/MedicalInformati
 import FitnessCenterOutlinedIcon from '@mui/icons-material/FitnessCenterOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import MonitorWeightOutlinedIcon from '@mui/icons-material/MonitorWeightOutlined';
 import PersonOffOutlinedIcon from '@mui/icons-material/PersonOffOutlined';
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
@@ -106,7 +107,7 @@ export function ClientsListPage() {
     {
       field: 'actions',
       headerName: t('clients.columns.actions'),
-      width: 250,
+      width: 290,
       sortable: false,
       renderCell: (params) => (
         <Stack direction="row" spacing={0.5}>
@@ -133,6 +134,11 @@ export function ClientsListPage() {
           <Tooltip title={t('clients.actions.attendance')}>
             <IconButton size="small" aria-label={t('clients.actions.attendance')} onClick={() => navigate(`/clients/${params.row.id}/attendance`)}>
               <EventAvailableOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('clients.actions.progress')}>
+            <IconButton size="small" aria-label={t('clients.actions.progress')} onClick={() => navigate(`/clients/${params.row.id}/progress`)}>
+              <MonitorWeightOutlinedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           {params.row.status === 'active' ? (

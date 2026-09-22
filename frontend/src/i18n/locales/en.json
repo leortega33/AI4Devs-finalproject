@@ -99,7 +99,8 @@
       "medicalRecord": "Medical record",
       "routine": "Routine",
       "payments": "Payments",
-      "attendance": "Attendance"
+      "attendance": "Attendance",
+      "progress": "Progress"
     },
     "routineAssigned": "Assigned",
     "routineNone": "No routine",
@@ -130,6 +131,42 @@
       "title": "Deactivate client",
       "message": "Deactivate {{name}}? Their history is preserved and they can be reactivated later.",
       "confirm": "Deactivate"
+    }
+  },
+  "progress": {
+    "title": "Progress",
+    "subtitle": "{{name}}'s progress",
+    "register": "Record measurement",
+    "empty": "This client has no measurements recorded yet.",
+    "registered": "Measurement recorded.",
+    "deleted": "Measurement deleted.",
+    "deleteConfirm": "Delete this measurement?",
+    "loadFailed": "Could not load progress.",
+    "saveFailed": "Could not record the measurement.",
+    "deleteFailed": "Could not delete the measurement.",
+    "summary": {
+      "latestWeight": "Current weight",
+      "weightChange": "Weight change",
+      "entryCount": "Measurements"
+    },
+    "metrics": {
+      "weightKg": "Weight",
+      "bodyFatPercent": "Body fat",
+      "chestCm": "Chest",
+      "waistCm": "Waist",
+      "hipsCm": "Hips",
+      "armCm": "Arm",
+      "thighCm": "Thigh"
+    },
+    "columns": {
+      "date": "Date",
+      "note": "Note",
+      "actions": "Actions"
+    },
+    "dialog": {
+      "date": "Date",
+      "note": "Note (optional)",
+      "atLeastOne": "Enter at least one measurement."
     }
   },
   "attendance": {

@@ -77,6 +77,7 @@ model Client {
   payments              Payment[]
   notificationLogs      NotificationLog[]
   attendances           Attendance[]
+  progressEntries       ProgressEntry[]
 }
 
 model MedicalRecord {
@@ -220,4 +221,22 @@ model Attendance {
   createdAt DateTime @default(now())
 
   @@index([clientId, checkInAt])
+}
+
+model ProgressEntry {
+  id             Int      @id @default(autoincrement())
+  clientId       Int
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date           DateTime
+  weightKg       Float?
+  bodyFatPercent Float?
+  chestCm        Float?
+  waistCm        Float?
+  hipsCm         Float?
+  armCm          Float?
+  thighCm        Float?
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@index([clientId, date])
 }

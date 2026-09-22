@@ -12,6 +12,7 @@ import { MedicalRecordPage } from './pages/MedicalRecordPage';
 import { ClientRoutinePage } from './pages/ClientRoutinePage';
 import { ClientPaymentsPage } from './pages/ClientPaymentsPage';
 import { ClientAttendancePage } from './pages/ClientAttendancePage';
+import { ClientProgressPage } from './pages/ClientProgressPage';
 import { ExerciseCatalogPage } from './pages/ExerciseCatalogPage';
 import { ExerciseFormPage } from './pages/ExerciseFormPage';
 import { RoutineTemplatesListPage } from './pages/RoutineTemplatesListPage';
@@ -35,6 +36,7 @@ function App() {
               <Route path="/clients/:clientId/routine" element={<ClientRoutinePage />} />
               <Route path="/clients/:clientId/payments" element={<ClientPaymentsPage />} />
               <Route path="/clients/:clientId/attendance" element={<ClientAttendancePage />} />
+              <Route path="/clients/:clientId/progress" element={<ClientProgressPage />} />
               <Route path="/exercises" element={<ExerciseCatalogPage />} />
               <Route path="/exercises/new" element={<ExerciseFormPage />} />
               <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />

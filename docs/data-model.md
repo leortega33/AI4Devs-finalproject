@@ -200,6 +200,23 @@ A single client check-in recorded by the trainer. See US-025.
 - Indexed on `[clientId, checkInAt]` for newest-first reads; frequency metrics
   (total / this month / last 30 days / last check-in) are derived at query time
 
+### 11. ProgressEntry
+A single physical measurement snapshot for a client. See US-026.
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `clientId`: Foreign key referencing Client (cascade on client delete)
+- `date`: Date of the measurement (defaults to now when not provided)
+- `weightKg`, `bodyFatPercent`, `chestCm`, `waistCm`, `hipsCm`, `armCm`, `thighCm`: Optional non-negative metrics (Float)
+- `note`: Optional short note (max 500 chars)
+- `createdAt`: Timestamp
+
+**Validation Rules:**
+- At least one metric must be provided; metrics are non-negative
+- Indexed on `[clientId, date]` for newest-first reads; the evolution summary
+  (latest weight, weight change vs. the first weighed entry, entry count) is
+  derived at query time
+
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -325,6 +342,20 @@ erDiagram
         String note
         DateTime createdAt
     }
+    ProgressEntry {
+        Int id PK
+        Int clientId FK
+        DateTime date
+        Float weightKg
+        Float bodyFatPercent
+        Float chestCm
+        Float waistCm
+        Float hipsCm
+        Float armCm
+        Float thighCm
+        String note
+        DateTime createdAt
+    }
 
     Client ||--o| MedicalRecord : "has"
     Client ||--o{ MedicalRecordVersion : "history of"
@@ -332,6 +363,7 @@ erDiagram
     Client ||--o{ Payment : "makes"
     Client ||--o{ NotificationLog : "reminded via"
     Client ||--o{ Attendance : "checks in"
+    Client ||--o{ ProgressEntry : "measured by"
 
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
@@ -349,6 +381,7 @@ erDiagram
 5. **Optional weekly progression**: `RoutineExerciseEntry` stores a single KG/REPS/SERIES value by default; a per-entry `RoutineExerciseWeek` list (US-018) optionally overrides it per week for a mesocycle.
 6. **Medical record history as full snapshots**: each save appends an immutable `MedicalRecordVersion` (full snapshot + timestamp, US-021) rather than field-level diffs, keeping the history simple to store and display; the newest version equals the current `MedicalRecord`.
 7. **Advisory medical warnings via body-region overlap (US-022)**: exercises carry `bodyRegions` tags; a curated keyword dictionary (in code) maps a client's free-text medical record to those same regions. Overlap surfaces a non-blocking, non-diagnostic warning when building a client's routine — no rules table, and the medical record stays free text.
+8. **Progress metrics stored, evolution derived (US-026)**: each `ProgressEntry` is an immutable measurement snapshot with all metrics optional (at least one required); the evolution summary (latest weight, weight change, entry count) is computed at read time rather than stored, and progress photos/videos are intentionally deferred (see US-026b) to keep this story infrastructure-free.
 
 ## Notes
 

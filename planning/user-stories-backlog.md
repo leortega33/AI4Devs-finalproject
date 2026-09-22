@@ -1424,7 +1424,7 @@ integration this iteration.
 
 ## US-026: Physical progress tracking (measurements)
 
-- **Status:** enriched
+- **Status:** in-openspec (`openspec/changes/add-progress-tracking`)
 
 **User story:** As the gym owner/trainer, I want to record a client's body
 measurements over time, so that I can track their physical progress at a glance.

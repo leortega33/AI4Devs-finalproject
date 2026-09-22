@@ -782,6 +782,127 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/progress:
+    get:
+      summary: List a client's measurements with an evolution summary
+      description: >
+        Returns the client's measurements newest first plus a summary
+        (latest weight, weight change vs. the first weighed entry, entry count).
+        See US-026.
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The measurements and the evolution summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ProgressList'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Record a measurement for a client
+      description: >
+        Records a measurement. `date` defaults to now when omitted; at least one
+        metric must be provided. See US-026.
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgressInput'
+      responses:
+        '201':
+          description: Measurement recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ProgressEntry'
+        '400':
+          description: Validation error (no metric provided, a negative metric, or an oversized note)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/progress/{id}:
+    delete:
+      summary: Delete a client's measurement
+      tags:
+        - Progress
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Measurement deleted
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Measurement not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/payments:
     get:
       summary: List a client's payments with the derived status
@@ -1966,6 +2087,74 @@ components:
         summary:
           $ref: '#/components/schemas/AttendanceSummary'
 
+    ProgressInput:
+      type: object
+      description: Input for recording a measurement; at least one metric is required (US-026).
+      properties:
+        date:
+          type: string
+          format: date-time
+          description: Defaults to the current time when omitted.
+        weightKg:
+          type: number
+          nullable: true
+        bodyFatPercent:
+          type: number
+          nullable: true
+        chestCm:
+          type: number
+          nullable: true
+        waistCm:
+          type: number
+          nullable: true
+        hipsCm:
+          type: number
+          nullable: true
+        armCm:
+          type: number
+          nullable: true
+        thighCm:
+          type: number
+          nullable: true
+        note:
+          type: string
+          nullable: true
+          description: Optional note (max 500 chars).
+
+    ProgressEntry:
+      allOf:
+        - $ref: '#/components/schemas/ProgressInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            clientId:
+              type: integer
+
+    ProgressSummary:
+      type: object
+      description: Evolution summary for a client's measurements (US-026).
+      properties:
+        latestWeightKg:
+          type: number
+          nullable: true
+        weightChangeKg:
+          type: number
+          nullable: true
+          description: Latest minus first weighed entry; null when fewer than two weighed entries.
+        entryCount:
+          type: integer
+
+    ProgressList:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressEntry'
+        summary:
+          $ref: '#/components/schemas/ProgressSummary'
+
     PaymentInput:
       type: object
       properties:
@@ -2165,6 +2354,8 @@ tags:
     description: Client payments with a derived up-to-date/overdue status (US-007)
   - name: Attendance
     description: Client check-ins with a frequency summary (US-025)
+  - name: Progress
+    description: Client physical measurements with an evolution summary (US-026)
   - name: Dashboard
     description: Read-only alert aggregation over clients, payments, and routines (US-009)
   - name: Reminders

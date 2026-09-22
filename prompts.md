@@ -501,6 +501,29 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 27:**
+
+> Agreguemos seguimiento de progreso físico (US-026, solo mediciones): change
+> OpenSpec `add-progress-tracking` **con spec delta** (nueva capability progress) y
+> **migración**. Nueva tabla `ProgressEntry` (`clientId` FK cascade, `date`,
+> métricas opcionales `weightKg`/`bodyFatPercent`/`chestCm`/`waistCm`/`hipsCm`/
+> `armCm`/`thighCm` Float?, `note?`, `createdAt`, índice `[clientId, date]`).
+> Backend: modelo/repo, `progressSchema` (date opcional coerce, métricas no
+> negativas, note max 500, al menos una métrica requerida), `ProgressService`
+> (record con default now, list newest-first + resumen peso actual/cambio de
+> peso/número de mediciones, remove con 404), controller + ruta anidada
+> `/api/clients/:clientId/progress` (`POST`/`GET`/`DELETE /:id`). Frontend:
+> `progressService` + `ClientProgressPage` (panel resumen + tabla + diálogo de
+> registro con fecha por defecto hoy + campos de métricas + nota, guardar
+> deshabilitado hasta cargar ≥1 métrica, borrado con confirmación) + acción-icono
+> en el listado + ruta + i18n (es/en). Fotos/videos de progreso diferidos a
+> US-026b (cero infraestructura de storage en esta iteración). TDD backend y
+> frontend, migración, curl (registrar subconjunto/default, 400 vacío/negativo,
+> 404, list+resumen, delete 204/404, 401), verificación visual + E2E. Actualizar
+> `api-spec.yml` y `data-model.md`. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

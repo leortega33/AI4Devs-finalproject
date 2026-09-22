@@ -150,6 +150,30 @@ export const attendanceSchema = z.object({
   note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
 });
 
+// A client progress measurement entry (US-026). `date` is optional (defaults to
+// now in the service); each metric is a non-negative number; at least one metric
+// is required.
+const progressMetric = z.number().nonnegative('Metrics must be non-negative').optional().nullable();
+export const progressSchema = z
+  .object({
+    date: z.coerce.date().optional(),
+    weightKg: progressMetric,
+    bodyFatPercent: progressMetric,
+    chestCm: progressMetric,
+    waistCm: progressMetric,
+    hipsCm: progressMetric,
+    armCm: progressMetric,
+    thighCm: progressMetric,
+    note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
+  })
+  .refine(
+    (data) =>
+      [data.weightKg, data.bodyFatPercent, data.chestCm, data.waistCm, data.hipsCm, data.armCm, data.thighCm].some(
+        (v) => v != null,
+      ),
+    { message: 'At least one measurement is required' },
+  );
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -161,6 +185,7 @@ export type RoutineTemplateInputData = z.infer<typeof routineTemplateSchema>;
 export type AssignRoutineInputData = z.infer<typeof assignRoutineSchema>;
 export type PaymentInputData = z.infer<typeof paymentSchema>;
 export type AttendanceInputData = z.infer<typeof attendanceSchema>;
+export type ProgressInputData = z.infer<typeof progressSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -220,4 +245,8 @@ export function validatePayment(data: unknown): PaymentInputData {
 
 export function validateAttendance(data: unknown): AttendanceInputData {
   return parseOrThrow(attendanceSchema, data);
+}
+
+export function validateProgress(data: unknown): ProgressInputData {
+  return parseOrThrow(progressSchema, data);
 }
