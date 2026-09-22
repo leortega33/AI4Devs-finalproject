@@ -17,7 +17,17 @@
 
 ### **0.2. Nombre del proyecto:**
 
+Gym Management
+
 ### **0.3. Descripción breve del proyecto:**
+
+Aplicación web para que un entrenador/dueño de gimnasio (usuario único) gestione
+su operación diaria desde un solo lugar: clientes, fichas médicas (con historial),
+catálogo de ejercicios, plantillas de rutina con progresión semanal y exportación
+a PDF/Excel, pagos, asistencia, progreso físico con fotos, planes de nutrición y
+un panel con alertas y recordatorios por email. Backend Node/Express + TypeScript
+(DDD por capas, Prisma/PostgreSQL) y frontend React + Vite + MUI, bilingüe
+(español/inglés).
 
 ### **0.4. URL del proyecto:**
 
@@ -724,6 +734,111 @@ erDiagram
 ## 4. Especificación de la API
 
 > Si tu backend se comunica a través de API, describe los endpoints principales (máximo 3) en formato OpenAPI. Opcionalmente puedes añadir un ejemplo de petición y de respuesta para mayor claridad
+
+La API es REST, se sirve bajo `/api` en el mismo origen que el frontend y usa una
+cookie de sesión `httpOnly` (JWT). A continuación, 3 endpoints representativos en
+formato OpenAPI 3.0 (la especificación completa — documentación viva — está en
+[docs/api-spec.yml](docs/api-spec.yml)).
+
+```yaml
+openapi: 3.0.0
+info:
+  title: Gym Management API
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión
+      description: Valida credenciales y setea una cookie de sesión httpOnly (JWT).
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        '200':
+          description: Login correcto (setea cookie de sesión)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer, example: 1 }
+                  email: { type: string, example: owner@gym.com }
+        '401': { description: Credenciales inválidas }
+        '429': { description: Demasiados intentos (rate limited) }
+
+  /api/clients:
+    post:
+      summary: Crear cliente
+      description: Alta de un cliente con datos básicos y contacto de emergencia opcional. Requiere sesión.
+      tags: [Clients]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [firstName, lastName, dni, phone, email, dateOfBirth]
+              properties:
+                firstName: { type: string, example: Ana }
+                lastName: { type: string, example: Pérez }
+                dni: { type: string, example: '30123456', description: '7-8 dígitos, único' }
+                phone: { type: string, example: '+5491122334455' }
+                email: { type: string, format: email }
+                dateOfBirth: { type: string, format: date, example: '1990-05-20' }
+                goal: { type: string, example: Hipertrofia }
+      responses:
+        '201':
+          description: Cliente creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer, example: 42 }
+                  firstName: { type: string, example: Ana }
+                  lastName: { type: string, example: Pérez }
+                  status: { type: string, example: active }
+        '400': { description: Datos inválidos (validación zod) }
+        '401': { description: No autenticado }
+        '409': { description: DNI o email ya registrado }
+
+  /api/dashboard:
+    get:
+      summary: Panel de alertas
+      description: Devuelve KPIs y alertas de pagos vencidos/por vencer y rutinas por vencer. Requiere sesión.
+      tags: [Dashboard]
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200':
+          description: Resumen del panel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  overduePayments: { type: integer, example: 3 }
+                  upcomingPayments: { type: integer, example: 5 }
+                  expiringRoutines: { type: integer, example: 2 }
+        '401': { description: No autenticado }
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+```
 
 ---
 
