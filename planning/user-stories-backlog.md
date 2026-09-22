@@ -1739,39 +1739,101 @@ to existing actions.
 
 ## US-030: Polished routine export design (match trainer's plan format)
 
-- **Status:** captured (needs the reference file re-shared before enriching)
+- **Status:** ready (reference captured 2026-09-22; layout enriched — ready to propose)
 
 **User story:** As the gym owner/trainer, I want the exported routine PDF and
 Excel to look like my usual training-plan sheet, so that I can print/share a
 clean, familiar document.
 
-**Functional description:** improve the visual design of the routine PDF/Excel
-export (US-017) so its layout matches the trainer's real plan format (the PDF the
-user shared when validating US-005). Known structure: sessions A/B/C; each
-session with a structured warm-up (mobility + activation) and main exercises
-grouped by block/superset; single KG/REPS/SERIES (and now the optional weekly
-progression, US-018); free-text general considerations per template. This is a
-**presentation-only** improvement of the existing `routinePdf.ts`/`routineXlsx.ts`
-builders — headers, columns, grouping, typography/spacing — no new endpoint.
+**Reference:** the trainer's real plan PDF (`Ortega, Leonel 10-08-2026.pdf`,
+"SPORT – FITNESS", PF Mansilla Leandro) — re-shared 2026-09-22. Save the binary at
+`planning/reference/trainer-plan.pdf` for future visual reference. The full layout
+is captured textually below so it survives even without the binary.
+
+**Reference layout (to replicate):**
+
+1. **Brand header (top of the document / repeated per session page):** a black
+   band with — left `PF: MANSILLA LEANDRO` (italic), center `SPORT – FITNESS`
+   (white bold) over `ENTRENAMIENTO FÍSICO INTEGRAL` (leaf-green), right
+   `CEL: 2604300402`. Below it the **bear-with-barbell logo** centered, then the
+   title `PLAN DE ENTRENAMIENTO`, then `Apellido y Nombre: <cliente>` and
+   `Fecha de inicio: <startDate>`.
+2. **Per session (A/B/C):**
+   - A **leaf-green title bar** `SESIÓN <name>`.
+   - A week header row `SEMANA DE TRABAJO | SEMANA 1 | SEMANA 2 | SEMANA 3 |
+     SEMANA 4` — one column group per training week (each week spans KG/REPS/SERIES).
+   - `PREPARACIÓN PARA EL MOVIMIENTO` (bold, centered) + the warm-up prescription
+     line (e.g. `2 VUELTAS 8 REPS C-U`).
+   - A two-column block **`MOVILIDAD`** (left) / **`ACTIVACIÓN`** (right), each a
+     numbered list (1-2-3) of the session's warm-up exercises.
+   - The main **exercises table**: a black header `EJERCICIOS` followed by a
+     `KG | REPS | SERIES` group **per week**; rows grouped into blocks
+     (supersets) separated by a blank row, with the **`SERIES` cell merged** across
+     each block's rows (one series value per block per week).
+   - An **`EJERCICIOS BLOQUE FINAL`** section: a black header with a single
+     `KG | REPS | SERIES` (not per-week) plus an `OBSERVACIONES` column.
+3. **Considerations page (last):** the template's `generalConsiderations`
+   rendered under a `CONSIDERACIONES A TENER EN CUENTA` heading (grouped bullets).
+
+**Mapping to the data model (resolved defaults, confirm at proposal):**
+- Sessions A/B/C → `RoutineSession.name`; warm-up prescription →
+  `RoutineSession.warmupPrescription`.
+- MOVILIDAD vs ACTIVACIÓN → warm-up entries (`phase='warmup'`) split by the
+  exercise's **`category`** (`mobility` → left, `activation` → right), numbered by
+  `order`.
+- Per-week `KG/REPS/SERIES` columns → the **weekly progression (US-018)**:
+  `RoutineExerciseWeek[]` provides each week's values; the number of week columns
+  = `RoutineTemplate.durationWeeks` (fallback 1). When an entry has no weeks, show
+  its base `kg/reps/series` in week 1. **Including weekly progression in the export
+  is required** to match the reference (it is built around the 4-week grid).
+- Blocks/supersets → `RoutineExerciseEntry.block`; the merged `SERIES` value is the
+  block's shared series per week. Entries without a block are single-row groups.
+- **BLOQUE FINAL** → a block whose label is `final`/`bloque final`
+  (case-insensitive) renders as the special final section; `OBSERVACIONES` =
+  entry `notes`. If no such block exists, omit the section.
+- Client name → the assigned client (`clientId`); start date →
+  `RoutineTemplate.startDate`. For a library template (no client), show a blank
+  name/date placeholder.
+- Brand assets: copy the bear logo into the backend (e.g.
+  `backend/src/infrastructure/pdf/assets/logo.png`) so `pdfkit` can embed it; the
+  brand text/phone are static constants.
+- Colors: leaf green header bars (derive the exact hex from the logo/PDF, ~
+  `#82B541`), black table/section headers with white text.
 
 **Data model (Prisma):** none. **Endpoints:** none (same export endpoints).
 
-**Files/modules (backend):** `infrastructure/pdf/routinePdf.ts`,
-`infrastructure/xlsx/routineXlsx.ts` (layout/styling only). Possibly include the
-weekly progression (US-018) in the export as part of this pass.
+**Files/modules (backend, presentation-only):**
+`infrastructure/pdf/routinePdf.ts` (redesign with `pdfkit` rects/fills for the
+green/black bars, embedded logo, and a manual column-grid table with per-week
+groups + merged series),
+`infrastructure/xlsx/routineXlsx.ts` (redesign with `exceljs` cell merges, fills,
+borders, and the same per-week grouping),
+new `backend/src/infrastructure/pdf/assets/logo.png`. No new endpoint, model, or
+i18n key beyond the section labels above (MOVILIDAD/ACTIVACIÓN/BLOQUE FINAL/
+OBSERVACIONES/PREPARACIÓN PARA EL MOVIMIENTO/SEMANA…).
 
 **Definition of done:** the PDF/Excel visually match the reference plan format
-(session grouping, warm-up/main sections, block labels, prescription columns,
-general considerations); smoke tests still pass.
+(brand header + logo, green session bars, per-week KG/REPS/SERIES grid with merged
+series per block, MOVILIDAD/ACTIVACIÓN two-column warm-up, BLOQUE FINAL +
+OBSERVACIONES, considerations page); existing PDF/XLSX smoke tests still pass and
+are extended for the new structure (per-week columns present, section headers,
+merged cells).
 
-**Tests:** existing PDF/XLSX smoke tests (non-empty, valid signatures, sheets);
-extend if the sheet/section structure changes.
+**Tests:** extend the existing PDF/XLSX smoke tests (non-empty, valid signature/
+sheets) to assert the new sections/columns exist (e.g. week headers, BLOQUE FINAL,
+MOVILIDAD/ACTIVACIÓN); routines export E2E unaffected.
 
-**Non-functional requirements:** i18n of labels; reasonable file size.
+**Non-functional requirements:** i18n of the new labels (es/en); reasonable file
+size (embed the logo once, compressed); readable A4 layout.
 
-**Open technical decisions:** exact layout — **pending the reference file being
-re-shared** by the user before enriching this US. Also decide whether to add the
-per-week progression (US-018) to the export in the same pass.
+**Open technical decisions (confirm at proposal):**
+- Exact leaf-green hex (derive from the logo/PDF).
+- Week-column handling when `durationWeeks` > 4–5 (cap, shrink, or paginate).
+- BLOQUE FINAL convention (block label `final`) — acceptable, or add an explicit
+  flag later.
+- Whether the English export keeps the Spanish brand header verbatim (brand is a
+  proper noun — recommend keeping `SPORT – FITNESS` as-is, translating only the
+  generic section labels).
 
 ---
 
