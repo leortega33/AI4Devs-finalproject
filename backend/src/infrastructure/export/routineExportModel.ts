@@ -63,6 +63,11 @@ function exerciseName(entry: RoutineExerciseEntry): string {
   return entry.exerciseName ?? `#${entry.exerciseId}`;
 }
 
+/** Strips a leading "Sesión/Sesion/Session" word so renderers can prefix it once. */
+export function stripSessionPrefix(name: string): string {
+  return name.replace(/^\s*sesi[oó]n\s+|^\s*session\s+/i, '').trim() || name.trim();
+}
+
 /** The per-week prescription for an entry; base values fall into week 1 when it has no weeks. */
 function perWeekPrescription(entry: RoutineExerciseEntry, weekCount: number): CellPrescription[] {
   const cells: CellPrescription[] = [];
@@ -114,7 +119,13 @@ export function buildRoutineExportModel(
   routine: RoutineTemplate,
   clientName: string | null = null,
 ): RoutineExportModel {
-  const weekCount = clamp(routine.durationWeeks ?? 1, 1, MAX_WEEK_COLUMNS);
+  // Week columns cover the routine duration and any per-entry weekly progression,
+  // so an unassigned template (no durationWeeks) still shows all its weeks.
+  const maxEntryWeek = Math.max(
+    0,
+    ...routine.sessions.flatMap((s) => s.entries.flatMap((e) => e.weeks.map((w) => w.week))),
+  );
+  const weekCount = clamp(Math.max(routine.durationWeeks ?? 0, maxEntryWeek, 1), 1, MAX_WEEK_COLUMNS);
   const sessions = [...routine.sessions]
     .sort((a, b) => a.order - b.order)
     .map((session): ExportSession => {
@@ -125,7 +136,7 @@ export function buildRoutineExportModel(
       const mainEntries = main.filter((e) => !isFinalBlock(e.block));
 
       return {
-        name: session.name,
+        name: stripSessionPrefix(session.name),
         warmupPrescription: session.warmupPrescription,
         mobility: warmup.filter((e) => e.exerciseCategory !== 'activation').map(exerciseName),
         activation: warmup.filter((e) => e.exerciseCategory === 'activation').map(exerciseName),

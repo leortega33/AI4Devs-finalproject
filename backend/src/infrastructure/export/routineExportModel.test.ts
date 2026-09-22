@@ -109,6 +109,35 @@ describe('buildRoutineExportModel', () => {
     expect(buildRoutineExportModel(routine([], 99)).weekCount).toBe(8);
   });
 
+  it('derives the week count from entry weeks when durationWeeks is absent (library template)', () => {
+    const model = buildRoutineExportModel(
+      routine(
+        [
+          entry('Sentadilla', 'main', {
+            block: 'A',
+            weeks: [{ week: 1, reps: 8 }, { week: 2, reps: 10 }, { week: 3, reps: 12 }, { week: 4, reps: 15 }],
+          }),
+        ],
+        null,
+      ),
+    );
+    expect(model.weekCount).toBe(4);
+    expect(model.sessions[0].blocks[0].rows[0].perWeek).toHaveLength(4);
+  });
+
+  it('strips a redundant "Sesión/Sesion" prefix from the session name', () => {
+    const withPrefix = new RoutineTemplate({
+      name: 'R',
+      sessions: [
+        new RoutineSession({ name: 'Sesion A', order: 0, entries: [] }),
+        new RoutineSession({ name: 'Sesión B', order: 1, entries: [] }),
+        new RoutineSession({ name: 'Piernas', order: 2, entries: [] }),
+      ],
+    });
+    const names = buildRoutineExportModel(withPrefix).sessions.map((s) => s.name);
+    expect(names).toEqual(['A', 'B', 'Piernas']);
+  });
+
   it('carries the header data (routine, client, start date, considerations)', () => {
     const model = buildRoutineExportModel(routine([]), 'Ortega, Leonel');
     expect(model.routineName).toBe('Full body');
