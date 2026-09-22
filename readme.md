@@ -416,9 +416,18 @@ Como alternativa cloud (free tier) hay un **`render.yaml`** (Blueprint: web
 service Docker + PostgreSQL gestionado). Detalle completo, variables y gestión de
 secretos en **[docs/deployment.md](docs/deployment.md)**.
 
+> **Validado (2026-09-22):** se construyó la imagen y se corrió el stack de
+> producción completo localmente, verificando migraciones, servido single-origin
+> del SPA, autenticación, subida de foto (con `sharp`) sobre el **volumen
+> persistente** (sobrevive reinicios) y el export de rutina en PDF con el logo.
+> El artefacto está listo para go-live; solo resta la exposición pública y los
+> secretos reales (acción del responsable).
+
 **Sacrificios / límites:** el despliegue lo ejecuta el responsable de forma
 local + túnel (no hay entorno cloud permanente en el MVP); los free tiers cloud
-tienen *cold starts* / expiración de la BD.
+tienen *cold starts* / expiración de la BD. En Render (free) el filesystem es
+efímero, por lo que las **fotos de progreso** requieren object storage — el
+camino local + túnel las mantiene en un volumen persistente.
 
 ### **2.5. Seguridad**
 

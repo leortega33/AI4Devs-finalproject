@@ -29,6 +29,16 @@ services:
         sync: false
       - key: DASHBOARD_DUE_SOON_DAYS
         value: "5"
+      # Progress photos (US-026b). NOTE: Render's free tier has an EPHEMERAL
+      # filesystem, so locally-stored photos are lost on redeploy/sleep. For
+      # durable photos on Render use an object-storage backend (PHOTO_STORAGE=s3,
+      # e.g. Cloudflare R2) — not yet implemented (US-026b follow-up). The
+      # local + Cloudflare Tunnel path (docs/deployment.md) keeps photos on a
+      # persistent volume and is the recommended deployment.
+      - key: PHOTO_STORAGE
+        value: local
+      - key: PHOTO_STORAGE_DIR
+        value: /data/photos
 
 databases:
   - name: gym-db

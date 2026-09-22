@@ -602,6 +602,24 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 31:**
+
+> Validemos el despliegue / la infra antes del go-live. Change OpenSpec
+> `verify-deployment` **presentation/infra-only** (`skip_specs: true`). Construir la
+> imagen de producción y correr el stack completo `docker-compose.prod.yml`
+> localmente con un `.env.prod` descartable (gitignored), y smoke-testear a través
+> del contenedor: build OK, `sharp` carga en Alpine (fotos US-026b), el logo del
+> export está en `dist`, migraciones (`migrate deploy`), health + SPA single-origin,
+> auth (login/me/401/protegido), **subida de foto** (sharp + volumen `/data/photos`),
+> **persistencia del volumen tras reiniciar el contenedor**, y export de rutina PDF
+> (logo). Refrescar `render.yaml` con `PHOTO_STORAGE`/`PHOTO_STORAGE_DIR` + nota de
+> FS efímero de Render. Camino recomendado: local Docker + Cloudflare Tunnel
+> (volúmenes persistentes para DB y fotos). Limpiar (down -v, borrar `.env.prod` e
+> imagen de prueba). Documentar el reporte de verificación + pasos de go-live y
+> actualizar readme. Sin cambios de código de aplicación.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**
