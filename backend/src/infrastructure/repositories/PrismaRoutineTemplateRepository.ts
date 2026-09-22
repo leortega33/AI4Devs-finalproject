@@ -13,6 +13,7 @@ import {
 } from '../../domain/repositories/RoutineTemplateRepository';
 
 const nestedInclude = {
+  client: { select: { firstName: true, lastName: true } },
   sessions: {
     orderBy: { order: 'asc' as const },
     include: {
@@ -37,6 +38,7 @@ function toDomain(record: TemplateRecord): RoutineTemplate {
     objective: record.objective,
     generalConsiderations: record.generalConsiderations,
     clientId: record.clientId,
+    clientName: record.client ? `${record.client.lastName}, ${record.client.firstName}` : null,
     sourceTemplateId: record.sourceTemplateId,
     startDate: record.startDate,
     durationWeeks: record.durationWeeks,

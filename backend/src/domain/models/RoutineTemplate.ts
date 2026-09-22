@@ -9,6 +9,7 @@ export interface RoutineTemplateProps {
   objective?: string | null;
   generalConsiderations?: string | null;
   clientId?: number | null;
+  clientName?: string | null;
   sourceTemplateId?: number | null;
   startDate?: Date | null;
   durationWeeks?: number | null;
@@ -26,6 +27,7 @@ export class RoutineTemplate {
   readonly objective: string | null;
   readonly generalConsiderations: string | null;
   readonly clientId: number | null;
+  readonly clientName: string | null;
   readonly sourceTemplateId: number | null;
   readonly startDate: Date | null;
   readonly durationWeeks: number | null;
@@ -41,6 +43,7 @@ export class RoutineTemplate {
     this.objective = props.objective ?? null;
     this.generalConsiderations = props.generalConsiderations ?? null;
     this.clientId = props.clientId ?? null;
+    this.clientName = props.clientName ?? null;
     this.sourceTemplateId = props.sourceTemplateId ?? null;
     this.startDate = props.startDate ?? null;
     this.durationWeeks = props.durationWeeks ?? null;

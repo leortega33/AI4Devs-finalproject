@@ -75,7 +75,7 @@ export class RoutineTemplateController {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="routine-${id}.pdf"`);
 
-      const doc = buildRoutinePdf(routine, lang);
+      const doc = buildRoutinePdf(routine, lang, routine.clientName);
       doc.pipe(res);
       doc.end();
     } catch (error) {
@@ -88,7 +88,7 @@ export class RoutineTemplateController {
       const id = parseId(req.params.id);
       const routine = await this.routineTemplateService.getExportData(id);
       const lang = parseLang(req.query.lang);
-      const buffer = await buildRoutineXlsx(routine, lang);
+      const buffer = await buildRoutineXlsx(routine, lang, routine.clientName);
 
       res.setHeader('Content-Type', XLSX_CONTENT_TYPE);
       res.setHeader('Content-Disposition', `attachment; filename="routine-${id}.xlsx"`);
