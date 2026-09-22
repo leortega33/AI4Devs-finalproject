@@ -1,11 +1,12 @@
-## Purpose
+# progress-photos Specification
 
+## Purpose
 Lets the trainer attach dated progress photos to a client's progress entries and
 review them privately, so a client's physical evolution can be compared visually
 alongside their measurements. Photos are sensitive personal data and are stored
 and served with privacy safeguards.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Upload photos for a progress entry
 The system SHALL let the trainer upload one or more image files to an existing
