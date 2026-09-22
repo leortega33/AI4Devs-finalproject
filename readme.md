@@ -59,10 +59,17 @@ cliente.
   loguea, no se envía)
 - Interfaz bilingüe (español por defecto / inglés) con selector de idioma
 
-**Backlog futuro (Fase 2, fuera del MVP):** recordatorios automáticos
-(email/WhatsApp), pasarela de pago online, registro de asistencia/check-in,
-seguimiento de progreso físico, planes de nutrición, soporte multi-tenant
-(varios gimnasios), y exportación de rutinas a PDF/Excel.
+**Backlog futuro (Fase 2, aún fuera del alcance):** pasarela de pago online,
+recordatorios por WhatsApp (el email ya está), subida nativa de video de
+ejercicios (hosting gestionado), plantillas de plan de nutrición reutilizables, y
+soporte multi-tenant (varios gimnasios/sedes).
+
+> Gran parte del backlog de Fase 2 ya se implementó por encima del MVP:
+> refresh de UI/UX, filtros y resumen de pagos, KPIs y campanita del panel,
+> exportación de rutinas a PDF/Excel (con formato de planilla del entrenador),
+> progresión semanal, media por ejercicio, avisos y calentamiento según ficha
+> médica, historial de ficha médica, recordatorios por email, asistencia/
+> check-in, progreso físico con fotos, y planes de nutrición.
 
 Ver detalle de historias de usuario en [planning/user-stories-backlog.md](planning/user-stories-backlog.md).
 
@@ -454,17 +461,18 @@ camino local + túnel las mantiene en un volumen persistente.
 
 > Describe brevemente algunos de los tests realizados
 
-- **Backend (Jest, 268 tests, cobertura ~98%, umbral 90%)**: unitarios de
-  dominio (estado de pago derivado, vencimiento de rutina), servicios (con
-  repositorios mockeados) e **integración** de rutas con `supertest` (códigos
+- **Backend (Jest, 477 tests en 66 suites)**: unitarios de
+  dominio (estado de pago derivado, vencimiento de rutina, modelos), servicios
+  (con repositorios mockeados) e **integración** de rutas con `supertest` (códigos
   200/201/204/400/401/404, autenticación, y el servido single-origin).
-- **Frontend (Vitest + Testing Library, 65 tests)**: componentes, diálogos,
-  páginas y servicios (con axios mockeado), incluyendo estados vacíos, errores y
-  navegación.
-- **E2E (Playwright)**: 14 tests que cubren los flujos principales (login,
-  clientes, ficha médica, ejercicios, rutinas, pagos + export PDF, dashboard,
-  i18n). Se pueden apuntar a cualquier destino con `PLAYWRIGHT_BASE_URL` (se
-  validó el flujo principal contra la imagen Docker de producción).
+- **Frontend (Vitest + Testing Library, 128 tests en 37 archivos)**: componentes,
+  diálogos, páginas y servicios (con axios mockeado), incluyendo estados vacíos,
+  errores y navegación.
+- **E2E (Playwright, 13 archivos)**: cubren los flujos principales (login,
+  clientes, ficha médica, ejercicios, rutinas, asignación de rutina, pagos +
+  export PDF, asistencia, progreso + fotos, nutrición, dashboard, i18n). Se
+  pueden apuntar a cualquier destino con `PLAYWRIGHT_BASE_URL` (se validó el
+  flujo principal contra la imagen Docker de producción).
 - **Comandos:** `cd backend && npm test` · `cd frontend && npm test` ·
   `cd frontend && npm run test:e2e`.
 
@@ -526,6 +534,9 @@ erDiagram
         Int defaultReps
         String technique
         String equipment
+        StringList bodyRegions
+        String videoUrl
+        String imageUrl
     }
     RoutineTemplate {
         Int id PK
@@ -558,6 +569,20 @@ erDiagram
         String notes
         Int order
     }
+    RoutineExerciseWeek {
+        Int id PK
+        Int routineExerciseEntryId FK
+        Int week
+        Float kg
+        Int reps
+        Int series
+    }
+    MedicalRecordVersion {
+        Int id PK
+        Int clientId FK
+        Json snapshotFields
+        DateTime createdAt
+    }
     Payment {
         Int id PK
         Int clientId FK
@@ -567,14 +592,77 @@ erDiagram
         Int periodMonth
         Int periodYear
     }
+    NotificationLog {
+        Int id PK
+        Int clientId FK
+        String type
+        String referenceKey
+        DateTime sentAt
+    }
+    Attendance {
+        Int id PK
+        Int clientId FK
+        DateTime checkInAt
+        String note
+    }
+    ProgressEntry {
+        Int id PK
+        Int clientId FK
+        DateTime date
+        Float weightKg
+        Float bodyFatPercent
+        String note
+    }
+    ProgressPhoto {
+        Int id PK
+        Int progressEntryId FK
+        String storageKey
+        String contentType
+    }
+    NutritionPlan {
+        Int id PK
+        Int clientId FK
+        Int dailyCalories
+        Int proteinTargetG
+        String generalNotes
+    }
+    NutritionMeal {
+        Int id PK
+        Int nutritionPlanId FK
+        String name
+        Int order
+    }
+    NutritionFoodItem {
+        Int id PK
+        Int nutritionMealId FK
+        String description
+        String quantity
+        Int order
+    }
+    NutritionPlanVersion {
+        Int id PK
+        Int clientId FK
+        Json snapshot
+        DateTime createdAt
+    }
 
     Client ||--o| MedicalRecord : "has"
+    Client ||--o{ MedicalRecordVersion : "history of"
     Client ||--o{ RoutineTemplate : "is assigned (clientId set)"
     Client ||--o{ Payment : "makes"
+    Client ||--o{ NotificationLog : "reminded via"
+    Client ||--o{ Attendance : "checks in"
+    Client ||--o{ ProgressEntry : "measured by"
+    Client ||--o| NutritionPlan : "eats per"
+    Client ||--o{ NutritionPlanVersion : "nutrition history of"
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
     RoutineSession ||--o{ RoutineExerciseEntry : "has"
     Exercise ||--o{ RoutineExerciseEntry : "used in"
+    RoutineExerciseEntry ||--o{ RoutineExerciseWeek : "progresses by week"
+    ProgressEntry ||--o{ ProgressPhoto : "illustrated by"
+    NutritionPlan ||--o{ NutritionMeal : "has"
+    NutritionMeal ||--o{ NutritionFoodItem : "contains"
 ```
 
 ### **3.2. Descripción de entidades principales:**
@@ -590,9 +678,13 @@ erDiagram
 - **MedicalRecord** — Ficha médica del cliente. Relación uno-a-uno **opcional**
   con `Client` (`clientId` único); guarda condiciones, lesiones, medicación,
   alergias, grupo sanguíneo y notas.
+- **MedicalRecordVersion** — Instantánea histórica (snapshot JSON) de la ficha
+  médica cada vez que se edita, para consultar la evolución del estado del
+  cliente.
 - **Exercise** — Entrada del catálogo reutilizable de ejercicios, clasificada
-  por `category` (`mobility`/`activation`/`main`). Sin borrado físico para no
-  romper rutinas que la referencian.
+  por `category` (`mobility`/`activation`/`main`) y `bodyRegions` (para avisos de
+  calentamiento según ficha médica). Puede incluir `videoUrl`/`imageUrl`. Sin
+  borrado físico para no romper rutinas que la referencian.
 - **RoutineTemplate** — Plantilla de rutina reutilizable (`clientId` nulo) o
   instancia asignada a un cliente (`clientId` seteado, clon de una plantilla vía
   `sourceTemplateId`). Una sola instancia `active` por cliente.
@@ -600,9 +692,29 @@ erDiagram
   en calor y su orden de visualización.
 - **RoutineExerciseEntry** — Ejercicio dentro de una sesión, en fase `warmup` o
   `main`, con prescripción (`kg`/`reps`/`series`), bloque opcional y notas.
+- **RoutineExerciseWeek** — Prescripción semanal (kg/reps/series por número de
+  semana) de una entrada, para modelar la progresión a lo largo de la rutina y
+  exportarla como planilla.
 - **Payment** — Pago registrado para un cliente (monto, fecha, método y período
   mes/año). Editable/eliminable; el estado de pago (al día/vencido) se **deriva**
   en consulta a partir del período más reciente vs. la fecha actual.
+- **NotificationLog** — Registro idempotente de recordatorios enviados
+  (por ejemplo, vencimiento de pago por email), para no reenviar el mismo aviso.
+- **Attendance** — Check-in de asistencia de un cliente (fecha/hora y nota
+  opcional).
+- **ProgressEntry** — Medición de progreso físico en una fecha (peso, % de grasa
+  y nota), base para la evolución del cliente.
+- **ProgressPhoto** — Foto de progreso asociada a una medición; se guarda en
+  almacenamiento de archivos (clave `storageKey`) con la imagen re-encodeada y
+  sin metadatos EXIF.
+- **NutritionPlan** — Plan de nutrición del cliente (calorías diarias, objetivo
+  de proteína y notas generales); relación uno-a-uno con `Client`.
+- **NutritionMeal** — Comida dentro de un plan (por ejemplo, desayuno), con su
+  orden.
+- **NutritionFoodItem** — Alimento dentro de una comida (descripción y cantidad),
+  con su orden.
+- **NutritionPlanVersion** — Instantánea histórica (snapshot JSON) del plan de
+  nutrición cada vez que se guarda.
 
 > Detalle completo de tipos, restricciones y reglas de validación en
 > [docs/data-model.md](docs/data-model.md).
