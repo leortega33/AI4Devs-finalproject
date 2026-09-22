@@ -1671,7 +1671,7 @@ implementing.
 
 ## US-028: Compact client action icons
 
-- **Status:** in-openspec (`openspec/changes/compact-client-action-icons`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-compact-client-action-icons/`)
 
 **User story:** As the gym owner/trainer, I want the client list actions as
 compact icons with tooltips, so that I can act on a row without scrolling
@@ -1704,7 +1704,7 @@ action set grows).
 
 ## US-029: Unify table action icons
 
-- **Status:** in-openspec (`openspec/changes/unify-table-action-icons`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-unify-table-action-icons/`)
 
 **User story:** As the gym owner/trainer, I want every table's row actions to use
 the same compact icon + tooltip pattern, so that the UI is consistent and no
