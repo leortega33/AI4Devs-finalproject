@@ -1503,47 +1503,75 @@ optional metric set; table + latest-weight summary; charts and photos deferred.
 
 ## US-026b: Physical progress photos (deferred follow-up)
 
-- **Status:** enriched (needs a storage decision before implementing)
+- **Status:** ready (storage/infra decisions resolved; ready to propose)
 
 **User story:** As the gym owner/trainer, I want to attach dated progress photos
 to a client, so that I can visually compare their evolution.
 
-**Functional description:** upload one or more photos per progress entry (or per
-date) and view them alongside the measurements. Photos are **sensitive personal
-data**, so they require an **authenticated** serving path (never a public static
-URL) and real deletion.
+**Functional description:** upload one or more photos **attached to a
+`ProgressEntry`** and view them alongside that entry's measurements. Photos are
+**sensitive personal data**, so they require an **authenticated** serving path
+(never a public static URL) and real deletion.
 
-**Product/infra decision (proposed, to confirm at implementation):** a pluggable
-`PhotoStorage` abstraction (mirroring the existing `EmailService` pattern):
-- `LocalDiskPhotoStorage` (default): stores files under a configured directory
-  mounted as a **Docker volume** (persistent on the self-hosted deploy); the DB
-  stores only the storage **key**, not the bytes.
-- Optional `S3PhotoStorage` (Cloudflare R2 / Supabase Storage, both free-tier)
-  selected via env for production robustness.
+**Resolved storage/infra decision (2026-09-21):** a pluggable `PhotoStorage`
+abstraction (mirroring the existing `EmailService` pattern), aligned with the
+`add-deployment-infra` model (single-origin Docker image via
+`docker-compose.prod.yml` + Cloudflare Tunnel; optional Render free tier):
+- **`LocalDiskPhotoStorage` (default, chosen):** stores files under a configured
+  directory (`PHOTO_STORAGE_DIR`, e.g. `/data/photos`) mounted as a **named
+  Docker volume** (`gym_prod_uploads`) on the `app` service — the container is
+  currently stateless, so this volume must be added. The DB stores only the
+  storage **key**, not the bytes. Named volumes persist across `up --build`/
+  redeploys just like the Postgres volume, so this is the clean fit for the
+  primary local + Cloudflare Tunnel path with **zero external services / cost**.
+- **`S3PhotoStorage` (opt-in, NOT built now):** Cloudflare R2 (10 GB free) or
+  Supabase Storage, selected via `PHOTO_STORAGE=local|s3`. Only needed if the
+  deploy target becomes Render/cloud, because **Render's free tier filesystem is
+  ephemeral** (persistent disks are paid) and would lose local-disk photos on
+  redeploy/sleep. The abstraction keeps this additive — no caller changes.
+- **EXIF stripping (chosen: yes):** normalize on upload with `sharp` (phone
+  photos carry GPS = location PII); also downscale/re-encode to `webp` to cap
+  size and unify format.
+- **Attach target (chosen: `ProgressEntry`):** photos FK to a `ProgressEntry` so
+  a measurement day groups metrics + photos on the existing timeline. This
+  requires **relaxing the US-026 "≥1 metric" rule to "≥1 metric OR ≥1 photo"** so
+  a photo-only entry is valid.
 - Constraints: allowed types (`jpeg/png/webp`), max size (~5 MB), generated file
   names (uuid), server-side validation, **auth on both upload and serve**, and
-  real file deletion when an entry/photo is removed.
+  real file deletion when an entry/photo is removed. No path traversal.
 
-**Data model (Prisma):** new `ProgressPhoto` table (`id`, FK to `ProgressEntry`
-or `Client`, `storageKey`, `contentType`, `createdAt`). Migration required.
+**Data model (Prisma):** new `ProgressPhoto` table (`id`, `progressEntryId` FK →
+`ProgressEntry` cascade, `storageKey`, `contentType`, `createdAt`). Migration
+required.
 
 **Endpoints (draft):** `POST /api/clients/:clientId/progress/:entryId/photos`
 (multipart), `GET .../photos/:photoId` (auth-protected stream),
 `DELETE .../photos/:photoId`.
 
-**Files/modules:** the `PhotoStorage` interface + `LocalDiskPhotoStorage` (and
-optional `S3PhotoStorage`), the photo model/repository, upload/serve controller,
-and photo UI on the progress page.
+**Files/modules:** the `PhotoStorage` interface + `LocalDiskPhotoStorage` (S3 as
+a documented opt-in), the photo model/repository, upload/serve controller, and
+photo UI on the progress page.
 
-**Definition of done (draft):** photos can be uploaded, viewed (authenticated),
-and deleted; storage is pluggable; files persist across redeploys via the volume.
+**Infra/deploy tasks (fold into the change):**
+- Add `PHOTO_STORAGE_DIR` (+ optional `PHOTO_STORAGE`) to `backend/.env.example`.
+- Add the `gym_prod_uploads` named volume mounted at `PHOTO_STORAGE_DIR` on the
+  `app` service in `docker-compose.prod.yml`; ensure the dir exists and is
+  writable by the runtime user (document volume ownership).
+- `.gitignore` the local dev upload dir.
+- Update `docs/deployment.md`: document the uploads volume and include it in the
+  **same backup story as the DB volume** (backing up one without the other
+  leaves orphaned metadata or lost photos).
+- CI (GitHub Actions) needs no change; the `docker build` job is unaffected.
 
-**Non-functional requirements:** privacy (sensitive PII), auth on serve, size/type
-validation, no path traversal, real deletion; i18n.
+**Definition of done (draft):** photos can be uploaded (EXIF-stripped, re-encoded),
+viewed (authenticated), and deleted; storage is pluggable via env; files persist
+across redeploys via the named volume; a photo-only entry is valid.
 
-**Open technical decisions:** local disk vs object storage for production; EXIF
-stripping; whether photos attach to an entry or to a date. Confirm before
-implementing.
+**Non-functional requirements:** privacy (sensitive PII), EXIF stripped, auth on
+serve, size/type validation, no path traversal, real deletion; i18n.
+
+**Open technical decisions:** none blocking — resolved above. (S3 backend to be
+implemented only if/when a cloud "always-on" deploy is chosen.)
 
 ---
 
