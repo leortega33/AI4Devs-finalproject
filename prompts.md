@@ -576,6 +576,32 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 30:**
+
+> Rediseñemos el export de rutinas (US-030) para que el PDF/Excel repliquen la
+> planilla real del entrenador ("SPORT – FITNESS"). Change OpenSpec
+> `polish-routine-export` **presentation-only** (`skip_specs: true`, sin endpoint
+> ni modelo nuevos). Muestrear los colores del PDF de referencia
+> (`planning/reference/trainer-plan.pdf`): barra de sesión `#C5DFB4`, acento lima
+> `#6FAC46`, headers negro. Layout A4 **landscape**: banda de marca (PF · SPORT –
+> FITNESS / ENTRENAMIENTO FÍSICO INTEGRAL · CEL) + logo del oso, `PLAN DE
+> ENTRENAMIENTO` + cliente + fecha; por sesión: barra verde `SESIÓN`, fila
+> `SEMANA 1..N`, `PREPARACIÓN PARA EL MOVIMIENTO` + prescripción, dos columnas
+> MOVILIDAD/ACTIVACIÓN, tabla con `KG/REPS/SERIES` por semana con **SERIES
+> fusionada por bloque**, sección `EJERCICIOS BLOQUE FINAL` + `OBSERVACIONES`, y
+> página de consideraciones. Incluir la **progresión semanal (US-018)** en el
+> export. Exponer `exerciseCategory` en la entry (select de Prisma) para separar
+> movilidad/activación; convención bloque final = label `final`. Un **view-model
+> compartido** que consumen `routinePdf.ts` (PDFKit) y `routineXlsx.ts` (ExcelJS).
+> Copiar el logo a `backend/src/infrastructure/pdf/assets/` (reducido) + copy-assets
+> en el build. Marca en inglés tal cual, solo labels genéricos traducidos. TDD del
+> helper + smoke tests PDF/XLSX extendidos, verificación de export real (render a
+> PNG comparado con la referencia), E2E de descarga sin regresiones. Actualizar
+> readme/prompts (sin cambios de API/modelo). Mantener todo en verde. Contenido en
+> español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

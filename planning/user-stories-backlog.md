@@ -1739,7 +1739,7 @@ to existing actions.
 
 ## US-030: Polished routine export design (match trainer's plan format)
 
-- **Status:** ready (reference captured 2026-09-22; layout enriched — ready to propose)
+- **Status:** in-openspec (`openspec/changes/polish-routine-export`)
 
 **User story:** As the gym owner/trainer, I want the exported routine PDF and
 Excel to look like my usual training-plan sheet, so that I can print/share a

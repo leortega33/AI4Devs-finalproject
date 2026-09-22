@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run copy-assets",
+    "copy-assets": "node -e \"const fs=require('fs'),p=require('path');const s='src/infrastructure/pdf/assets',d='dist/infrastructure/pdf/assets';fs.mkdirSync(d,{recursive:true});for(const f of fs.readdirSync(s))fs.copyFileSync(p.join(s,f),p.join(d,f));\"",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",

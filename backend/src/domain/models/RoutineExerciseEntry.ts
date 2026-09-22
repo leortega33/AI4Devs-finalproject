@@ -1,5 +1,6 @@
 import { RoutineExerciseWeek } from './RoutineExerciseWeek';
 import { RegionCode } from './bodyRegions';
+import { ExerciseCategory } from './Exercise';
 
 export type RoutinePhase = 'warmup' | 'main';
 
@@ -9,6 +10,7 @@ export interface RoutineExerciseEntryProps {
   exerciseName?: string;
   exerciseVideoUrl?: string | null;
   exerciseBodyRegions?: RegionCode[];
+  exerciseCategory?: ExerciseCategory;
   phase: RoutinePhase;
   block?: string | null;
   kg?: number | null;
@@ -26,6 +28,7 @@ export class RoutineExerciseEntry {
   readonly exerciseName?: string;
   readonly exerciseVideoUrl: string | null;
   readonly exerciseBodyRegions: RegionCode[];
+  readonly exerciseCategory: ExerciseCategory | null;
   readonly phase: RoutinePhase;
   readonly block: string | null;
   readonly kg: number | null;
@@ -41,6 +44,7 @@ export class RoutineExerciseEntry {
     this.exerciseName = props.exerciseName;
     this.exerciseVideoUrl = props.exerciseVideoUrl ?? null;
     this.exerciseBodyRegions = props.exerciseBodyRegions ?? [];
+    this.exerciseCategory = props.exerciseCategory ?? null;
     this.phase = props.phase;
     this.block = props.block ?? null;
     this.kg = props.kg ?? null;

@@ -4,6 +4,7 @@ import { RoutineSession } from '../../domain/models/RoutineSession';
 import { RoutineExerciseEntry, RoutinePhase } from '../../domain/models/RoutineExerciseEntry';
 import { RoutineExerciseWeek } from '../../domain/models/RoutineExerciseWeek';
 import { RegionCode } from '../../domain/models/bodyRegions';
+import { ExerciseCategory } from '../../domain/models/Exercise';
 import {
   RoutineTemplateRepository,
   RoutineTemplateInput,
@@ -18,7 +19,7 @@ const nestedInclude = {
       entries: {
         orderBy: { order: 'asc' as const },
         include: {
-          exercise: { select: { name: true, videoUrl: true, bodyRegions: true } },
+          exercise: { select: { name: true, videoUrl: true, bodyRegions: true, category: true } },
           weeks: { orderBy: { week: 'asc' as const } },
         },
       },
@@ -57,6 +58,7 @@ function toDomain(record: TemplateRecord): RoutineTemplate {
                 exerciseName: e.exercise.name,
                 exerciseVideoUrl: e.exercise.videoUrl,
                 exerciseBodyRegions: e.exercise.bodyRegions as RegionCode[],
+                exerciseCategory: e.exercise.category as ExerciseCategory,
                 phase: e.phase as RoutinePhase,
                 block: e.block,
                 kg: e.kg,
