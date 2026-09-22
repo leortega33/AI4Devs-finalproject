@@ -11,6 +11,9 @@
 - `ready-to-enrich` — has enough description to run `enrich-us`
 - `enriched` — processed by `enrich-us`, ready for OpenSpec `/new`+`/ff`
 - `in-openspec` — has a corresponding change under `openspec/changes/`
+- `done` — implemented and archived (see `openspec/changes/archive/` and the
+  matching capability under `openspec/specs/`)
+- `captured (future)` — recorded for a later phase, not yet scheduled
 
 ---
 
@@ -171,7 +174,7 @@ name and filterable by status; filtering by payment status is Phase 2.
 
 ## US-003: Client medical record (ficha médica)
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-medical-record/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-15-add-medical-record/`)
 
 **User story:** As a gym owner/trainer, I want to load and update each
 client's medical file, so that I can design safe routines and react properly
@@ -233,7 +236,7 @@ in the client detail page, `components/MedicalRecordForm.tsx`.
 
 ## US-004: Exercise catalog
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-exercise-catalog/`; polish in `openspec/changes/refine-exercise-catalog/`: Spanish base seed + non-negative sets/reps)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-15-add-exercise-catalog/`; polish in `openspec/changes/archive/2026-09-15-refine-exercise-catalog/`: Spanish base seed + non-negative sets/reps)
 
 **User story:** As a gym owner/trainer, I want a reusable catalog of
 exercises, so that I can build routines faster without retyping exercises
@@ -295,7 +298,7 @@ the routine builder (US-005) can filter warm-up vs main exercises.
 
 ## US-005: Routine templates (create/duplicate/reuse)
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-routine-templates/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-15-add-routine-templates/`)
 
 **User story:** As a gym owner/trainer, I want to build reusable routine
 templates composed of one or more sessions, and duplicate an existing
@@ -374,7 +377,7 @@ exercise catalog by category).
 
 ## US-006: Assign routine to client
 
-- **Status:** in-openspec (implemented — see `openspec/changes/assign-client-routine/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-15-assign-client-routine/`)
 
 **User story:** As a gym owner/trainer, I want to assign a routine to a
 specific client by cloning a template, with a start date and a fixed
@@ -440,7 +443,7 @@ client detail page showing the active routine + "Assign routine" action
 
 ## US-007: Payment registration
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-payment-registration/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-16-add-payment-registration/`)
 
 **User story:** As a gym owner/trainer, I want to register a payment for a
 client and edit or delete it later if I made a mistake, so that I can keep
@@ -506,7 +509,7 @@ helper), `application/validator.ts` (additions),
 
 ## US-008: Payment history per client
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-payment-history-export/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-16-add-payment-history-export/`)
 
 **User story:** As a gym owner/trainer, I want to see the full chronological
 payment history of a client and export/print it, so that I can review past
@@ -557,7 +560,7 @@ within the client detail "Payments" tab, "Export PDF" button.
 
 ## US-009: Dashboard with alerts
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-dashboard-alerts/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-16-add-dashboard-alerts/`)
 
 **User story:** As a gym owner/trainer, I want a home dashboard showing
 clients with overdue/upcoming payments and expiring routines, each linking
@@ -657,7 +660,7 @@ frontend maps them to localized messages.
 
 ## US-011: App shell, navigation and visual theme
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-app-shell/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-14-add-app-shell/`)
 - **Priority:** cross-cutting — done before US-003, while there are few screens.
 
 **User story:** As a gym owner/trainer, I want a consistent branded layout with
@@ -710,7 +713,7 @@ file placed under `frontend/src/assets/`).
 
 ## US-012: UI/UX design refresh
 
-- **Status:** in-openspec (implemented — see `openspec/changes/refresh-ui-design/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-17-refresh-ui-design/`)
 - **Priority:** first Phase 2 item (visual/UX polish over the whole app).
 
 **User story:** As the gym owner/trainer, I want a more modern, consistent, and
@@ -795,7 +798,7 @@ reorganizes the existing screens without changing their functional behavior.
 
 ## US-013: Notification bell
 
-- **Status:** in-openspec (implemented — see `openspec/changes/add-notification-bell/`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-add-notification-bell/`)
 - **Dependency:** build after US-012 (lives in the refreshed shell).
 
 **User story:** As the gym owner/trainer, I want a bell icon in the top bar with
@@ -837,7 +840,7 @@ i18n, no backend change.
 
 ## US-014: Filter client list by payment status
 
-- **Status:** in-openspec (`openspec/changes/filter-clients-by-payment`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-filter-clients-by-payment/`)
 
 **User story:** As the gym owner/trainer, I want to filter the client list by
 payment status (up to date / overdue / no payments), so that I can quickly find
@@ -873,7 +876,7 @@ filters.
 
 ## US-015: Smarter payment-period entry
 
-- **Status:** in-openspec (`openspec/changes/smarter-payment-period`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-smarter-payment-period/`)
 
 **User story:** As the gym owner/trainer, when I register a payment I want the
 period pre-filled to the next month the client owes and the payment date
@@ -915,7 +918,7 @@ gap/arrears analysis using the client's join date is deferred.
 
 ## US-016: Payment history summary
 
-- **Status:** in-openspec (`openspec/changes/payment-history-summary`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-payment-history-summary/`)
 
 **User story:** As the gym owner/trainer, I want a summary of a client's payments
 (total paid, number of payments, covered-period range, current status) alongside
@@ -950,7 +953,7 @@ Proposed: the latter; "months owed" deferred.
 
 ## US-017: Export routines to PDF/Excel
 
-- **Status:** in-openspec (`openspec/changes/export-routines`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-18-export-routines/`)
 
 **User story:** As the gym owner/trainer, I want to export a routine (a library
 template or a client's assigned routine) to PDF and Excel, so that I can print or
@@ -988,7 +991,7 @@ consistency with US-008; evaluate `exceljs` for the `.xlsx`.
 
 ## US-018: Weekly progression (mesocycle)
 
-- **Status:** in-openspec (`openspec/changes/add-weekly-progression`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-19-add-weekly-progression/`)
 
 **User story:** As the gym owner/trainer, I want each exercise's kg/reps/series to
 vary across the weeks of a routine, so that the plan reflects a real progression.
@@ -1026,7 +1029,7 @@ separate table; a compact per-week table in the view.
 
 ## US-019: Exercise media reference (video/image)
 
-- **Status:** in-openspec (`openspec/changes/add-exercise-media`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-exercise-media/`)
 
 **User story:** As the gym owner/trainer, I want to attach a reference video or
 image to each exercise, so that the correct technique is easy to review.
@@ -1059,7 +1062,7 @@ Proposed: **URL-only** for the MVP (paste a YouTube/image link).
 
 ## US-020: Dashboard KPIs
 
-- **Status:** in-openspec (`openspec/changes/add-dashboard-kpis`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-dashboard-kpis/`)
 - **Dependency:** presented within the US-012 dashboard cards.
 
 **User story:** As the gym owner/trainer, I want key numbers on the dashboard
@@ -1092,7 +1095,7 @@ revisit indexing/caching only if slow.
 
 ## US-021: Medical record change history
 
-- **Status:** in-openspec (`openspec/changes/add-medical-record-history`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-medical-record-history/`)
 
 **User story:** As the gym owner/trainer, I want to see the history of changes to
 a client's medical record, so that I can track how their condition evolves over
@@ -1129,7 +1132,7 @@ Proposed: **full snapshots** (simpler, easy to display).
 
 ## US-022: Medical-aware exercise warnings
 
-- **Status:** in-openspec (`openspec/changes/add-medical-aware-exercise-warnings`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-medical-aware-exercise-warnings/`)
 
 **User story:** As the gym owner/trainer, when I build or assign a routine, I want
 an advisory warning when an exercise loads a body area that the client's medical
@@ -1231,7 +1234,7 @@ levels, structured (non-free-text) medical fields, warm-up suggestions (US-023).
 
 ## US-023: Medical-aware warm-up suggestions
 
-- **Status:** in-openspec (`openspec/changes/add-warmup-suggestions`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-warmup-suggestions/`)
 
 **User story:** As the gym owner/trainer, when I open a client's routine, I want
 the app to suggest warm-up/mobility exercises for the body areas the client's
@@ -1310,7 +1313,7 @@ client routine page; server-side computation.
 
 ## US-024: Automated reminders (email)
 
-- **Status:** in-openspec (`openspec/changes/add-automated-reminders`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-automated-reminders/`)
 
 **User story:** As the gym owner/trainer, I want automatic email reminders for
 clients with overdue/due-soon payments and expiring routines, so that I don't
@@ -1352,7 +1355,7 @@ required. WhatsApp via Meta Cloud API deferred.
 
 ## US-025: Attendance / check-in tracking
 
-- **Status:** in-openspec (`openspec/changes/add-attendance-tracking`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-20-add-attendance-tracking/`)
 
 **User story:** As the gym owner/trainer, I want to record a client's check-ins
 and see their attendance frequency, so that I can track how regularly they train.
@@ -1424,7 +1427,7 @@ integration this iteration.
 
 ## US-026: Physical progress tracking (measurements)
 
-- **Status:** in-openspec (`openspec/changes/add-progress-tracking`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-21-add-progress-tracking/`)
 
 **User story:** As the gym owner/trainer, I want to record a client's body
 measurements over time, so that I can track their physical progress at a glance.
@@ -1503,7 +1506,7 @@ optional metric set; table + latest-weight summary; charts and photos deferred.
 
 ## US-026b: Physical progress photos (deferred follow-up)
 
-- **Status:** in-openspec (`openspec/changes/add-progress-photos`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-21-add-progress-photos/`)
 
 **User story:** As the gym owner/trainer, I want to attach dated progress photos
 to a client, so that I can visually compare their evolution.
@@ -1577,7 +1580,7 @@ implemented only if/when a cloud "always-on" deploy is chosen.)
 
 ## US-027: Nutrition plans
 
-- **Status:** in-openspec (`openspec/changes/add-nutrition-plans`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-22-add-nutrition-plans/`)
 
 **User story:** As the gym owner/trainer, I want to create structured nutrition
 plans for clients, so that I can complement their training.
@@ -1739,7 +1742,7 @@ to existing actions.
 
 ## US-030: Polished routine export design (match trainer's plan format)
 
-- **Status:** in-openspec (`openspec/changes/polish-routine-export`)
+- **Status:** done (archived — see `openspec/changes/archive/2026-09-22-polish-routine-export/`)
 
 **User story:** As the gym owner/trainer, I want the exported routine PDF and
 Excel to look like my usual training-plan sheet, so that I can print/share a

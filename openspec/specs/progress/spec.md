@@ -1,7 +1,9 @@
 # progress Specification
 
 ## Purpose
-TBD - created by archiving change add-progress-tracking. Update Purpose after archive.
+Let the trainer record and review each client's physical progress over time
+through dated measurements (weight, body fat, and body circumferences) with
+optional notes and photos, to support follow-up and motivation.
 
 ## Requirements
 

@@ -1,7 +1,9 @@
 # notifications Specification
 
 ## Purpose
-TBD - created by archiving change add-automated-reminders. Update Purpose after archive.
+Proactively remind clients about dashboard alerts (overdue or due-soon payments
+and expiring routines) via automated, deduplicated email so the trainer does not
+have to chase them manually.
 
 ## Requirements
 

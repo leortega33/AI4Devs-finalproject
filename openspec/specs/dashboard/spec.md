@@ -1,7 +1,9 @@
 # dashboard Specification
 
 ## Purpose
-TBD - created by archiving change add-dashboard-alerts. Update Purpose after archive.
+Give the trainer an at-a-glance operational view by aggregating active clients
+into payment and routine alert groups (overdue, due-soon, no payments, expiring
+routines) derived at query time, so nothing important is missed.
 
 ## Requirements
 

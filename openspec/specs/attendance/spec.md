@@ -1,7 +1,8 @@
 # attendance Specification
 
 ## Purpose
-TBD - created by archiving change add-attendance-tracking. Update Purpose after archive.
+Track in-person attendance so the trainer can record and review when each client
+checks in to the gym, using simple timestamped check-ins with optional notes.
 
 ## Requirements
 
