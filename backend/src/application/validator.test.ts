@@ -11,6 +11,7 @@ import {
   validatePayment,
   validateAttendance,
   validateProgress,
+  validateNutritionPlan,
   ValidationError,
 } from './validator';
 
@@ -416,6 +417,40 @@ describe('validator', () => {
 
     it('should reject a negative metric', () => {
       expect(() => validateProgress({ weightKg: -1 })).toThrow(ValidationError);
+    });
+  });
+
+  describe('validateNutritionPlan', () => {
+    it('should accept a full plan and coerce string targets', () => {
+      const result = validateNutritionPlan({
+        dailyCalories: '2200',
+        proteinTargetG: 150,
+        generalNotes: 'Agua',
+        meals: [{ name: 'Desayuno', note: 'x', items: [{ description: 'Avena', quantity: '80 g' }] }],
+      });
+      expect(result.dailyCalories).toBe(2200);
+      expect(result.meals[0].items[0].description).toBe('Avena');
+    });
+
+    it('should accept an empty plan', () => {
+      const result = validateNutritionPlan({ meals: [] });
+      expect(result.meals).toEqual([]);
+    });
+
+    it('should reject a negative target', () => {
+      expect(() => validateNutritionPlan({ dailyCalories: -1, meals: [] })).toThrow(ValidationError);
+    });
+
+    it('should reject a meal without a name', () => {
+      expect(() =>
+        validateNutritionPlan({ meals: [{ name: '', items: [] }] }),
+      ).toThrow(ValidationError);
+    });
+
+    it('should reject a food item without a description', () => {
+      expect(() =>
+        validateNutritionPlan({ meals: [{ name: 'Cena', items: [{ description: '' }] }] }),
+      ).toThrow(ValidationError);
     });
   });
 });

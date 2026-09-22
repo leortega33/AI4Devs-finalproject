@@ -167,7 +167,13 @@ páginas internas comparten un encabezado consistente (`PageHeader`), muestran
    entradas solo-foto): las imágenes se recortan de metadatos y se sirven de forma
    **autenticada** (nunca por URL pública); se pueden **agregar** y **eliminar**
    fotos con confirmación (US-026b).
-11. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
+11. **Nutrición del cliente** — Desde la acción "Nutrición" del listado se abre un
+   **editor de plan de nutrición**: objetivos diarios opcionales (calorías,
+   proteína), una nota general, y una lista de **comidas** (agregar / eliminar /
+   reordenar) cada una con sus **alimentos** (descripción + cantidad opcional).
+   Al **guardar** se agrega una **versión** al historial, consultable desde la
+   misma pantalla (US-027).
+12. **Idioma** — En cualquier momento el usuario cambia entre español e inglés
    desde la barra superior; la preferencia persiste entre recargas.
 
 > _Capturas / videotutorial: pendientes de incorporar._

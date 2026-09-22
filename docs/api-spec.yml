@@ -1060,6 +1060,135 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/clients/{clientId}/nutrition-plan:
+    get:
+      summary: Get a client's current nutrition plan
+      description: >
+        Returns the client's plan (targets, note, and ordered meals with ordered
+        food items). When the client has no plan, an empty plan payload is
+        returned (not a 404). See US-027.
+      tags:
+        - Nutrition
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The nutrition plan (or an empty payload)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/NutritionPlan'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Save (upsert) a client's nutrition plan
+      description: >
+        Creates or replaces the whole plan (targets + note + meals + food items)
+        in one operation and appends a version snapshot. Meal/item order is taken
+        from array position. See US-027.
+      tags:
+        - Nutrition
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NutritionPlanInput'
+      responses:
+        '200':
+          description: The saved plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/NutritionPlan'
+        '400':
+          description: Validation error (negative target, a meal without a name, or an item without a description)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/clients/{clientId}/nutrition-plan/versions:
+    get:
+      summary: List a client's nutrition plan version history
+      description: Version snapshots newest first; the first matches the current plan. See US-027.
+      tags:
+        - Nutrition
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The version history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NutritionPlanVersion'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/clients/{clientId}/payments:
     get:
       summary: List a client's payments with the derived status
@@ -2328,6 +2457,99 @@ components:
         summary:
           $ref: '#/components/schemas/ProgressSummary'
 
+    NutritionFoodItemInput:
+      type: object
+      description: A food item within a meal (US-027). Order is derived server-side.
+      properties:
+        description:
+          type: string
+        quantity:
+          type: string
+          nullable: true
+
+    NutritionMealInput:
+      type: object
+      properties:
+        name:
+          type: string
+        note:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NutritionFoodItemInput'
+
+    NutritionPlanInput:
+      type: object
+      description: The whole plan to upsert (US-027). Targets are optional non-negative integers.
+      properties:
+        dailyCalories:
+          type: integer
+          nullable: true
+        proteinTargetG:
+          type: integer
+          nullable: true
+        generalNotes:
+          type: string
+          nullable: true
+        meals:
+          type: array
+          items:
+            $ref: '#/components/schemas/NutritionMealInput'
+
+    NutritionFoodItem:
+      allOf:
+        - $ref: '#/components/schemas/NutritionFoodItemInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+
+    NutritionMeal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        note:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NutritionFoodItem'
+
+    NutritionPlan:
+      type: object
+      properties:
+        dailyCalories:
+          type: integer
+          nullable: true
+        proteinTargetG:
+          type: integer
+          nullable: true
+        generalNotes:
+          type: string
+          nullable: true
+        meals:
+          type: array
+          items:
+            $ref: '#/components/schemas/NutritionMeal'
+
+    NutritionPlanVersion:
+      type: object
+      description: An immutable version snapshot of a plan (US-027).
+      properties:
+        id:
+          type: integer
+        snapshot:
+          $ref: '#/components/schemas/NutritionPlan'
+        createdAt:
+          type: string
+          format: date-time
+
     PaymentInput:
       type: object
       properties:
@@ -2529,6 +2751,8 @@ tags:
     description: Client check-ins with a frequency summary (US-025)
   - name: Progress
     description: Client physical measurements with an evolution summary (US-026)
+  - name: Nutrition
+    description: Client structured nutrition plans with a saved version history (US-027)
   - name: Dashboard
     description: Read-only alert aggregation over clients, payments, and routines (US-009)
   - name: Reminders

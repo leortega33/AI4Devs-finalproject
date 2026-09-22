@@ -234,6 +234,50 @@ A single photo attached to a progress entry. See US-026b.
   backend (local disk on a named volume by default), served only over an
   authenticated stream
 
+### 13. NutritionPlan
+A client's current structured nutrition plan (1:1 with the client). See US-027.
+
+**Fields:**
+- `id`: Unique identifier (Primary Key)
+- `clientId`: Foreign key referencing Client, **unique** (cascade on client delete)
+- `dailyCalories`, `proteinTargetG`: Optional non-negative integer daily targets
+- `generalNotes`: Optional plan-level note
+- `createdAt`, `updatedAt`: Timestamps
+
+### 14. NutritionMeal
+An ordered meal within a plan. See US-027.
+
+**Fields:**
+- `id`: Primary Key
+- `nutritionPlanId`: FK referencing NutritionPlan (cascade)
+- `name`: Meal name (e.g. Desayuno)
+- `note`: Optional meal note
+- `order`: Position within the plan (derived server-side)
+
+### 15. NutritionFoodItem
+An ordered food item within a meal. See US-027.
+
+**Fields:**
+- `id`: Primary Key
+- `nutritionMealId`: FK referencing NutritionMeal (cascade)
+- `description`: What to eat
+- `quantity`: Optional free-text quantity
+- `order`: Position within the meal (derived server-side)
+
+### 16. NutritionPlanVersion
+An immutable snapshot of the whole plan, appended on each save. See US-027.
+
+**Fields:**
+- `id`: Primary Key
+- `clientId`: FK referencing Client (cascade)
+- `snapshot`: JSON snapshot of the saved plan (targets + note + meals + items)
+- `createdAt`: Timestamp
+
+**Validation Rules:**
+- Saving upserts the plan and replaces its meals/items in one transaction, then
+  appends a version; the newest version equals the current plan; history is read
+  newest-first
+
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -380,6 +424,35 @@ erDiagram
         String contentType
         DateTime createdAt
     }
+    NutritionPlan {
+        Int id PK
+        Int clientId FK
+        Int dailyCalories
+        Int proteinTargetG
+        String generalNotes
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    NutritionMeal {
+        Int id PK
+        Int nutritionPlanId FK
+        String name
+        String note
+        Int order
+    }
+    NutritionFoodItem {
+        Int id PK
+        Int nutritionMealId FK
+        String description
+        String quantity
+        Int order
+    }
+    NutritionPlanVersion {
+        Int id PK
+        Int clientId FK
+        Json snapshot
+        DateTime createdAt
+    }
 
     Client ||--o| MedicalRecord : "has"
     Client ||--o{ MedicalRecordVersion : "history of"
@@ -389,6 +462,10 @@ erDiagram
     Client ||--o{ Attendance : "checks in"
     Client ||--o{ ProgressEntry : "measured by"
     ProgressEntry ||--o{ ProgressPhoto : "illustrated by"
+    Client ||--o| NutritionPlan : "eats per"
+    Client ||--o{ NutritionPlanVersion : "history of"
+    NutritionPlan ||--o{ NutritionMeal : "has"
+    NutritionMeal ||--o{ NutritionFoodItem : "contains"
 
     RoutineTemplate ||--o{ RoutineSession : "has"
     RoutineTemplate |o--o{ RoutineTemplate : "cloned from (sourceTemplateId)"
@@ -408,6 +485,7 @@ erDiagram
 7. **Advisory medical warnings via body-region overlap (US-022)**: exercises carry `bodyRegions` tags; a curated keyword dictionary (in code) maps a client's free-text medical record to those same regions. Overlap surfaces a non-blocking, non-diagnostic warning when building a client's routine — no rules table, and the medical record stays free text.
 8. **Progress metrics stored, evolution derived (US-026)**: each `ProgressEntry` is an immutable measurement snapshot with all metrics optional (at least one required); the evolution summary (latest weight, weight change, entry count) is computed at read time rather than stored, and progress photos/videos are intentionally deferred (see US-026b) to keep this story infrastructure-free.
 9. **Progress photos stored by reference, served privately (US-026b)**: `ProgressPhoto` rows hold only an opaque `storageKey`; bytes live in a pluggable `PhotoStorage` backend (local disk on a named volume by default), are EXIF-stripped and re-encoded to webp on upload, and are served exclusively over an authenticated stream (never a public static URL). A `ProgressEntry` is valid with at least one metric **or** at least one photo (photo-only entries allowed), and deleting an entry cascades its photo rows while the service removes the underlying files.
+10. **Nutrition plan edited as one document, versioned by JSON snapshot (US-027)**: a client has one `NutritionPlan` (meals → food items). Saving upserts the plan and **replaces** its meals/items in a single transaction, then appends an immutable `NutritionPlanVersion` holding a full JSON snapshot of the saved plan; meal/item `order` is derived server-side from array position. History is read newest-first (the first equals the current plan). An absent plan reads as an empty payload, not a 404. Reusable templates are deferred (US-027b).
 
 ## Notes
 

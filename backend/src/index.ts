@@ -11,6 +11,7 @@ import { PrismaMedicalRecordVersionRepository } from './infrastructure/repositor
 import { PrismaAttendanceRepository } from './infrastructure/repositories/PrismaAttendanceRepository';
 import { PrismaProgressEntryRepository } from './infrastructure/repositories/PrismaProgressEntryRepository';
 import { PrismaProgressPhotoRepository } from './infrastructure/repositories/PrismaProgressPhotoRepository';
+import { PrismaNutritionPlanRepository } from './infrastructure/repositories/PrismaNutritionPlanRepository';
 import { PrismaExerciseRepository } from './infrastructure/repositories/PrismaExerciseRepository';
 import { PrismaRoutineTemplateRepository } from './infrastructure/repositories/PrismaRoutineTemplateRepository';
 import { PrismaPaymentRepository } from './infrastructure/repositories/PrismaPaymentRepository';
@@ -26,6 +27,7 @@ import { MedicalRecordService } from './application/services/medicalRecordServic
 import { MedicalFlagsService } from './application/services/medicalFlagsService';
 import { AttendanceService } from './application/services/attendanceService';
 import { ProgressService } from './application/services/progressService';
+import { NutritionService } from './application/services/nutritionService';
 import { WarmupSuggestionService } from './application/services/warmupSuggestionService';
 import { ExerciseService } from './application/services/exerciseService';
 import { RoutineTemplateService } from './application/services/routineTemplateService';
@@ -39,6 +41,7 @@ import { createMedicalRecordRoutes } from './routes/medicalRecordRoutes';
 import { createMedicalFlagsRoutes } from './routes/medicalFlagsRoutes';
 import { createClientAttendanceRoutes } from './routes/attendanceRoutes';
 import { createClientProgressRoutes } from './routes/progressRoutes';
+import { createClientNutritionRoutes } from './routes/nutritionRoutes';
 import { createWarmupSuggestionRoutes } from './routes/warmupSuggestionRoutes';
 import { createExerciseRoutes } from './routes/exerciseRoutes';
 import { createRoutineTemplateRoutes } from './routes/routineTemplateRoutes';
@@ -104,6 +107,9 @@ export function createApp() {
     photoStorage,
   );
 
+  const nutritionPlanRepository = new PrismaNutritionPlanRepository(prisma);
+  const nutritionService = new NutritionService(nutritionPlanRepository, clientRepository);
+
   const medicalRecordRepository = new PrismaMedicalRecordRepository(prisma);
   const medicalRecordVersionRepository = new PrismaMedicalRecordVersionRepository(prisma);
   const medicalRecordService = new MedicalRecordService(
@@ -160,6 +166,10 @@ export function createApp() {
   app.use(
     '/api/clients/:clientId/progress',
     createClientProgressRoutes(progressService, JWT_SECRET),
+  );
+  app.use(
+    '/api/clients/:clientId/nutrition-plan',
+    createClientNutritionRoutes(nutritionService, JWT_SECRET),
   );
   app.use('/api/clients/:clientId', createClientRoutineRoutes(clientRoutineService, JWT_SECRET));
   app.use('/api/clients/:clientId/payments', createClientPaymentRoutes(paymentService, JWT_SECRET));

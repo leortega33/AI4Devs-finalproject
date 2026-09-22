@@ -171,6 +171,34 @@ export const progressSchema = z.object({
   note: z.string().max(500, 'Note must be 500 characters or fewer').optional().nullable(),
 });
 
+// A client nutrition plan (US-027): optional non-negative daily targets, an
+// optional general note, and ordered meals each with ordered food items. Order is
+// derived server-side from array position, not from client input.
+const nutritionFoodItemSchema = z.object({
+  description: z.string().min(1, 'Food item description is required').max(300),
+  quantity: z.string().max(60).optional().nullable(),
+});
+
+const nutritionMealSchema = z.object({
+  name: z.string().min(1, 'Meal name is required').max(120),
+  note: z.string().max(500).optional().nullable(),
+  items: z.array(nutritionFoodItemSchema).max(50, 'A meal can have at most 50 food items'),
+});
+
+const nutritionTarget = z.coerce
+  .number()
+  .int('Targets must be whole numbers')
+  .nonnegative('Targets must be non-negative')
+  .optional()
+  .nullable();
+
+export const nutritionPlanSchema = z.object({
+  dailyCalories: nutritionTarget,
+  proteinTargetG: nutritionTarget,
+  generalNotes: z.string().max(1000, 'Notes must be 1000 characters or fewer').optional().nullable(),
+  meals: z.array(nutritionMealSchema).max(30, 'A plan can have at most 30 meals'),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -183,6 +211,7 @@ export type AssignRoutineInputData = z.infer<typeof assignRoutineSchema>;
 export type PaymentInputData = z.infer<typeof paymentSchema>;
 export type AttendanceInputData = z.infer<typeof attendanceSchema>;
 export type ProgressInputData = z.infer<typeof progressSchema>;
+export type NutritionPlanInputData = z.infer<typeof nutritionPlanSchema>;
 
 /** Thrown when request data fails schema validation (mapped to HTTP 400 by the controller). */
 export class ValidationError extends Error {
@@ -246,4 +275,8 @@ export function validateAttendance(data: unknown): AttendanceInputData {
 
 export function validateProgress(data: unknown): ProgressInputData {
   return parseOrThrow(progressSchema, data);
+}
+
+export function validateNutritionPlan(data: unknown): NutritionPlanInputData {
+  return parseOrThrow(nutritionPlanSchema, data);
 }

@@ -550,6 +550,32 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
+**Prompt 29:**
+
+> Agreguemos planes de nutrición (US-027): change OpenSpec `add-nutrition-plans`
+> **con spec delta** (nueva capability nutrition) y **migración**. Nuevas tablas
+> `NutritionPlan` (1:1 con Client, `clientId` unique, `dailyCalories?`,
+> `proteinTargetG?`, `generalNotes?`), `NutritionMeal` (FK cascade, `name`,
+> `note?`, `order`), `NutritionFoodItem` (FK cascade, `description`, `quantity?`,
+> `order`) y `NutritionPlanVersion` (FK cascade a Client, `snapshot Json`,
+> `createdAt`). Estructura completa (plan → comidas → ítems), objetivos diarios
+> opcionales, y **historial por snapshot JSON** (una versión por guardado);
+> plantillas diferidas a US-027b. Backend: modelos/repo con **upsert transaccional
+> que reemplaza hijos y agrega versión**, `nutritionPlanSchema` (targets no
+> negativos, nombre de comida y descripción de alimento requeridos, topes de
+> arrays), `NutritionService` (getPlan devuelve payload vacío si no hay plan,
+> savePlan upsert, getVersions), controller + ruta anidada
+> `/api/clients/:clientId/nutrition-plan` (`GET`, `PUT`, `GET /versions`).
+> Frontend: `nutritionService` + `ClientNutritionPage` (objetivos + nota + editor
+> de comidas con agregar/quitar/reordenar y alimentos por comida + guardar +
+> vista de historial) + acción-icono en el listado + ruta + i18n (es/en). Plan
+> ausente = payload vacío (no 404). TDD backend y frontend, migración, curl (get
+> vacío, put create/replace, versions newest-first, 400 target negativo/comida sin
+> nombre, 401, 404), verificación visual + E2E. Actualizar `api-spec.yml` y
+> `data-model.md`. Mantener todo en verde. Contenido en español.
+
+---
+
 ### 7. Pull Requests
 
 **Prompt 1:**

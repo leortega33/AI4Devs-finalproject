@@ -100,7 +100,8 @@
       "routine": "Rutina",
       "payments": "Pagos",
       "attendance": "Asistencia",
-      "progress": "Progreso"
+      "progress": "Progreso",
+      "nutrition": "Nutrición"
     },
     "routineAssigned": "Asignada",
     "routineNone": "Sin rutina",
@@ -181,6 +182,31 @@
       "saveFailed": "No se pudo agregar la foto.",
       "deleteFailed": "No se pudo eliminar la foto."
     }
+  },
+  "nutrition": {
+    "title": "Nutrición",
+    "subtitle": "Plan de nutrición de {{name}}",
+    "dailyCalories": "Calorías diarias",
+    "proteinTarget": "Proteína (g/día)",
+    "generalNotes": "Notas generales",
+    "mealName": "Nombre de la comida",
+    "mealNote": "Nota de la comida",
+    "foodDescription": "Alimento",
+    "foodQuantity": "Cantidad",
+    "addMeal": "Agregar comida",
+    "removeMeal": "Eliminar comida",
+    "addItem": "Agregar alimento",
+    "removeItem": "Eliminar alimento",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "history": "Historial",
+    "historyEmpty": "Todavía no hay versiones guardadas.",
+    "historyMealCount": "{{count}} comida(s)",
+    "saved": "Plan de nutrición guardado.",
+    "validationHint": "Cada comida necesita un nombre y cada alimento una descripción.",
+    "loadFailed": "No se pudo cargar el plan de nutrición.",
+    "saveFailed": "No se pudo guardar el plan de nutrición.",
+    "historyFailed": "No se pudo cargar el historial."
   },
   "attendance": {
     "title": "Asistencia",

@@ -100,7 +100,8 @@
       "routine": "Routine",
       "payments": "Payments",
       "attendance": "Attendance",
-      "progress": "Progress"
+      "progress": "Progress",
+      "nutrition": "Nutrition"
     },
     "routineAssigned": "Assigned",
     "routineNone": "No routine",
@@ -181,6 +182,31 @@
       "saveFailed": "Could not add the photo.",
       "deleteFailed": "Could not delete the photo."
     }
+  },
+  "nutrition": {
+    "title": "Nutrition",
+    "subtitle": "{{name}}'s nutrition plan",
+    "dailyCalories": "Daily calories",
+    "proteinTarget": "Protein (g/day)",
+    "generalNotes": "General notes",
+    "mealName": "Meal name",
+    "mealNote": "Meal note",
+    "foodDescription": "Food",
+    "foodQuantity": "Quantity",
+    "addMeal": "Add meal",
+    "removeMeal": "Remove meal",
+    "addItem": "Add food",
+    "removeItem": "Remove food",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "history": "History",
+    "historyEmpty": "No saved versions yet.",
+    "historyMealCount": "{{count}} meal(s)",
+    "saved": "Nutrition plan saved.",
+    "validationHint": "Each meal needs a name and each food needs a description.",
+    "loadFailed": "Could not load the nutrition plan.",
+    "saveFailed": "Could not save the nutrition plan.",
+    "historyFailed": "Could not load the history."
   },
   "attendance": {
     "title": "Attendance",

@@ -78,6 +78,8 @@ model Client {
   notificationLogs      NotificationLog[]
   attendances           Attendance[]
   progressEntries       ProgressEntry[]
+  nutritionPlan         NutritionPlan?
+  nutritionPlanVersions NutritionPlanVersion[]
 }
 
 model MedicalRecord {
@@ -251,4 +253,49 @@ model ProgressPhoto {
   createdAt       DateTime      @default(now())
 
   @@index([progressEntryId])
+}
+
+model NutritionPlan {
+  id            Int             @id @default(autoincrement())
+  clientId      Int             @unique
+  client        Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  dailyCalories Int?
+  proteinTargetG Int?
+  generalNotes  String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  meals         NutritionMeal[]
+}
+
+model NutritionMeal {
+  id              Int                @id @default(autoincrement())
+  nutritionPlanId Int
+  nutritionPlan   NutritionPlan      @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  name            String
+  note            String?
+  order           Int
+  items           NutritionFoodItem[]
+
+  @@index([nutritionPlanId])
+}
+
+model NutritionFoodItem {
+  id             Int           @id @default(autoincrement())
+  nutritionMealId Int
+  nutritionMeal  NutritionMeal @relation(fields: [nutritionMealId], references: [id], onDelete: Cascade)
+  description    String
+  quantity       String?
+  order          Int
+
+  @@index([nutritionMealId])
+}
+
+model NutritionPlanVersion {
+  id        Int      @id @default(autoincrement())
+  clientId  Int
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  snapshot  Json
+  createdAt DateTime @default(now())
+
+  @@index([clientId, createdAt])
 }

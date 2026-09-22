@@ -1577,7 +1577,7 @@ implemented only if/when a cloud "always-on" deploy is chosen.)
 
 ## US-027: Nutrition plans
 
-- **Status:** ready (product scope resolved; ready to propose)
+- **Status:** in-openspec (`openspec/changes/add-nutrition-plans`)
 
 **User story:** As the gym owner/trainer, I want to create structured nutrition
 plans for clients, so that I can complement their training.
