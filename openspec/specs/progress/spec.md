@@ -1,4 +1,9 @@
-## ADDED Requirements
+# progress Specification
+
+## Purpose
+TBD - created by archiving change add-progress-tracking. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Record a client progress entry
 The system SHALL let the trainer record a dated progress entry for a client with
