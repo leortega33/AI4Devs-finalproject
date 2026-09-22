@@ -1577,32 +1577,95 @@ implemented only if/when a cloud "always-on" deploy is chosen.)
 
 ## US-027: Nutrition plans
 
-- **Status:** enriched (greenfield module — needs product definition)
+- **Status:** ready (product scope resolved; ready to propose)
 
-**User story:** As the gym owner/trainer, I want to create simple nutrition plans
-for clients, so that I can complement their training.
+**User story:** As the gym owner/trainer, I want to create structured nutrition
+plans for clients, so that I can complement their training.
 
-**Functional description:** a nutrition plan per client (meals/notes). A **new
-module** whose scope (structured meals vs free text, macros, templates) needs a
-product-definition pass before implementation.
+**Functional description:** one nutrition plan per client, built as an **ordered
+list of meals**, each meal holding an **ordered list of food items**, plus
+optional **daily targets** and a general note. Each save appends an immutable
+**version snapshot** so the plan's history is preserved (mirroring the medical
+record history, US-021). Reusable plan templates are split out to a follow-up
+(**US-027b**).
 
-**Data model (Prisma):** new `NutritionPlan` (+ possibly `Meal`) tables tied to
-`Client`. Migration required.
+**Resolved product decisions (2026-09-21):**
+1. **Full structure (chosen):** `NutritionPlan` → `NutritionMeal[]` (e.g.
+   Desayuno/Almuerzo/Merienda/Cena) → `NutritionFoodItem[]` (name + optional
+   quantity/note). No per-item macros and no food database.
+2. **Optional daily targets (chosen):** plan-level optional numeric fields
+   `dailyCalories` and `proteinTargetG` (non-negative). No per-item macro
+   tracking.
+3. **Version history (chosen):** each save appends a `NutritionPlanVersion`
+   holding a full JSON snapshot of the plan (targets + note + meals + items) with
+   a timestamp; the newest version equals the current plan. JSON snapshot is used
+   (not normalized version tables) because the plan is a nested structure.
+4. **Templates deferred (chosen):** reusable plan templates are out of scope here
+   — see US-027b.
 
-**Endpoints (draft):** `POST/GET/PUT /api/clients/:clientId/nutrition-plan`.
+**Data model (Prisma):**
+- `NutritionPlan` (1:1 with `Client`, cascade): `id`, `clientId` (unique),
+  `dailyCalories Int?`, `proteinTargetG Int?`, `generalNotes String?`,
+  `createdAt`, `updatedAt`.
+- `NutritionMeal`: `id`, `nutritionPlanId` FK cascade, `name`, `note String?`,
+  `order`, `@@index([nutritionPlanId])`.
+- `NutritionFoodItem`: `id`, `nutritionMealId` FK cascade, `description`,
+  `quantity String?`, `order`, `@@index([nutritionMealId])`.
+- `NutritionPlanVersion`: `id`, `clientId` FK cascade, `snapshot Json`,
+  `createdAt`, `@@index([clientId, createdAt])`.
+Migration required.
 
-**Files/modules:** the nutrition model(s)/repository/service/controller/route and
-a client nutrition view/editor.
+**Endpoints (draft):**
+- `GET /api/clients/:clientId/nutrition-plan` — the current plan (meals + items +
+  targets + note), or an empty payload when none exists.
+- `PUT /api/clients/:clientId/nutrition-plan` — upsert: create/replace the plan
+  and its meals/items in one operation, appending a version snapshot.
+- `GET /api/clients/:clientId/nutrition-plan/versions` — the version history
+  (snapshots, newest first).
 
-**Definition of done (draft):** a nutrition plan can be created/edited and viewed
-per client.
+**Files/modules:** the nutrition model(s)/repository/service/controller/route
+(upsert + history) and a client nutrition view/editor (meals with reorder/add/
+remove, food items per meal, optional targets, general note, history view).
 
-**Tests:** model/service/route + a frontend editor test.
+**Definition of done (draft):** a structured nutrition plan (meals + food items +
+optional targets + note) can be created/edited and viewed per client; each save
+appends a version snapshot viewable as history.
 
-**Non-functional requirements:** protected; i18n.
+**Tests:** model/service/route (upsert replaces meals/items, appends a version,
+returns empty for no plan, history newest-first) + a frontend editor test
+(add/remove a meal and a food item, save, history renders).
 
-**Open technical decisions:** structured vs free-text; macros/calories; reusable
-plan templates. Define before implementing.
+**Non-functional requirements:** protected; i18n; non-negative targets.
+
+**Open technical decisions:** none blocking — resolved above. (Per-item macros
+and a food database intentionally excluded.)
+
+---
+
+## US-027b: Nutrition plan templates (deferred follow-up)
+
+- **Status:** enriched (needs the US-027 base first)
+
+**User story:** As the gym owner/trainer, I want reusable nutrition plan
+templates, so that I can assign a starting plan to a client quickly.
+
+**Functional description:** a library of reusable nutrition templates (same
+meal/food-item structure as US-027, with `clientId IS NULL`), clonable onto a
+client's plan — mirroring the routine-template pattern (US-005/006).
+
+**Data model (Prisma):** reuse the US-027 structure with a nullable `clientId` on
+`NutritionPlan` (template when null, assigned when set) or a dedicated
+`NutritionTemplate` table; decide at proposal time.
+
+**Endpoints (draft):** `POST/GET/PUT /api/nutrition-templates`, plus a
+clone-to-client action.
+
+**Definition of done (draft):** templates can be created, listed, edited, and
+cloned onto a client's plan.
+
+**Open technical decisions:** shared table (nullable clientId) vs dedicated
+template table; whether cloning is a copy or a live link. Define before
+implementing.
 
 ---
 
