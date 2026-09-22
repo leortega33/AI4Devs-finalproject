@@ -1800,6 +1800,22 @@ is captured textually below so it survives even without the binary.
 - Colors: leaf green header bars (derive the exact hex from the logo/PDF, ~
   `#82B541`), black table/section headers with white text.
 
+**Resolved design decisions (2026-09-22, sampled from the reference PDF):**
+- **Colors (derived by pixel-sampling `trainer-plan.pdf`):** session title bar
+  fill `#C5DFB4` (soft green, black text); accent lime green `#6FAC46` (brand
+  subtitle + underlines); brand band + table/section headers black `#000000` with
+  white text. The export uses these lighter greens for fidelity to the real plan
+  (not the app theme's darker `#2E7D32`).
+- **Orientation:** render the routine export in **A4 landscape** so the exercise
+  name + per-week `KG/REPS/SERIES` grid stays legible. When `durationWeeks` > ~5,
+  auto-shrink column widths/font to a floor; if it still overflows, continue the
+  exercise table on the next page repeating the header.
+- **BLOQUE FINAL:** use the block-label `final` (case-insensitive) convention (no
+  schema change); can be promoted to an explicit flag later if fragile.
+- **Brand in English export:** keep `SPORT – FITNESS` / `ENTRENAMIENTO FÍSICO
+  INTEGRAL` verbatim (proper noun); translate only the generic section labels.
+- Reference binary saved at `planning/reference/trainer-plan.pdf`.
+
 **Data model (Prisma):** none. **Endpoints:** none (same export endpoints).
 
 **Files/modules (backend, presentation-only):**
@@ -1827,13 +1843,9 @@ MOVILIDAD/ACTIVACIÓN); routines export E2E unaffected.
 size (embed the logo once, compressed); readable A4 layout.
 
 **Open technical decisions (confirm at proposal):**
-- Exact leaf-green hex (derive from the logo/PDF).
-- Week-column handling when `durationWeeks` > 4–5 (cap, shrink, or paginate).
-- BLOQUE FINAL convention (block label `final`) — acceptable, or add an explicit
-  flag later.
-- Whether the English export keeps the Spanish brand header verbatim (brand is a
-  proper noun — recommend keeping `SPORT – FITNESS` as-is, translating only the
-  generic section labels).
+- Week-column handling when `durationWeeks` > 4–5 — resolved to landscape +
+  auto-shrink + page continuation (above); revisit only if real plans exceed ~8
+  weeks.
 
 ---
 
