@@ -216,7 +216,7 @@ docker compose up -d
 
 # 3. Backend
 cd backend
-cp .env.example .env          # completar JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
+cp .env.example .env          # ya trae credenciales demo (admin@example.com / ChangeMe123!)
 npm install
 npx prisma migrate deploy     # aplicar migraciones
 npx prisma db seed            # crear el usuario admin desde el .env
@@ -425,10 +425,19 @@ flowchart LR
 ```
 
 **Proceso de despliegue (opción recomendada, gratis):**
-1. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build`
+1. `cp .env.prod.example .env.prod` (trae valores demo listos; cambiar los
+   secretos para un despliegue real/público).
+2. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build`
    (las migraciones se aplican solas al iniciar con `prisma migrate deploy`).
-2. Seed del admin único: `... run --rm app npx prisma db seed`.
-3. URL pública con **Cloudflare Tunnel**: `cloudflared tunnel --url http://localhost:3000`.
+3. Seed del admin único:
+   `docker compose -f docker-compose.prod.yml --env-file .env.prod run --rm app npx prisma db seed`.
+4. Abrir `http://localhost:3000` e iniciar sesión con las credenciales del
+   `.env.prod` (por defecto `admin@example.com` / `ChangeMe123!`).
+5. (Opcional) URL pública con **Cloudflare Tunnel**:
+   `cloudflared tunnel --url http://localhost:3000`.
+
+> Atajo: `./scripts/prod-start.sh` levanta el stack, espera el health, abre el
+> túnel e imprime la URL pública; `./scripts/prod-stop.sh` lo baja.
 
 Como alternativa cloud (free tier) hay un **`render.yaml`** (Blueprint: web
 service Docker + PostgreSQL gestionado). Detalle completo, variables y gestión de
